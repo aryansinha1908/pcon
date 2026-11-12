@@ -1,8 +1,8 @@
 export const focusAreas = [
-  { number: "01", name: "Competitive programming", description: "Sharpen your problem-solving instincts and learn to think in algorithms.", symbol: "{ }", tint: "mint" },
-  { number: "02", name: "Web & app development", description: "Turn ideas into useful products, from your first interface to launch day.", symbol: "</>", tint: "blue" },
-  { number: "03", name: "AI & machine learning", description: "Explore intelligent systems and build with the technologies shaping tomorrow.", symbol: "✳", tint: "orange" },
-  { number: "04", name: "Cloud, blockchain & more", description: "Experiment across the stack, follow your curiosity, and find your next frontier.", symbol: "⌘", tint: "violet" },
+  { number: "01", name: "Competitive programming", description: "Sharpen your problem-solving instincts and learn to think in algorithms.", symbol: "{ }", tint: "mint", roadmap: "/roadmaps#cp" },
+  { number: "02", name: "Web & app development", description: "Turn ideas into useful products, from your first interface to launch day.", symbol: "</>", tint: "blue", roadmap: "/roadmaps#web" },
+  { number: "03", name: "AI & machine learning", description: "Explore intelligent systems and build with the technologies shaping tomorrow.", symbol: "✳", tint: "orange", roadmap: "/roadmaps#ml" },
+  { number: "04", name: "Cloud, blockchain & more", description: "Experiment across the stack, follow your curiosity, and find your next frontier.", symbol: "⌘", tint: "violet", roadmap: "/roadmaps#devops" },
 ];
 
 export const navLinks = [
@@ -11,7 +11,10 @@ export const navLinks = [
   { label: "Roadmaps", href: "/roadmaps" },
   { label: "Events", href: "/#events" },
   { label: "Blogs", href: "/#blogs" },
+<<<<<<< HEAD
   { label: "Team", href: "/team" },
+=======
+>>>>>>> 966b84f05ba3b76aafc4d35a432b5b5ac05aa01e
   { label: "Community", href: "/#community" },
 ];
 
