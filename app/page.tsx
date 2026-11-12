@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowIcon } from "@/components/brand";
 import { BuildOnScroll } from "@/components/build-on-scroll";
 import { CodeRain } from "@/components/code-rain";
@@ -108,7 +109,7 @@ export default function HomePage() {
                 <article className={"domain-card domain-card--" + area.tint} key={area.number} data-build>
                   <div className="domain-card__top"><span>{area.number} / 04</span><span className="domain-card__symbol">{area.symbol}</span></div>
                   <h3>{area.name}</h3><p>{area.description}</p>
-                  <a href="#community" aria-label={"Explore " + area.name}><ArrowIcon diagonal /></a>
+                  <Link href={area.roadmap} aria-label={area.name + " roadmap"}><ArrowIcon diagonal /></Link>
                 </article>
               ))}
             </div>
@@ -152,7 +153,7 @@ export default function HomePage() {
             </div>
             <div className="blog-grid">
               {blogPosts.map((post) => (
-                <a className="blog-card" href="/blogs" key={post.title} data-build>
+                <a className="blog-card" href={post.tag === "Roadmap" ? "/roadmaps" : "/blogs"} key={post.title} data-build>
                   <span className="chip">{post.tag}</span>
                   <h3>{post.title}</h3>
                   <span className="blog-card__author">
