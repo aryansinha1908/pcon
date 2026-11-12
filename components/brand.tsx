@@ -2,7 +2,7 @@ import Image from "next/image";
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <a className={"brand" + (compact ? " brand--compact" : "")} href="#top" aria-label="PCON home">
-      <Image src="/pcon-mark.svg" alt="" width={42} height={42} priority />
+      <Image className="brand__logo" src="/pcon-logo.png" alt="" width={70} height={42} priority />
       <span className="brand__wordmark"><strong>PCON</strong>{!compact && <small>NIT Jamshedpur</small>}</span>
     </a>
   );

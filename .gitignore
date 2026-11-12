@@ -7,3 +7,12 @@ coverage/
 .DS_Store
 .env*
 !.env.example
+
+# Agent skills
+.agents/
+skills-lock.json
+
+# Claude Code / MCP local tooling
+.claude/
+.mcp.json
+.playwright-mcp/
