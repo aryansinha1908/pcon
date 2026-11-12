@@ -49,7 +49,7 @@ function stateFor(progress: number): BuildState {
   return "live";
 }
 
-type Item = { el: HTMLElement; order: number; cursor: number; progress: number; state?: BuildState };
+type Item = { el: HTMLElement; order: number; cursor: number; progress: number; intro: boolean; state?: BuildState };
 type Target = { x: number; y: number; score: number; size?: string };
 type CursorMotion = { x: number; y: number; tx: number; ty: number; placed: boolean; active: boolean };
 
@@ -61,12 +61,19 @@ export function BuildOnScroll() {
 
     const root = document.documentElement;
     const items: Item[] = [...document.querySelectorAll<HTMLElement>("[data-build-section]")].flatMap((section) =>
-      [...section.querySelectorAll<HTMLElement>("[data-build]")].map((el, order) => ({ el, order, cursor: order % CURSORS.length, progress: -1 })),
+      [...section.querySelectorAll<HTMLElement>("[data-build]")].map((el, order) => ({
+        el,
+        order,
+        cursor: order % CURSORS.length,
+        progress: -1,
+        intro: section.hasAttribute("data-build-intro"),
+      })),
     );
     const cursors = cursorRefs.current;
     const sizeLabels = cursors.map((cursor) => cursor?.querySelector<HTMLElement>(".build-cursor__size") ?? null);
     const motion: CursorMotion[] = CURSORS.map(() => ({ x: 0, y: 0, tx: 0, ty: 0, placed: false, active: false }));
     const clickTimers: number[] = [];
+    const introStartedAt = performance.now();
     let frame = 0;
     let lastTime = 0;
 
@@ -101,7 +108,11 @@ export function BuildOnScroll() {
       for (const item of items) {
         const rect = item.el.getBoundingClientRect();
         const stagger = (item.order % CURSORS.length) * 0.055;
-        const goal = clamp((vh * 0.96 - rect.top) / (vh * 0.55) - stagger + endBoost);
+        const introProgress = (time - introStartedAt) / 1350 - item.order * 0.11;
+        const goal = item.intro
+          ? clamp(introProgress)
+          : clamp((vh * 0.96 - rect.top) / (vh * 0.55) - stagger + endBoost);
+        if (item.intro && introProgress < 1) moving = true;
         item.progress = item.progress < 0 ? goal : item.progress + (goal - item.progress) * progressBlend;
         if (Math.abs(goal - item.progress) > SETTLE_EPSILON) moving = true;
         else item.progress = goal;
