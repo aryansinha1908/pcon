@@ -6,7 +6,11 @@ import { formatDate } from "@/lib/format";
 import { getPublicEvents } from "@/lib/events";
 import { ScrollReveal } from "./scroll-reveal";
 import "./events.css";
-
+// Events are live, admin-edited data — never prerender/cache this page at
+// build time (that would freeze the list at whatever it was when `next
+// build` ran, and also fails CI, which points DATABASE_URL at a placeholder
+// that doesn't exist). Always render fresh, per request.
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Events — PCON",
   description: "Contests, hackathons, workshops and talks from the Programming Club of NIT Jamshedpur — what's coming up, and what we've run before.",
