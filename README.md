@@ -4,15 +4,32 @@ The website for the Programming Club of NIT Jamshedpur, built with Next.js App R
 
 ## Run locally
 
+You need Node 22 and a Postgres server running on `localhost:5432` with user `postgres` / password `postgres` (Homebrew, Postgres.app or Docker all work).
+
 ```bash
 npm install
+createdb pcon               # the app's database
+createdb pcon_test          # only if you'll run the tests
 cp .env.example .env        # then fill it in (see below)
-npx prisma migrate dev --name init   # first time only: creates the tables
-npm run db:seed             # makes the emails in SEED_ADMIN_EMAILS admins
+npx prisma migrate deploy   # creates the tables
+npm run db:seed             # makes the emails in SEED_ADMIN_EMAILS / SEED_OWNER_EMAILS admins / owners
 npm run dev
 ```
 
+No Docker? Skip it: any local Postgres works. With Docker, this replaces the two `createdb` lines:
+
+```bash
+docker run -d --name pcon-db -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=pcon postgres:16
+docker exec pcon-db createdb -U postgres pcon_test
+```
+
 Open [http://localhost:3000](http://localhost:3000) for the site and [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel.
+
+**Each developer has their own local database**, so everyone seeds themselves: put **your own** college email in `SEED_ADMIN_EMAILS` (and `SEED_OWNER_EMAILS` if you need to manage roles). A teammate can copy someone else's `.env` (sent privately, never committed) but must change those two lines to their own email, or they'll seed the other person instead of themselves.
+
+**Check it worked:** `npm run db:seed` should print `created you@nitjsr.ac.in as ADMIN` (or `promoted ...`). `Nothing to seed` means the `SEED_` lines are empty. After signing in, the admin top bar shows your role badge.
+
+**Changing the schema:** edit `prisma/schema.prisma`, then run `npx prisma migrate dev --name what-changed` and commit the new folder in `prisma/migrations/`. Teammates pick it up with `npx prisma migrate deploy`.
 
 ### Environment
 
@@ -50,12 +67,14 @@ Rules built in:
 
 1. Go to `/admin` (for example `http://localhost:3000/admin`). You'll be sent to the sign-in page.
 2. Click **Continue with Google** and pick your `@nitjsr.ac.in` account. Other accounts are refused.
+   If Google says access is blocked, the OAuth consent screen (Google Cloud Console → OAuth consent screen) is in **Testing** mode: whoever owns the Google client must add your email under **Test users**, or publish the app.
 3. What you see depends on your role. A new person is a Member until an owner (or the seed script) gives them more.
 
 There are no passwords. Access comes from your role in the database:
 
 - **First admin/owner:** put the email in `SEED_ADMIN_EMAILS` or `SEED_OWNER_EMAILS` and run `npm run db:seed`, before or after that person first signs in.
-- **Everyone after that:** they sign in once, then an owner sets their role on **Users & roles**. Admins can also add someone to the team by email before they ever sign in.
+- **Everyone after that:** they sign in once, then an owner sets their role on **Users & roles**. Admins can also add someone to the team by email before they ever sign in; they then appear on Users & roles as "Not signed in yet" and an owner can promote them in advance.
+- Roles live in the database, so promoting someone only affects the database the app is pointed at. On local setups each developer seeds themselves (see **Run locally**).
 
 ## Tests
 
@@ -87,6 +106,7 @@ prisma/              Schema and seed script
 tests/unit/          Fast tests for roles, the event rule, dates and validation
 tests/db/            Server-action permission tests against a test database
 public/              Static assets, including the PCON mark
+
 ```
 
 ## Roadmaps
