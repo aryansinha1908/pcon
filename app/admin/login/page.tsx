@@ -11,7 +11,10 @@ const errorMessage = (code: string, domain: string): string =>
   ({
     AccessDenied: `Only @${domain} Google accounts can sign in.`,
     OAuthAccountNotLinked: "This email is already linked to another sign-in method.",
-    Configuration: "Sign-in isn't configured correctly. Check your PostgreSQL database connection and Google OAuth credentials.",
+    // Auth.js reports every server-side failure as "Configuration", including the
+    // database being down or missing tables, so don't point only at AUTH_* here.
+    Configuration:
+      "Sign-in failed on the server. If you run this site, check the server logs (the terminal running the app): usually the PostgreSQL database isn't reachable or its tables are missing, or the Google OAuth credentials / an AUTH_* variable are wrong.",
   })[code] ?? "Sign-in failed. Please try again.";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
