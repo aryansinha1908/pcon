@@ -364,16 +364,16 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
 
         if (isImpact) {
           // Brilliant white-mint electric spark on impact!
-          ctx.shadowColor = "rgba(112, 255, 210, 1)";
-          ctx.shadowBlur = 16;
+          ctx.shadowColor = "rgba(0, 255, 179, 1)";
+          ctx.shadowBlur = 18;
           ctx.fillStyle = "#ffffff";
         } else if (pointerBoost > 0.15 || rippleBoost > 0.25) {
-          ctx.shadowColor = "rgba(112, 255, 220, 1)";
-          ctx.shadowBlur = 14;
-          ctx.fillStyle = `rgba(200, 255, 240, ${alpha})`;
+          ctx.shadowColor = "rgba(0, 255, 179, 1)";
+          ctx.shadowBlur = 16;
+          ctx.fillStyle = `rgba(220, 255, 245, ${alpha})`;
         } else {
           ctx.shadowBlur = 0;
-          ctx.fillStyle = `rgba(112, 227, 199, ${alpha})`;
+          ctx.fillStyle = `rgba(0, 245, 160, ${alpha})`;
         }
 
         ctx.fillText(displayGlyph, drawX, drawY);
@@ -400,18 +400,18 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
             if (t === 0) {
               // Luminous White Lead Drop Tip!
               ctx.shadowColor = "rgba(255, 255, 255, 1)";
-              ctx.shadowBlur = 18;
+              ctx.shadowBlur = 20;
               ctx.fillStyle = "#ffffff";
             } else if (t === 1) {
               // Bright Mint Secondary Glow
-              ctx.shadowColor = "rgba(112, 255, 210, 0.95)";
-              ctx.shadowBlur = 12;
-              ctx.fillStyle = "#c8ffea";
+              ctx.shadowColor = "rgba(0, 255, 179, 1)";
+              ctx.shadowBlur = 14;
+              ctx.fillStyle = "#39ffb8";
             } else {
               // Cascading Green Trail fading upward
               ctx.shadowBlur = t < 4 ? 6 : 0;
-              ctx.shadowColor = "rgba(39, 201, 173, 0.8)";
-              ctx.fillStyle = `rgba(112, 227, 199, ${Math.max(0.12, 0.85 * trailNorm)})`;
+              ctx.shadowColor = "rgba(0, 255, 160, 0.9)";
+              ctx.fillStyle = `rgba(0, 245, 160, ${Math.max(0.12, 0.9 * trailNorm)})`;
             }
 
             ctx.fillText(glyph, stream.x, trailY);
