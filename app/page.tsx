@@ -31,11 +31,6 @@ export default function HomePage() {
               <h1 id="hero-title" className="hero__title" data-build>PCON</h1>
               <p className="hero__club-name" data-build>PROGRAMMING CLUB OF NIT JAMSHEDPUR</p>
               <HackerScramble />
-              <p className="hero__intro" data-build>Competitive programming, creative technology, and curious minds — all finding their next idea here.</p>
-              <div className="hero__actions" data-build>
-                <a className="button button--primary" href="#about">Explore PCON <ArrowIcon /></a>
-                <Link className="button button--outline" href="/roadmaps">Explore roadmaps <span aria-hidden="true">↗</span></Link>
-              </div>
               <MatrixControl />
             </div>
           </div>
