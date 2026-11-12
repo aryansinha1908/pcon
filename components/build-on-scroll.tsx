@@ -33,6 +33,10 @@ const LIVE_START = 0.70;
 const PROGRESS_SMOOTHING = 80;
 const CURSOR_SMOOTHING = 70;
 const SETTLE_EPSILON = 0.0005;
+/** Items in a section start building spread over the first 35% of the section's progress. */
+const SECTION_STAGGER = 0.35;
+/** Sections finish at 90% of the way to the anchor line, leaving the easing time to settle before arrival. */
+const SECTION_FINISH = 0.9;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
@@ -48,7 +52,10 @@ function stateFor(progress: number): BuildState {
 
 type Item = {
   el: HTMLElement;
+  section: HTMLElement;
   order: number;
+  /** Where in its section's progress (0–1) this item starts building, so the section's items take turns in page order. */
+  start: number;
   cursor: number;
   progress: number;
   intro: boolean;
@@ -68,9 +75,10 @@ export function BuildOnScroll() {
     const root = document.documentElement;
     const vhInitial = window.innerHeight;
 
-    const items: Item[] = [...document.querySelectorAll<HTMLElement>("[data-build-section]")].flatMap((section) =>
-      [...section.querySelectorAll<HTMLElement>("[data-build]")].map((el, order) => {
-        const isIntro = section.hasAttribute("data-build-intro");
+    const items: Item[] = [...document.querySelectorAll<HTMLElement>("[data-build-section]")].flatMap((section) => {
+      const els = [...section.querySelectorAll<HTMLElement>("[data-build]")];
+      const isIntro = section.hasAttribute("data-build-intro");
+      return els.map((el, order) => {
         const rect = el.getBoundingClientRect();
         // If element is already on-screen or above on initial load, show live right away
         const alreadyInView = !isIntro && rect.top < vhInitial * 0.40;
@@ -81,15 +89,17 @@ export function BuildOnScroll() {
         }
         return {
           el,
+          section,
           order,
+          start: els.length > 1 ? (order / (els.length - 1)) * SECTION_STAGGER : 0,
           cursor: order % CURSORS.length,
           progress: alreadyInView ? 1 : -1,
           intro: isIntro,
           state: alreadyInView ? "live" : undefined,
           hasBuilt: alreadyInView,
         };
-      }),
-    );
+      });
+    });
 
     const cursors = cursorRefs.current;
     const motion: CursorMotion[] = CURSORS.map(() => ({ x: 0, y: 0, tx: 0, ty: 0, placed: false, active: false }));
@@ -121,12 +131,33 @@ export function BuildOnScroll() {
       const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height ?? 0;
       const currentScrollY = window.scrollY;
       const isScrollingUp = currentScrollY < lastScrollY - 2;
+      // A jump (anchor link, page load at a #hash, arriving from another page) shouldn't
+      // replay the build after landing: snap straight to the new state instead of easing.
+      const jumped = Math.abs(currentScrollY - lastScrollY) > vh * 0.75;
       lastScrollY = currentScrollY;
 
       const remaining = root.scrollHeight - vh - currentScrollY;
       const endBoost = clamp(1 - remaining / (vh * 0.35));
       const targets: (Target | null)[] = CURSORS.map(() => null);
       let moving = false;
+
+      if (jumped) motion.forEach((m) => { m.placed = false; });
+
+      // Section progress runs 0 → 1 as the section's top travels from the bottom of the
+      // viewport to just under the header, where #anchor links land. Every item in the
+      // section is built by then, so following a navbar link always shows finished sections.
+      const finishLine = headerHeight + 8;
+      const startLine = vh * 0.96;
+      const sectionProgress = new Map<HTMLElement, number>();
+      const progressOf = (section: HTMLElement) => {
+        let value = sectionProgress.get(section);
+        if (value === undefined) {
+          const top = section.getBoundingClientRect().top;
+          value = clamp((startLine - top) / ((startLine - finishLine) * SECTION_FINISH));
+          sectionProgress.set(section, value);
+        }
+        return value;
+      };
 
       for (const item of items) {
         if (item.hasBuilt) {
@@ -172,6 +203,12 @@ export function BuildOnScroll() {
           } else {
             goal = clamp((rawProgress - stagger) / (1 - stagger) + endBoost);
           }
+
+          // Navbar #anchor links land with the section's top just under the header. Items lower
+          // in the section can still be low on screen then, so also follow the section's own
+          // progress: every item is fully built by the time its section reaches the anchor line.
+          const bySection = clamp((progressOf(item.section) - item.start) / (1 - item.start));
+          goal = Math.max(goal, bySection);
         }
 
         // Selecting only runs forward on scroll down - never unbuilds
@@ -179,7 +216,7 @@ export function BuildOnScroll() {
           goal = Math.max(item.progress, goal);
         }
 
-        item.progress = item.progress < 0 ? goal : item.progress + (goal - item.progress) * progressBlend;
+        item.progress = item.progress < 0 || jumped ? goal : item.progress + (goal - item.progress) * progressBlend;
         if (Math.abs(goal - item.progress) > SETTLE_EPSILON) moving = true;
         else item.progress = goal;
 
