@@ -7,6 +7,7 @@ import { BuildOnScroll } from "@/components/build-on-scroll";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { blogPosts, events, focusAreas } from "@/lib/site-data";
+import { getPublishedBlogs } from "@/lib/blogs-db";
 
 const tickerWords = ["THINK DEEPLY", "BUILD BOLDLY", "LEARN TOGETHER", "CODE FOR THE FUTURE"];
 
