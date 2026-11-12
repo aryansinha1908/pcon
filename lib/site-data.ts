@@ -6,13 +6,6 @@ export const focusAreas = [
 ];
 
 export const navLinks = [
-<<<<<<< Updated upstream
-  { label: "About", href: "#about" },
-  { label: "What we do", href: "#domains" },
-  { label: "Events", href: "#events" },
-  { label: "Blogs", href: "#blogs" },
-  { label: "Community", href: "#community" },
-=======
   { label: "About", href: "/#about" },
   { label: "What we do", href: "/#domains" },
   { label: "Roadmaps", href: "/roadmaps" },
@@ -20,7 +13,6 @@ export const navLinks = [
   { label: "Blogs", href: "/#blogs" },
   { label: "Team", href: "/team" },
   { label: "Community", href: "/#community" },
->>>>>>> Stashed changes
 ];
 
 export const heroPillars = [

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { DepartmentTint, TeamMember } from "@/lib/team";
+import type { TeamMember } from "@/lib/team";
 
 function getInitials(name: string): string {
   return name
@@ -29,22 +29,39 @@ function LinkedInIcon() {
   );
 }
 
+function GlobeIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="9.5" />
+      <path d="M2.5 12h19" />
+      <path d="M12 2.5a14.5 14.5 0 0 1 0 19 14.5 14.5 0 0 1 0-19Z" />
+    </svg>
+  );
+}
+
 export type TeamMemberCardProps = {
   member: TeamMember;
-  tint?: DepartmentTint;
 };
 
-export function TeamMemberCard({ member, tint = "mint" }: TeamMemberCardProps) {
+export function TeamMemberCard({ member }: TeamMemberCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const showFallback = !member.image || imageFailed;
 
   return (
-    <article className={`team-card team-card--${tint}`}>
-      <div className="team-card__portrait">
+    <article className="member-card">
+      <div className="member-card__photo">
         {!showFallback ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            className="team-card__img"
+            className="member-card__img"
             src={member.image}
             alt={member.name}
             loading="lazy"
@@ -52,46 +69,54 @@ export function TeamMemberCard({ member, tint = "mint" }: TeamMemberCardProps) {
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <div className="team-card__fallback" aria-hidden="true">
-            <span className="team-card__initials">{getInitials(member.name)}</span>
+          <div className="member-card__fallback" aria-hidden="true">
+            <span>{getInitials(member.name)}</span>
           </div>
         )}
+      </div>
 
-        <div className="team-card__vignette" aria-hidden="true" />
+      <div className="member-card__body">
+        <div className="member-card__identity">
+          <h3 className="member-card__name">{member.name}</h3>
+          <p className="member-card__role">{member.designation}</p>
+          <span className="member-card__domain">{member.department}</span>
+        </div>
 
-        <div className="team-card__overlay">
-          <div className="team-card__identity">
-            <span className="team-card__role">{member.designation}</span>
-            <h3 className="team-card__name">{member.name}</h3>
-          </div>
-
-          <div className="team-card__socials" aria-label={`${member.name} social links`}>
+        <div className="member-card__socials" aria-label={`${member.name} links`}>
+          <a
+            className="member-card__social-icon"
+            href={member.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${member.name} GitHub profile`}
+            title="GitHub"
+          >
+            <GitHubIcon />
+          </a>
+          <a
+            className="member-card__social-icon"
+            href={member.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${member.name} LinkedIn profile`}
+            title="LinkedIn"
+          >
+            <LinkedInIcon />
+          </a>
+          {member.portfolio && (
             <a
-              className="team-card__social-link"
-              href={member.github}
+              className="member-card__social-icon"
+              href={member.portfolio}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`${member.name} on GitHub`}
-              title="GitHub"
+              aria-label={`${member.name} personal website`}
+              title="Portfolio"
             >
-              <GitHubIcon />
-              <span>GitHub</span>
+              <GlobeIcon />
             </a>
-            <a
-              className="team-card__social-link"
-              href={member.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${member.name} on LinkedIn`}
-              title="LinkedIn"
-            >
-              <LinkedInIcon />
-              <span>LinkedIn</span>
-            </a>
-          </div>
+          )}
         </div>
       </div>
     </article>
   );
 }
-
