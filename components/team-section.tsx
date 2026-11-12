@@ -42,15 +42,21 @@ export function TeamSection({
     return () => observer.disconnect();
   }, [measure, selectedBatch]);
 
+  const selectBatch = (batch: TeamBatch) => {
+    setSelectedBatch(batch);
+  };
+
   const go = (step: number) => {
     const next = TEAM_BATCHES[activeIndex + step];
-    if (next !== undefined) setSelectedBatch(next);
+    if (next !== undefined) {
+      selectBatch(next);
+    }
   };
 
   return (
     <section className="team-directory" aria-label="Team members by batch">
       <div className="shell">
-        <div className="batch-selector mt-28px">
+        <div className="batch-selector">
           <span className="batch-selector__label">BATCH OF</span>
 
           <div className="batch-selector__viewport">
@@ -77,7 +83,7 @@ export function TeamSection({
                       "batch-selector__btn" +
                       (isActive ? " batch-selector__btn--active" : "")
                     }
-                    onClick={() => setSelectedBatch(batch)}
+                    onClick={() => selectBatch(batch)}
                   >
                     {batch}
                   </button>
@@ -121,7 +127,10 @@ export function TeamSection({
           className="members-grid"
         >
           {filteredMembers.map((member) => (
-            <TeamMemberCard key={member.id} member={member} />
+            <TeamMemberCard
+              key={member.id}
+              member={member}
+            />
           ))}
         </div>
       </div>

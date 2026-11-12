@@ -16,6 +16,7 @@ export const TEAM_HERO_BANNER =
 export type TeamMember = {
   id: string;
   name: string;
+  rollNumber?: string;
   designation: string;
   department: string;
   batch: TeamBatch;

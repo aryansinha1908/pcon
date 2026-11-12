@@ -29,24 +29,6 @@ function LinkedInIcon() {
   );
 }
 
-function GlobeIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.9"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="9.5" />
-      <path d="M2.5 12h19" />
-      <path d="M12 2.5a14.5 14.5 0 0 1 0 19 14.5 14.5 0 0 1 0-19Z" />
-    </svg>
-  );
-}
-
 export type TeamMemberCardProps = {
   member: TeamMember;
 };
@@ -55,8 +37,12 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const showFallback = !member.image || imageFailed;
 
+  const hasAnySocial = Boolean(member.github || member.linkedin);
+
   return (
-    <article className="member-card">
+    <article
+      className="member-card"
+    >
       <div className="member-card__photo">
         {!showFallback ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -78,44 +64,41 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
       <div className="member-card__body">
         <div className="member-card__identity">
           <h3 className="member-card__name">{member.name}</h3>
-          <p className="member-card__role">{member.designation}</p>
-          <span className="member-card__domain">{member.department}</span>
+          <p className="member-card__detail">
+            <span className="member-card__detail-label">Roll No.</span>
+            {member.rollNumber}
+          </p>
+         
         </div>
 
-        <div className="member-card__socials" aria-label={`${member.name} links`}>
-          <a
-            className="member-card__social-icon"
-            href={member.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${member.name} GitHub profile`}
-            title="GitHub"
-          >
-            <GitHubIcon />
-          </a>
-          <a
-            className="member-card__social-icon"
-            href={member.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${member.name} LinkedIn profile`}
-            title="LinkedIn"
-          >
-            <LinkedInIcon />
-          </a>
-          {member.portfolio && (
-            <a
-              className="member-card__social-icon"
-              href={member.portfolio}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${member.name} personal website`}
-              title="Portfolio"
-            >
-              <GlobeIcon />
-            </a>
-          )}
-        </div>
+        {hasAnySocial && (
+          <div className="member-card__socials" aria-label={`${member.name} links`}>
+            {member.github && (
+              <a
+                className="member-card__social-icon"
+                href={member.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${member.name} GitHub profile`}
+              >
+                <GitHubIcon />
+                <span>GitHub</span>
+              </a>
+            )}
+            {member.linkedin && (
+              <a
+                className="member-card__social-icon"
+                href={member.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${member.name} LinkedIn profile`}
+              >
+                <LinkedInIcon />
+                <span>LinkedIn</span>
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );
