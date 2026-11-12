@@ -12,6 +12,8 @@ import { useCallback, useMemo, useSyncExternalStore } from "react";
  */
 
 const STORAGE_KEY = "pcon:roadmap-progress:v1";
+export const TOGGLE_EVENT = "roadmap:toggle";
+export type ToggleDetail = { id: string; value: boolean; done: Set<string> };
 const EMPTY = "[]";
 const listeners = new Set<() => void>();
 let snapshot: string | null = null;
@@ -75,6 +77,8 @@ function useProgress() {
     if (value) next.add(id);
     else next.delete(id);
     writeIds(next);
+    // Announce real user ticks (not progress loaded from storage), e.g. for the completion celebration.
+    window.dispatchEvent(new CustomEvent<ToggleDetail>(TOGGLE_EVENT, { detail: { id, value, done: new Set(next) } }));
   }, []);
 
   const reset = useCallback((ids: string[]) => {
@@ -110,6 +114,12 @@ export function TrackProgress({ ids, label, resettable = false }: { ids: string[
     <div className="track-progress" data-complete={count === ids.length && ids.length > 0}>
       <div className="track-progress__meta">
         <span>{count} / {ids.length} done</span>
+        {count === ids.length && ids.length > 0 && (
+          <span className="track-progress__badge">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            Track complete
+          </span>
+        )}
         {resettable && count > 0 && (
           <button type="button" className="track-progress__reset" onClick={() => reset(ids)}>Reset</button>
         )}
@@ -126,4 +136,42 @@ export function TrackProgress({ ids, label, resettable = false }: { ids: string[
       </div>
     </div>
   );
+}
+
+/**
+ * Marks the next step to do in a track: "Start here" before anything is ticked,
+ * "You are here" after, and nothing once the track is complete.
+ */
+export function NextPin({ id, ids }: { id: string; ids: string[] }) {
+  const { done } = useProgress();
+  const next = ids.find((stepId) => !done.has(stepId));
+  if (next !== id) return null;
+  const started = ids.some((stepId) => done.has(stepId));
+  return (
+    <span className="next-pin">
+      <span className="next-pin__dot" aria-hidden="true" />
+      {started ? "You are here" : "Start here"}
+    </span>
+  );
+}
+
+const NEW_FOR_MS = 7 * 24 * 60 * 60 * 1000;
+const noopSubscribe = () => () => {};
+
+/**
+ * "New" badge for resources added in the last week. The date check runs only
+ * in the browser (server HTML never shows it), so a statically built page
+ * doesn't keep showing "New" forever.
+ */
+export function NewBadge({ addedAt }: { addedAt?: string }) {
+  const isNew = useSyncExternalStore(
+    noopSubscribe,
+    () => {
+      if (!addedAt) return false;
+      const added = Date.parse(addedAt);
+      return Number.isFinite(added) && Date.now() - added < NEW_FOR_MS && Date.now() >= added;
+    },
+    () => false,
+  );
+  return isNew ? <span className="chip chip--new">New</span> : null;
 }
