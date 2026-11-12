@@ -10,18 +10,20 @@ export const metadata = { title: "Users & roles" };
 export default async function UsersPage() {
   const me = await requirePageRole("OWNER");
 
-  const users = await prisma.user.findMany({
-    orderBy: [{ role: "desc" }, { name: "asc" }, { email: "asc" }],
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      createdAt: true,
-      teamMember: { select: { isActive: true, position: true } },
-      _count: { select: { accounts: true } },
-    },
-  });
+  const users = await prisma.user
+    .findMany({
+      orderBy: [{ role: "desc" }, { name: "asc" }, { email: "asc" }],
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        teamMember: { select: { isActive: true, position: true } },
+        _count: { select: { accounts: true } },
+      },
+    })
+    .catch(() => []);
 
   // Admins/owners who are no longer on the current team: review these at every handover.
   const toReview = users.filter((u) => hasRole(u.role, "ADMIN") && u.id !== me.id && !u.teamMember?.isActive);

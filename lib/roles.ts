@@ -1,6 +1,5 @@
-import type { Role } from "@prisma/client";
-
-export const ROLES = ["MEMBER", "ADMIN", "OWNER"] as const satisfies readonly Role[];
+export const ROLES = ["MEMBER", "ADMIN", "OWNER"] as const;
+export type Role = (typeof ROLES)[number];
 
 const RANK: Record<Role, number> = { MEMBER: 0, ADMIN: 1, OWNER: 2 };
 

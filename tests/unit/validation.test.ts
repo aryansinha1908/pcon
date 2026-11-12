@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { blogSchema, eventSchema, teamMemberSchema } from "@/lib/validation";
+import {
+  blogSchema,
+  blogCategorySchema,
+  blogAuthorSchema,
+  eventSchema,
+  teamMemberSchema,
+} from "@/lib/validation";
 
 const event = {
   title: "Hack Night",
@@ -39,25 +45,58 @@ describe("eventSchema", () => {
 });
 
 describe("blogSchema", () => {
-  const blog = { title: "Intro to DP", content: "Dynamic programming breaks problems down.", published: "" };
+  const validBlog = {
+    title: "Intro to DP",
+    excerpt: "Learn dynamic programming fundamentals step by step.",
+    content: "Dynamic programming breaks complex recursive problems down into memoized subproblems.",
+    categoryId: 1,
+    authorId: 1,
+    status: "draft",
+    isFeatured: false,
+  };
 
-  it("normalises and de-duplicates tags", () => {
-    const r = blogSchema.parse({ ...blog, tags: " DSA, Dynamic Programming ,dsa,, " });
-    expect(r.tags).toEqual(["dsa", "dynamic-programming"]);
+  it("accepts a valid blog payload", () => {
+    const r = blogSchema.safeParse(validBlog);
+    expect(r.success).toBe(true);
   });
 
-  it("allows at most 8 tags", () => {
-    expect(blogSchema.safeParse({ ...blog, tags: "a,b,c,d,e,f,g,h" }).success).toBe(true);
-    expect(blogSchema.safeParse({ ...blog, tags: "a,b,c,d,e,f,g,h,i" }).success).toBe(false);
+  it("reads published checkbox or string status", () => {
+    expect(blogSchema.parse({ ...validBlog, status: "published" }).status).toBe("published");
+    expect(blogSchema.parse({ ...validBlog, status: "on" }).status).toBe("published");
+    expect(blogSchema.parse({ ...validBlog, status: "draft" }).status).toBe("draft");
   });
 
-  it("reads the published checkbox", () => {
-    expect(blogSchema.parse({ ...blog, published: "on" }).published).toBe(true);
-    expect(blogSchema.parse({ ...blog, published: "" }).published).toBe(false);
+  it("parses featured checkbox", () => {
+    expect(blogSchema.parse({ ...validBlog, isFeatured: "on" }).isFeatured).toBe(true);
+    expect(blogSchema.parse({ ...validBlog, isFeatured: false }).isFeatured).toBe(false);
   });
 
   it("rejects very short content", () => {
-    expect(blogSchema.safeParse({ ...blog, content: "Too short" }).success).toBe(false);
+    expect(blogSchema.safeParse({ ...validBlog, content: "Too short" }).success).toBe(false);
+  });
+
+  it("rejects very short excerpt", () => {
+    expect(blogSchema.safeParse({ ...validBlog, excerpt: "No" }).success).toBe(false);
+  });
+});
+
+describe("blogCategorySchema", () => {
+  it("accepts valid category and slugifies", () => {
+    const r = blogCategorySchema.parse({ name: "Web Dev", hue: 172 });
+    expect(r.name).toBe("Web Dev");
+    expect(r.hue).toBe(172);
+  });
+});
+
+describe("blogAuthorSchema", () => {
+  it("accepts valid author", () => {
+    const r = blogAuthorSchema.parse({
+      name: "Aarav Sinha",
+      roleTitle: "Pre-final year, CSE",
+      bio: "Codeforces specialist",
+    });
+    expect(r.name).toBe("Aarav Sinha");
+    expect(r.roleTitle).toBe("Pre-final year, CSE");
   });
 });
 

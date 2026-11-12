@@ -9,10 +9,12 @@ export const metadata = { title: "Team" };
 export default async function TeamAdminPage() {
   await requirePageRole("ADMIN");
 
-  const members = await prisma.teamMember.findMany({
-    orderBy: [{ order: "asc" }, { batch: "asc" }, { createdAt: "asc" }],
-    include: { user: { select: { name: true, email: true, role: true } } },
-  });
+  const members = await prisma.teamMember
+    .findMany({
+      orderBy: [{ order: "asc" }, { batch: "asc" }, { createdAt: "asc" }],
+      include: { user: { select: { name: true, email: true, role: true } } },
+    })
+    .catch(() => []);
 
   const rows: TeamRowData[] = members.map((m) => ({
     id: m.id,

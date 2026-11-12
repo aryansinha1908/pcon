@@ -6,6 +6,7 @@ import { CodeRain } from "@/components/code-rain";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { blogPosts, events, focusAreas, heroPillars } from "@/lib/site-data";
+import { getPublishedBlogs } from "@/lib/blogs-db";
 
 const codeLines = [
   <><span className="syntax-purple">const</span> <span className="syntax-blue">future</span> = <span className="syntax-yellow">&quot;yours to build&quot;</span>;</>,
@@ -25,7 +26,22 @@ function initials(name: string) {
   return name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { posts: recentBlogs } = await getPublishedBlogs(undefined, 6);
+  const displayBlogs = recentBlogs.length > 0
+    ? recentBlogs.map((b) => ({
+        tag: b.category.name,
+        title: b.title,
+        author: b.author.name,
+        href: `/blogs/${b.slug || b.id}`,
+      }))
+    : blogPosts.map((p) => ({
+        tag: p.tag,
+        title: p.title,
+        author: p.author,
+        href: p.tag === "Roadmap" ? "/roadmaps" : "/blogs",
+      }));
+
   return (
     <div className="site-shell" id="top">
       <SiteHeader />
@@ -152,8 +168,8 @@ export default function HomePage() {
               <p>Roadmaps, announcements and interview experiences, written by members for members.</p>
             </div>
             <div className="blog-grid">
-              {blogPosts.map((post) => (
-                <a className="blog-card" href={post.tag === "Roadmap" ? "/roadmaps" : "/blogs"} key={post.title} data-build>
+              {displayBlogs.map((post) => (
+                <a className="blog-card" href={post.href} key={post.title} data-build>
                   <span className="chip">{post.tag}</span>
                   <h3>{post.title}</h3>
                   <span className="blog-card__author">
@@ -164,7 +180,7 @@ export default function HomePage() {
                 </a>
               ))}
             </div>
-            <div className="section-more"><a className="button button--outline" href="/blogs">Read more <ArrowIcon /></a></div>
+            <div className="section-more"><Link className="button button--outline" href="/blogs">Read more <ArrowIcon /></Link></div>
           </div>
         </section>
 

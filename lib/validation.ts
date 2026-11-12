@@ -1,6 +1,13 @@
 import { z } from "zod";
+import { slugify } from "./blog-utils";
 
-/** https only — blocks javascript: and other schemes in links we render. */
+/** https or relative URL check for images and links */
+const urlPattern = /^(https?:\/\/|\/)/;
+const validUrl = z.string().trim().refine((v) => !v || urlPattern.test(v), {
+  message: "Use a valid web URL or absolute path.",
+});
+const optionalUrl = z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), validUrl.optional());
+
 const httpsUrl = z.url({ protocol: /^https$/, message: "Use a full https:// link." });
 const optionalHttpsUrl = z.preprocess((v) => (v === "" ? undefined : v), httpsUrl.optional());
 const optionalText = (max: number) =>
@@ -18,31 +25,49 @@ export const eventSchema = z
   })
   .refine((e) => e.endDate >= e.startDate, { path: ["endDate"], message: "End must be after the start." });
 
+export const blogCategorySchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters.").max(60),
+  slug: z
+    .string()
+    .trim()
+    .optional()
+    .transform((s) => {
+      const val = s ? slugify(s) : "";
+      return val;
+    }),
+  hue: z.coerce.number().int().min(0).max(360).default(160),
+});
+
+export const blogAuthorSchema = z.object({
+  name: z.string().trim().min(2, "Author name is required.").max(100),
+  roleTitle: z.string().trim().min(2, "Role / branch is required (e.g. Pre-final year, CSE).").max(100),
+  bio: z.string().trim().max(500).default(""),
+  avatarUrl: optionalUrl,
+  memberId: optionalText(60),
+});
+
 export const blogSchema = z.object({
   title: z.string().trim().min(3, "Title is too short.").max(150),
-  summary: optionalText(300),
-  content: z.string().trim().min(20, "Write a little more before saving.").max(100_000),
-  tags: z
+  slug: z
     .string()
     .optional()
-    .transform((s) =>
-      Array.from(
-        new Set(
-          (s ?? "")
-            .split(",")
-            .map((t) => t.trim().toLowerCase().replace(/\s+/g, "-"))
-            .filter(Boolean),
-        ),
-      ),
-    )
-    .pipe(z.array(z.string().max(30, "Tags must be 30 characters or less.")).max(8, "Use at most 8 tags.")),
-  published: z.preprocess((v) => v === "on" || v === "true", z.boolean()),
+    .transform((s) => (s && s.trim() ? slugify(s) : undefined)),
+  excerpt: z.string().trim().min(5, "Add a short intro / excerpt.").max(300, "Excerpt must be under 300 characters."),
+  content: z.string().trim().min(20, "Write a little more before saving.").max(100_000),
+  coverImageUrl: optionalUrl,
+  coverImageAlt: optionalText(200),
+  categoryId: z.coerce.number({ message: "Please select a category." }).int().positive(),
+  authorId: z.coerce.number({ message: "Please select an author." }).int().positive(),
+  status: z.preprocess((v) => {
+    if (v === "published" || v === "true" || v === "on") return "published";
+    return "draft";
+  }, z.enum(["draft", "published"])),
+  isFeatured: z.preprocess((v) => v === "true" || v === "on" || v === true, z.boolean()).default(false),
 });
 
 export const teamMemberSchema = z.object({
   email: z.preprocess((v) => (typeof v === "string" ? v.trim().toLowerCase() : v), z.email("Enter a valid email.")),
   position: z.string().trim().min(2, "Add a position.").max(60),
-  // Checked at request time, not when the server starts, so it stays right across New Year.
   batch: z.coerce
     .number()
     .int()
@@ -53,7 +78,7 @@ export const teamMemberSchema = z.object({
 
 export const teamMemberUpdateSchema = teamMemberSchema.omit({ email: true });
 
-export type FormState = { error?: string; fieldErrors?: Record<string, string[] | undefined>; ok?: string };
+export type FormState = { error?: string; fieldErrors?: Record<string, string[] | undefined>; ok?: string; data?: unknown };
 
 /** Flatten a zod error into per-field messages for forms. */
 export function fieldErrorsOf(error: z.ZodError): FormState["fieldErrors"] {
