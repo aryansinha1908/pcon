@@ -25,7 +25,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     <div className="adm-shell">
       <aside className="adm-sidebar">
         <Link href="/admin" className="adm-sidebar__brand">
-          <Image src="/pcon-mark.svg" alt="" width={34} height={34} />
+          <Image src="/pcon-logo.png" alt="" width={57} height={34} />
           <span>
             <strong>PCON</strong>
             <small>Admin</small>

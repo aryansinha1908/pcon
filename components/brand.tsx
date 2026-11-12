@@ -3,7 +3,7 @@ import Link from "next/link";
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link className={"brand" + (compact ? " brand--compact" : "")} href="/" aria-label="PCON home">
-      <Image className="brand__logo" src="/pcon-logo.png" alt="" width={70} height={42} priority />
+      <Image className="brand__logo" src="/pcon-logo.png" alt="" width={647} height={386} priority />
       <span className="brand__wordmark"><strong>PCON</strong>{!compact && <small>NIT Jamshedpur</small>}</span>
     </Link>
   );

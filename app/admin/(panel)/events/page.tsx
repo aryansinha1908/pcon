@@ -61,19 +61,19 @@ export default async function EventsAdminPage() {
                 const status = e.endDate < now ? "Past" : e.startDate <= now ? "Ongoing" : "Upcoming";
                 return (
                   <tr key={e.id} data-dim={hidden ? "" : undefined}>
-                    <td>
+                    <td data-col="Event">
                       <strong>{e.title}</strong>
                       {e.location && <span className="adm-muted adm-block">{e.location}</span>}
                     </td>
-                    <td>
+                    <td data-col="When (IST)">
                       {formatDate(e.startDate, true)}
                       <span className="adm-muted adm-block">to {formatDate(e.endDate, true)}</span>
                     </td>
-                    <td>
+                    <td data-col="Status">
                       <span className={`adm-badge adm-badge--${status.toLowerCase()}`}>{status}</span>
                       {hidden && <span className="adm-badge adm-badge--hidden" title="Hidden by the display rule">Hidden on site</span>}
                     </td>
-                    <td className="adm-muted">{e.createdBy?.name ?? e.createdBy?.email ?? "—"}</td>
+                    <td data-col="Added by" className="adm-muted">{e.createdBy?.name ?? e.createdBy?.email ?? "—"}</td>
                     <td className="adm-table__actions">
                       <Link href={`/admin/events/${e.id}/edit`} className="adm-btn adm-btn--ghost adm-btn--sm">
                         Edit

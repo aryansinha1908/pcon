@@ -56,16 +56,16 @@ export default async function UsersPage() {
           <tbody>
             {users.map((u) => (
               <tr key={u.id}>
-                <td>
+                <td data-col="User">
                   <strong>{u.name ?? "—"}</strong>
                   <span className="adm-muted adm-block">{u.email}</span>
                   {u._count.accounts === 0 && <span className="adm-badge adm-badge--hidden">Not signed in yet</span>}
                 </td>
-                <td className="adm-muted">
+                <td data-col="Team" className="adm-muted">
                   {u.teamMember ? `${u.teamMember.position}${u.teamMember.isActive ? "" : " (alumni)"}` : "—"}
                 </td>
-                <td className="adm-muted">{formatDate(u.createdAt)}</td>
-                <td>
+                <td data-col="Joined" className="adm-muted">{formatDate(u.createdAt)}</td>
+                <td data-col="Role">
                   {u.id === me.id ? (
                     <span className="adm-badge">You · Owner</span>
                   ) : (
