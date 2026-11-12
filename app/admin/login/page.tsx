@@ -23,7 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <main className="adm-login">
       <div className="adm-login__card">
         <div className="adm-login__brand">
-          <Image src="/pcon-mark.svg" alt="" width={44} height={44} priority />
+          <Image src="/pcon-logo.png" alt="" width={74} height={44} priority />
           <div>
             <strong>PCON</strong>
             <span>Admin panel</span>
