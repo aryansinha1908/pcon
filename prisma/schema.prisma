@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// Permission level. Higher levels include everything lower levels can do.
+enum Role {
+  MEMBER
+  ADMIN
+  OWNER
+}
+
+// ---------- Auth.js tables (shape required by @auth/prisma-adapter) ----------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(MEMBER)
+
+  accounts      Account[]
+  sessions      Session[]
+  blogs         Blog[]
+  eventsCreated Event[]
+  teamMember    TeamMember?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// ---------- Site content ----------
+
+model Blog {
+  id        String   @id @default(cuid())
+  title     String
+  summary   String?
+  content   String
+  tags      String[]
+  published Boolean  @default(false)
+
+  /// Only the author may edit or delete a blog — no admin override.
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, createdAt])
+}
+
+model Event {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  location        String?
+  posterUrl       String?
+  registrationUrl String?
+  startDate       DateTime
+  endDate         DateTime
+
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startDate])
+}
+
+/// Who appears on the members page. Separate from `role`: being on the team
+/// is not the same as having admin rights.
+model TeamMember {
+  id       String  @id @default(cuid())
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String  @unique
+  position String
+  batch    Int
+  order    Int     @default(0)
+  /// false = alumni. Their profile stays; they just move to the alumni list.
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, order])
+}
