@@ -1,24 +1,109 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TeamMemberCard } from "@/components/team-member-card";
-import { TEAM_BATCHES, type TeamBatch, type TeamMember } from "@/lib/team";
+import { TEAM_BATCHES, type TeamMember } from "@/lib/team";
 
 export type TeamSectionProps = {
-  members: TeamMember[];
-  defaultBatch?: TeamBatch;
+  initialMembers?: TeamMember[];
+  defaultBatch?: number;
 };
 
 export function TeamSection({
-  members,
+  initialMembers,
   defaultBatch = TEAM_BATCHES[0],
 }: TeamSectionProps) {
-  const [selectedBatch, setSelectedBatch] = useState<TeamBatch>(defaultBatch);
+  const [members, setMembers] = useState<TeamMember[]>(initialMembers ?? []);
+  const [loading, setLoading] = useState<boolean>(!initialMembers);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedBatchOverride, setSelectedBatchOverride] = useState<number | null>(null);
+
+  // Dynamic batches extracted from active members, fallback to default batches
+  const availableBatches = useMemo(() => {
+    const batchSet = new Set(members.map((m) => m.batch));
+    if (batchSet.size === 0) {
+      return [...TEAM_BATCHES];
+    }
+    return Array.from(batchSet).sort((a, b) => a - b);
+  }, [members]);
+
+  // Derived selected batch: override if still available, else defaultBatch or first available
+  const selectedBatch = useMemo(() => {
+    if (selectedBatchOverride !== null && availableBatches.includes(selectedBatchOverride)) {
+      return selectedBatchOverride;
+    }
+    if (availableBatches.includes(defaultBatch)) {
+      return defaultBatch;
+    }
+    return availableBatches[0] ?? defaultBatch;
+  }, [availableBatches, defaultBatch, selectedBatchOverride]);
+
   const [offset, setOffset] = useState(0);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
   const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
 
-  const activeIndex = TEAM_BATCHES.indexOf(selectedBatch);
+  // Fetch active team members from API on mount
+  useEffect(() => {
+    if (initialMembers) return;
+
+    let isMounted = true;
+    async function fetchTeam() {
+      try {
+        const res = await fetch("/api/team/members", { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error(`Failed to load team members (${res.status})`);
+        }
+        const data = await res.json();
+        if (!isMounted) return;
+        const memberList = data.members || data.data;
+        if (!data.success || !Array.isArray(memberList)) {
+          throw new Error(data.error || "Invalid response format from server");
+        }
+        setMembers(memberList);
+      } catch (err: unknown) {
+        if (!isMounted) return;
+        console.error("Error fetching team members:", err);
+        const msg = err instanceof Error ? err.message : "Unable to load team members right now.";
+        setError(msg);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchTeam();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialMembers]);
+
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    fetch("/api/team/members", { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to load team members (${res.status})`);
+        return res.json();
+      })
+      .then((data) => {
+        const memberList = data.members || data.data;
+        if (!data.success || !Array.isArray(memberList)) {
+          throw new Error(data.error || "Invalid response format from server");
+        }
+        setMembers(memberList);
+      })
+      .catch((err: unknown) => {
+        console.error("Error fetching team members:", err);
+        setError(err instanceof Error ? err.message : "Unable to load team members right now.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const activeIndex = availableBatches.indexOf(selectedBatch);
   const filteredMembers = members.filter((member) => member.batch === selectedBatch);
 
   // Slide the strip so the selected year sits at the start of the viewport,
@@ -42,14 +127,14 @@ export function TeamSection({
     return () => observer.disconnect();
   }, [measure, selectedBatch]);
 
-  const selectBatch = (batch: TeamBatch) => {
-    setSelectedBatch(batch);
+  const selectBatch = (batch: number) => {
+    setSelectedBatchOverride(batch);
   };
 
   const go = (step: number) => {
-    const next = TEAM_BATCHES[activeIndex + step];
-    if (next !== undefined) {
-      selectBatch(next);
+    const nextIndex = activeIndex + step;
+    if (nextIndex >= 0 && nextIndex < availableBatches.length) {
+      selectBatch(availableBatches[nextIndex]);
     }
   };
 
@@ -66,7 +151,7 @@ export function TeamSection({
               aria-label="Select batch year"
               style={{ transform: `translateX(${-offset}px)` }}
             >
-              {TEAM_BATCHES.map((batch) => {
+              {availableBatches.map((batch) => {
                 const isActive = batch === selectedBatch;
                 return (
                   <button
@@ -111,7 +196,7 @@ export function TeamSection({
               type="button"
               className="batch-selector__arrow"
               aria-label="Next batch"
-              disabled={activeIndex >= TEAM_BATCHES.length - 1}
+              disabled={activeIndex >= availableBatches.length - 1}
               onClick={() => go(1)}
             >
               ›
@@ -119,20 +204,61 @@ export function TeamSection({
           </div>
         </div>
 
-        <div
-          key={selectedBatch}
-          id={`batch-panel-${selectedBatch}`}
-          role="tabpanel"
-          aria-labelledby={`batch-tab-${selectedBatch}`}
-          className="members-grid"
-        >
-          {filteredMembers.map((member) => (
-            <TeamMemberCard
-              key={member.id}
-              member={member}
-            />
-          ))}
-        </div>
+        {/* Loading skeleton grid */}
+        {loading && (
+          <div className="members-grid" aria-busy="true" aria-label="Loading team members">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="member-card member-card--skeleton">
+                <div className="member-card__photo" />
+                <div className="member-card__body">
+                  <div className="skeleton-line skeleton-line--title" />
+                  <div className="skeleton-line skeleton-line--subtitle" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Error state */}
+        {!loading && error && (
+          <div className="team-state-box" role="alert">
+            <p className="team-state-box__text">{error}</p>
+            <button
+              type="button"
+              className="team-state-box__btn"
+              onClick={handleRetry}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {/* Empty state for batch */}
+        {!loading && !error && filteredMembers.length === 0 && (
+          <div className="team-state-box">
+            <p className="team-state-box__text">
+              No members found for Batch {selectedBatch}.
+            </p>
+          </div>
+        )}
+
+        {/* Members grid */}
+        {!loading && !error && filteredMembers.length > 0 && (
+          <div
+            key={selectedBatch}
+            id={`batch-panel-${selectedBatch}`}
+            role="tabpanel"
+            aria-labelledby={`batch-tab-${selectedBatch}`}
+            className="members-grid"
+          >
+            {filteredMembers.map((member) => (
+              <TeamMemberCard
+                key={member.id}
+                member={member}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

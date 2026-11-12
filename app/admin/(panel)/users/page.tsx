@@ -18,7 +18,7 @@ export default async function UsersPage() {
       email: true,
       role: true,
       createdAt: true,
-      teamMember: { select: { isActive: true, position: true } },
+      teamMember: { select: { isActive: true, designation: true } },
       _count: { select: { accounts: true } },
     },
   });
@@ -62,7 +62,9 @@ export default async function UsersPage() {
                   {u._count.accounts === 0 && <span className="adm-badge adm-badge--hidden">Not signed in yet</span>}
                 </td>
                 <td data-col="Team" className="adm-muted">
-                  {u.teamMember ? `${u.teamMember.position}${u.teamMember.isActive ? "" : " (alumni)"}` : "—"}
+                  {u.teamMember
+                    ? `${u.teamMember.designation ?? "Team member"}${u.teamMember.isActive ? "" : " (alumni)"}`
+                    : "—"}
                 </td>
                 <td data-col="Joined" className="adm-muted">{formatDate(u.createdAt)}</td>
                 <td data-col="Role">

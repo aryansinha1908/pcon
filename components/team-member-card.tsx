@@ -29,26 +29,36 @@ function LinkedInIcon() {
   );
 }
 
+function PortfolioIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  );
+}
+
 export type TeamMemberCardProps = {
   member: TeamMember;
 };
 
 export function TeamMemberCard({ member }: TeamMemberCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
-  const showFallback = !member.image || imageFailed;
+  const photoUrl = member.photo || member.image;
+  const showFallback = !photoUrl || imageFailed;
 
-  const hasAnySocial = Boolean(member.github || member.linkedin);
+  const hasAnySocial = Boolean(member.github || member.linkedin || member.portfolio);
+  const roleDisplay = member.designation || member.domain || member.department;
 
   return (
-    <article
-      className="member-card"
-    >
+    <article className="member-card">
       <div className="member-card__photo">
         {!showFallback ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             className="member-card__img"
-            src={member.image}
+            src={photoUrl!}
             alt={member.name}
             loading="lazy"
             decoding="async"
@@ -64,11 +74,15 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
       <div className="member-card__body">
         <div className="member-card__identity">
           <h3 className="member-card__name">{member.name}</h3>
-          <p className="member-card__detail">
-            <span className="member-card__detail-label">Roll No.</span>
-            {member.rollNumber}
-          </p>
-         
+          {roleDisplay && (
+            <p className="member-card__role">{roleDisplay}</p>
+          )}
+          {member.rollNumber && (
+            <p className="member-card__detail">
+              <span className="member-card__detail-label">Roll No.</span>
+              {member.rollNumber}
+            </p>
+          )}
         </div>
 
         {hasAnySocial && (
@@ -95,6 +109,18 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
               >
                 <LinkedInIcon />
                 <span>LinkedIn</span>
+              </a>
+            )}
+            {member.portfolio && (
+              <a
+                className="member-card__social-icon"
+                href={member.portfolio}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${member.name} Portfolio`}
+              >
+                <PortfolioIcon />
+                <span>Portfolio</span>
               </a>
             )}
           </div>

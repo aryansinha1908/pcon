@@ -11,11 +11,8 @@ export const navLinks = [
   { label: "Roadmaps", href: "/roadmaps" },
   { label: "Events", href: "/#events" },
   { label: "Blogs", href: "/#blogs" },
-<<<<<<< HEAD
   { label: "Team", href: "/team" },
-=======
->>>>>>> 966b84f05ba3b76aafc4d35a432b5b5ac05aa01e
-  { label: "Community", href: "/#community" },
+
 ];
 
 export const heroPillars = [

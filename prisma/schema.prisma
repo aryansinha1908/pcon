@@ -116,17 +116,25 @@ model Event {
 /// Who appears on the members page. Separate from `role`: being on the team
 /// is not the same as having admin rights.
 model TeamMember {
-  id       String  @id @default(cuid())
-  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String  @unique
-  position String
-  batch    Int
-  order    Int     @default(0)
-  /// false = alumni. Their profile stays; they just move to the alumni list.
-  isActive Boolean @default(true)
+  id           String   @id @default(cuid())
+  name         String
+  photo        String?
+  batch        Int
+  designation  String?
+  domain       String?
+  github       String?
+  linkedin     String?
+  portfolio    String?
+  email        String?
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId       String?  @unique
 
-  @@index([isActive, order])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive, displayOrder])
+  @@index([batch])
 }

@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TeamSection } from "@/components/team-section";
-import { TEAM_HERO_BANNER, teamMembers } from "@/lib/team";
+import { TEAM_HERO_BANNER } from "@/lib/team";
 import { TeamHeading } from "./team-heading";
 import "./team.css";
 
 export const metadata: Metadata = {
   title: "Team — PCON",
-  description: "Meet the team of the Programming Club of NIT Jamshedpur across batches 2026, 2027, 2028, and 2029.",
+  description: "Meet the team of the Programming Club of NIT Jamshedpur across batches.",
 };
 
 export default function TeamPage() {
@@ -29,13 +29,11 @@ export default function TeamPage() {
           </div>
 
           <div className="shell team-hero__content">
-
-
             <TeamHeading />
           </div>
         </section>
 
-        <TeamSection members={teamMembers} />
+        <TeamSection />
       </main>
       <SiteFooter />
     </div>

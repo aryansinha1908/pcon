@@ -53,6 +53,32 @@ export const teamMemberSchema = z.object({
 
 export const teamMemberUpdateSchema = teamMemberSchema.omit({ email: true });
 
+export const teamMemberInputSchema = z.object({
+  name: z.string().trim().min(2, "Name is required (at least 2 characters).").max(100),
+  photo: optionalHttpsUrl,
+  batch: z.coerce
+    .number()
+    .int()
+    .min(1950, "Enter a valid batch year.")
+    .max(2100, "Enter a valid batch year."),
+  designation: optionalText(100),
+  domain: optionalText(100),
+  github: optionalHttpsUrl,
+  linkedin: optionalHttpsUrl,
+  portfolio: optionalHttpsUrl,
+  email: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() ? v.trim().toLowerCase() : undefined),
+    z.string().email("Enter a valid email.").optional()
+  ),
+  displayOrder: z.coerce.number().int().min(0).max(9999).default(0),
+  isActive: z.preprocess(
+    (v) => (v === undefined ? true : v === "true" || v === true || v === "on"),
+    z.boolean()
+  ).default(true),
+});
+
+export const teamMemberUpdateApiSchema = teamMemberInputSchema.partial();
+
 export type FormState = { error?: string; fieldErrors?: Record<string, string[] | undefined>; ok?: string };
 
 /** Flatten a zod error into per-field messages for forms. */

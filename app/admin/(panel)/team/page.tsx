@@ -10,19 +10,24 @@ export default async function TeamAdminPage() {
   await requirePageRole("ADMIN");
 
   const members = await prisma.teamMember.findMany({
-    orderBy: [{ order: "asc" }, { batch: "asc" }, { createdAt: "asc" }],
+    orderBy: [{ displayOrder: "asc" }, { batch: "asc" }, { createdAt: "asc" }],
     include: { user: { select: { name: true, email: true, role: true } } },
   });
 
   const rows: TeamRowData[] = members.map((m) => ({
     id: m.id,
-    name: m.user.name,
-    email: m.user.email,
-    position: m.position,
+    name: m.name || m.user?.name || "Unnamed",
+    email: m.email || m.user?.email || null,
+    photo: m.photo,
+    designation: m.designation,
+    domain: m.domain,
     batch: m.batch,
-    order: m.order,
+    displayOrder: m.displayOrder,
+    github: m.github,
+    linkedin: m.linkedin,
+    portfolio: m.portfolio,
     isActive: m.isActive,
-    isAdmin: hasRole(m.user.role, "ADMIN"),
+    isAdmin: m.user ? hasRole(m.user.role, "ADMIN") : false,
   }));
   const current = rows.filter((r) => r.isActive);
   const alumni = rows.filter((r) => !r.isActive);
