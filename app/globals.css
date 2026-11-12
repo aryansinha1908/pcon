@@ -198,18 +198,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .event-card p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.65; }
 
 /* ───── Blogs ───── */
-<<<<<<< HEAD
-.blogs { position: relative; background: var(--ink-deep); border-top: 1px solid var(--line); }
-.blogs .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 53px; }
-.blogs .blog-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 210px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(160deg, var(--ink-raised), rgb(3 15 13 / 60%)); transition: transform .25s, border-color .25s; }
-.blogs .blog-card:hover { transform: translateY(-4px); border-color: var(--line-strong); }
-.blogs .blog-card h3 { margin: 22px 0 24px; color: #e9eee7; font: 600 18px/1.35 var(--display); letter-spacing: -.03em; }
-.blogs .blog-card__author { width: 100%; display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); color: var(--text-muted); font-size: 12px; }
-.avatar { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ink-soft); color: var(--mint); font: 600 10px var(--mono); }
-.blogs .blog-card__arrow { margin-left: auto; color: var(--mint); transition: transform .2s; }
-.blogs .blog-card__arrow svg { display: block; width: 15px; height: 15px; }
-.blogs .blog-card:hover .blog-card__arrow { transform: translate(2px, -2px); }
-=======
 .blogs { position: relative; background: var(--abyss); border-top: 1px solid var(--line); }
 .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 53px; }
 .blog-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 210px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(160deg, var(--ink-raised), rgb(1 8 6 / 85%)); transition: transform .25s, border-color .25s, box-shadow .25s; }
@@ -220,7 +208,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .blog-card__arrow { margin-left: auto; color: var(--mint); transition: transform .2s; }
 .blog-card__arrow svg { display: block; width: 15px; height: 15px; }
 .blog-card:hover .blog-card__arrow { transform: translate(2px, -2px); }
->>>>>>> afdbfc42e762ab219df1e985958de0f41e03b711
 
 /* ───── Community ───── */
 .community { position: relative; overflow: hidden; padding-top: 105px; padding-bottom: 36px; background: var(--mint); color: var(--ink-deep); }

@@ -6,21 +6,8 @@ import { MatrixControl } from "@/components/matrix-control";
 import { BuildOnScroll } from "@/components/build-on-scroll";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-<<<<<<< HEAD
-import { blogPosts, events, focusAreas, heroPillars } from "@/lib/site-data";
-import { getPublishedBlogs } from "@/lib/blogs-db";
-
-const codeLines = [
-  <><span className="syntax-purple">const</span> <span className="syntax-blue">future</span> = <span className="syntax-yellow">&quot;yours to build&quot;</span>;</>,
-  <><span className="syntax-purple">for</span> (<span className="syntax-orange">idea</span> <span className="syntax-purple">of</span> <span className="syntax-blue">possibilities</span>) {"{"}</>,
-  <>{"  "}<span className="syntax-blue">learn</span>(idea);</>,
-  <>{"  "}<span className="syntax-blue">build</span>(idea);</>,
-  <>{"  "}<span className="syntax-blue">share</span>(idea);</>,
-  <>{"}"}</>,
-];
-=======
 import { blogPosts, events, focusAreas } from "@/lib/site-data";
->>>>>>> afdbfc42e762ab219df1e985958de0f41e03b711
+import { getPublishedBlogs } from "@/lib/blogs-db";
 
 const tickerWords = ["THINK DEEPLY", "BUILD BOLDLY", "LEARN TOGETHER", "CODE FOR THE FUTURE"];
 
