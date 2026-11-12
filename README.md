@@ -16,13 +16,6 @@ npm run db:seed             # makes the emails in SEED_ADMIN_EMAILS / SEED_OWNER
 npm run dev
 ```
 
-No Docker? Skip it: any local Postgres works. With Docker, this replaces the two `createdb` lines:
-
-```bash
-docker run -d --name pcon-db -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=pcon postgres:16
-docker exec pcon-db createdb -U postgres pcon_test
-```
-
 Open [http://localhost:3000](http://localhost:3000) for the site and [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel.
 
 **Each developer has their own local database**, so everyone seeds themselves: put **your own** college email in `SEED_ADMIN_EMAILS` (and `SEED_OWNER_EMAILS` if you need to manage roles). A teammate can copy someone else's `.env` (sent privately, never committed) but must change those two lines to their own email, or they'll seed the other person instead of themselves.
