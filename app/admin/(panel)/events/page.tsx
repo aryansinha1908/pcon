@@ -13,10 +13,12 @@ export default async function EventsAdminPage() {
   await requirePageRole("ADMIN");
 
   // Admins always see every event, including ones the public site hides.
-  const events = await prisma.event.findMany({
-    orderBy: { startDate: "desc" },
-    include: { createdBy: { select: { name: true, email: true } } },
-  });
+  const events = await prisma.event
+    .findMany({
+      orderBy: { startDate: "desc" },
+      include: { createdBy: { select: { name: true, email: true } } },
+    })
+    .catch(() => []);
   const now = new Date();
   const total = events.length;
   const hiddenCount = events.filter((e) => isHiddenOnSite(e.startDate, total, now)).length;

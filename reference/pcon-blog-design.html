@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blog | PCON NIT Jamshedpur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#03100d;--bg2:#071a15;--card:#0a1f19;--line:#16352b;--ink:#f1efe6;--mute:#8fa89f;--mint:#6ee7c8;--mint2:#2fbf9f;--sans:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(900px 420px at 50% -80px,rgba(47,191,159,.16),transparent 70%),radial-gradient(rgba(110,231,200,.07) 1px,transparent 1px);background-size:auto,28px 28px;background-repeat:no-repeat,repeat}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--mint);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+nav{display:flex;align-items:center;justify-content:space-between;height:72px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.02em}
+.brand i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--mint),var(--mint2));display:grid;place-items:center;color:#03100d;font:700 15px var(--mono);font-style:normal}
+.brand small{display:block;font:400 11px var(--mono);color:var(--mute);letter-spacing:0}
+.links{display:flex;gap:30px;font-size:15px;color:var(--mute)}
+.links a:hover,.links a.on{color:var(--ink)}
+.join{border:1px solid var(--line);padding:9px 18px;border-radius:999px;font-size:14px;color:var(--ink);background:rgba(10,31,25,.6)}
+.join:hover{border-color:var(--mint)}
+@media(max-width:760px){.links{display:none}}
+
+/* index */
+.hero{padding:72px 0 36px}
+.tag{display:inline-flex;align-items:center;gap:10px;font:400 13px var(--mono);color:var(--mute)}
+.tag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px var(--mint)}
+h1{font-size:clamp(46px,8vw,96px);line-height:.98;letter-spacing:-.04em;margin:18px 0 18px;font-weight:600}
+h1 span{color:var(--mint)}
+.lede{max-width:560px;color:var(--mute);font-size:18px;margin:0}
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin:40px 0 32px}
+.chip{font:500 14px var(--sans);color:var(--mute);background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer}
+.chip:hover{color:var(--ink);border-color:var(--mint2)}
+.chip[aria-pressed=true]{background:var(--mint);color:#03100d;border-color:var(--mint)}
+.cover{position:relative;overflow:hidden;aspect-ratio:16/9;background:var(--c1)}
+.cover svg{position:absolute;inset:0;width:100%;height:100%}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(3,16,13,.65),transparent 55%)}
+.cat{font:500 12px var(--mono);color:var(--mint)}
+.cover .cat{position:absolute;left:16px;bottom:14px;z-index:2;background:rgba(3,16,13,.75);border:1px solid var(--line);padding:4px 10px;border-radius:999px;backdrop-filter:blur(6px)}
+.feature{display:grid;grid-template-columns:1.25fr 1fr;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--card);margin-bottom:28px}
+.feature .cover{aspect-ratio:auto;min-height:340px}
+.feature .body{padding:40px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.feature h2{font-size:clamp(28px,3.4vw,42px);line-height:1.1;letter-spacing:-.03em;margin:0;font-weight:600}
+.feature p{margin:0;color:var(--mute)}
+@media(max-width:860px){.feature{grid-template-columns:1fr}.feature .cover{min-height:0;aspect-ratio:16/9}.feature .body{padding:26px}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:24px;padding-bottom:96px}
+.card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--mint2);transform:translateY(-3px)}
+.card .body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card h3{margin:0;font-size:21px;line-height:1.25;letter-spacing:-.02em;font-weight:600}
+.card p{margin:0;color:var(--mute);font-size:15px}
+.meta{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:10px;font-size:13px;color:var(--mute)}
+.av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:600 11px var(--sans);color:#03100d;background:linear-gradient(135deg,var(--mint),#9af0dc);flex:none}
+.empty{grid-column:1/-1;color:var(--mute);padding:40px 0}
+
+/* post */
+.back{display:inline-flex;gap:8px;margin:40px 0 28px;color:var(--mute);font-size:14px}
+.back:hover{color:var(--mint)}
+article{max-width:760px;margin:0 auto;padding-bottom:80px}
+article h1{font-size:clamp(34px,5.4vw,56px);line-height:1.06;margin:16px 0 22px}
+.byline{display:flex;align-items:center;gap:14px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:32px}
+.byline .av{width:46px;height:46px;font-size:15px}
+.byline b{display:block;font-weight:600}
+.byline span{font-size:13px;color:var(--mute)}
+.byline .when{margin-left:auto;text-align:right;font:400 13px var(--mono);color:var(--mute)}
+article .cover{border-radius:18px;border:1px solid var(--line);margin-bottom:44px}
+.prose{font-size:19px;line-height:1.75;color:#dcdfd6}
+.prose p{margin:0 0 1.3em}
+.prose h2{font-size:28px;letter-spacing:-.02em;line-height:1.2;margin:2.1em 0 .6em;color:var(--ink);font-weight:600}
+.prose a{color:var(--mint);border-bottom:1px solid rgba(110,231,200,.4)}
+.prose code{font:400 .86em var(--mono);background:var(--bg2);border:1px solid var(--line);padding:2px 7px;border-radius:6px;color:var(--mint)}
+.prose pre{background:#020a08;border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto;margin:1.6em 0;font:400 14px/1.7 var(--mono);color:#c9ded6}
+.prose pre code{background:none;border:0;padding:0;color:inherit;font-size:inherit}
+.prose blockquote{margin:1.8em 0;padding:4px 0 4px 22px;border-left:3px solid var(--mint);color:var(--ink);font-size:21px;line-height:1.55}
+.prose ul{padding-left:1.2em;margin:0 0 1.3em}.prose li{margin-bottom:.4em}
+.author{display:flex;gap:18px;align-items:flex-start;margin-top:56px;padding:24px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.author .av{width:56px;height:56px;font-size:18px}
+.author b{font-size:17px}.author p{margin:4px 0 0;color:var(--mute);font-size:15px}
+.more{border-top:1px solid var(--line);padding:56px 0 96px}
+.more h2{font-size:28px;letter-spacing:-.02em;margin:0 0 24px;font-weight:600}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mute);font-size:13px;font-family:var(--mono)}
+@media(max-width:560px){.byline{flex-wrap:wrap}.byline .when{margin-left:0;text-align:left;width:100%}.prose{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--mint);z-index:50;box-shadow:0 0 10px var(--mint)}
+.phead{max-width:900px;margin:0 auto 40px;text-align:left}
+.crumbs{display:flex;align-items:center;gap:14px;color:var(--mute);font:400 13px var(--mono)}
+.pill{background:rgba(110,231,200,.12);color:var(--mint);border:1px solid rgba(110,231,200,.3);padding:5px 14px;border-radius:999px;font:500 13px var(--sans)}
+.phead h1{font-size:clamp(38px,6vw,68px);line-height:1.03;margin:22px 0 20px}
+.dek{font-size:21px;line-height:1.5;color:var(--mute);margin:0 0 34px;max-width:720px}
+.by{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,var(--card),rgba(10,31,25,.4))}
+.av.ring{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--mint2)}
+.by .av{width:52px;height:52px;font-size:17px}
+.who small,.acard small{display:block;font:400 12px var(--mono);color:var(--mint);margin-bottom:2px}
+.who b{font-size:18px;display:block;line-height:1.2}.who span{font-size:14px;color:var(--mute)}
+.act{margin-left:auto;display:flex;align-items:center;gap:16px}
+.date{font:400 13px var(--mono);color:var(--mute)}
+.copy{font:500 13px var(--sans);color:var(--ink);background:transparent;border:1px solid var(--line);padding:8px 14px;border-radius:999px;cursor:pointer}
+.copy:hover{border-color:var(--mint)}
+.hcover{max-width:1040px;margin:0 auto 56px}
+.hcover .cover{aspect-ratio:21/9;border-radius:22px;border:1px solid var(--line)}
+.pgrid{display:grid;grid-template-columns:240px minmax(0,700px);gap:64px;max-width:1004px;margin:0 auto}
+.side{order:0}.acard{position:sticky;top:24px;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.acard .av.big{width:64px;height:64px;font-size:20px;margin-bottom:16px}
+.acard b{display:block;font-size:18px;line-height:1.25}.acard .role{font-size:13px;color:var(--mute)}
+.acard p{font-size:14px;color:var(--mute);margin:14px 0;line-height:1.55}
+.more-by{font-size:13px;color:var(--mint)}
+.cta{max-width:1004px;margin:72px auto 0;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:32px 36px;border:1px solid var(--line);border-radius:22px;background:radial-gradient(500px 200px at 90% 0,rgba(110,231,200,.14),transparent),var(--card)}
+.cta h2{margin:0 0 4px;font-size:26px;letter-spacing:-.02em}.cta p{margin:0;color:var(--mute)}
+.cta .join{background:var(--mint);color:#03100d;border-color:var(--mint);font-weight:600;white-space:nowrap}
+@media(max-width:900px){.pgrid{grid-template-columns:1fr;gap:32px}.acard{position:static;order:-1}.cta{flex-direction:column;align-items:flex-start}.by{flex-wrap:wrap}.act{margin-left:0;width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="brand" href="#blog"><i>P</i><span>PCON<small>NIT Jamshedpur</small></span></a>
+  <div class="links"><a href="#blog">About</a><a href="#blog">What we do</a><a href="#blog">Events</a><a class="on" href="#blog">Blogs</a><a href="#blog">Community</a></div>
+  <a class="join" href="#blog">Join the club ↗</a>
+</nav>
+<main id="app"></main>
+<footer>© 2026 PCON, NIT Jamshedpur. Code for the future.</footer>
+</div>
+
+<script>
+var POSTS=[
+{id:'dp-without-tears',cat:'Algorithms',hue:162,title:'Dynamic programming without the tears',ex:'Stop memorising recurrences. A way to find the state, the transition and the base case for any DP problem.',au:'Aarav Sinha',role:'Pre-final year, CSE',bio:'Codeforces specialist who runs the Tuesday problem-solving sessions.',date:'Nov 8, 2026',min:9,
+body:'<p>Every DP problem is the same question in disguise: <em>what is the smallest piece of information I need to carry forward?</em> Once you can answer that, the code writes itself.</p><h2>Start with the state</h2><p>Take the classic “maximum sum with no two adjacent elements”. At index <code>i</code> you only care about the best sum up to <code>i</code>. Nothing else matters.</p><pre><code>dp[i] = max(dp[i-1], dp[i-2] + a[i]);</code></pre><blockquote>If your state needs more than two or three parameters, you have probably picked the wrong state.</blockquote><h2>A checklist</h2><ul><li>Define what <code>dp[i]</code> means in one sentence.</li><li>Write the transition on paper before any code.</li><li>Check the base cases against a tiny input.</li></ul><p>Practise this on ten problems and the pattern becomes automatic.</p>'},
+{id:'nextjs-for-club-sites',cat:'Web Dev',hue:172,title:'Building our club site with Next.js',ex:'How we structured routes, content and deployment for the PCON website, and what we would do differently.',au:'Meera Kapoor',role:'Final year, IT',bio:'Leads the web team and maintains the PCON website.',date:'Nov 2, 2026',min:7,
+body:'<p>When we rebuilt the PCON site we wanted something any member could contribute to without learning a CMS.</p><h2>Routes</h2><p>Blogs live under <code>/blogs/[id]</code>, and the listing sits at <code>/blog</code>. Each post is a Markdown file with front matter.</p><pre><code>export async function generateStaticParams() {\n  return posts.map((p) =&gt; ({ id: p.id }));\n}</code></pre><p>Static generation keeps every page fast and free to host.</p>'},
+{id:'intro-to-llvm',cat:'Computer Science',hue:150,title:'Profiling code with LLVM',ex:'A first look at how compilers see your program, and how to measure where the time actually goes.',au:'Rohan Das',role:'Third year, CSE',bio:'Systems nerd. Compilers, kernels and anything low level.',date:'Oct 27, 2026',min:12,
+body:'<p>Before optimising anything, measure it. LLVM gives us tools that show exactly which functions burn your cycles.</p><h2>Build with symbols</h2><pre><code>clang++ -O2 -g main.cpp -o main</code></pre><p>With debug symbols on, a profiler can map samples back to your source lines.</p>'},
+{id:'max-likelihood',cat:'Machine Learning',hue:185,title:'Maximum likelihood, from scratch',ex:'Why do we minimise cross-entropy? Derive it from the one principle behind most of ML.',au:'Ishita Verma',role:'Pre-final year, ECE',bio:'Reads papers on weekends. Runs the ML reading group.',date:'Oct 19, 2026',min:10,
+body:'<p>Maximum likelihood asks one thing: which parameters make the data we saw most probable?</p><blockquote>Loss functions are not arbitrary. Most of them are a likelihood in disguise.</blockquote><p>Work through the coin-flip example first, then the Gaussian case, and the rest follows.</p>'},
+{id:'what-is-a-dll',cat:'Miscellaneous',hue:140,title:'What is a .dll, really?',ex:'Shared libraries on Windows explained without the jargon, including why “DLL hell” happens.',au:'Kabir Mehta',role:'Second year, CSE',bio:'Curious about how things work under the hood.',date:'Oct 11, 2026',min:6,
+body:'<p>A <code>.dll</code> is a bundle of code that many programs share, so each one does not need its own copy.</p><h2>Why it matters</h2><p>Smaller programs, shared updates and plugin systems all rely on dynamic linking.</p>'},
+{id:'distributed-bitcoin',cat:'Blockchain',hue:195,title:'Distributed systems through Bitcoin',ex:'Consensus, fault tolerance and trust, explained by the most famous distributed system ever built.',au:'Ananya Roy',role:'Final year, CSE',bio:'Backend developer and hackathon regular.',date:'Oct 3, 2026',min:14,
+body:'<p>Bitcoin solves a problem that sounds impossible: getting strangers to agree without a referee.</p><h2>Longest chain wins</h2><p>Nodes always follow the longest valid chain, so cheating costs more than honesty pays.</p>'}
+];
+var CATS=['All'].concat(POSTS.map(function(p){return p.cat}).filter(function(v,i,a){return a.indexOf(v)===i}));
+var SN=['printf("AC\\n");','mid = (lo+hi)>>1;','dp[i] = max(a,b);','$ npm run build','#include <bits/stdc++.h>','if (visited[v])','for (auto x : v)','const future = "yours";'];
+function ini(n){return n.split(' ').map(function(w){return w[0]}).join('').slice(0,2)}
+function cover(p){return coverArt(p)}function coverOld(p){var h=p.hue,t='',i;for(i=0;i<5;i++){t+='<text x="'+(14+(i*37)%60)+'" y="'+(40+i*42)+'" font-family="JetBrains Mono,monospace" font-size="15" fill="hsl('+h+',60%,70%)" opacity="'+(.1+i*.04)+'">'+SN[(p.id.length+i)%SN.length].replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</text>'}
+return '<div class="cover" style="--c1:hsl('+h+',55%,9%)"><svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><radialGradient id="g'+h+'" cx="72%" cy="30%" r="70%"><stop offset="0" stop-color="hsl('+h+',70%,45%)" stop-opacity=".55"/><stop offset="1" stop-color="hsl('+h+',60%,8%)" stop-opacity="0"/></radialGradient></defs><rect width="400" height="225" fill="url(#g'+h+')"/>'+t+'<circle cx="290" cy="80" r="46" fill="none" stroke="hsl('+h+',70%,65%)" stroke-opacity=".35"/><circle cx="290" cy="80" r="26" fill="none" stroke="hsl('+h+',70%,65%)" stroke-opacity=".25"/></svg><span class="cat">'+p.cat+'</span></div>'}
+function art(c,h){var s='hsl('+h+',70%,66%)',f='hsl('+h+',60%,12%)',x='',m='font-family="JetBrains Mono,monospace"';
+if(c==='Algorithms'){var n=[[200,45],[130,100],[270,100],[90,160],[170,160],[230,160],[310,160]],e=[[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]];e.forEach(function(l){x+='<line x1="'+n[l[0]][0]+'" y1="'+n[l[0]][1]+'" x2="'+n[l[1]][0]+'" y2="'+n[l[1]][1]+'" stroke="'+s+'" stroke-opacity=".5" stroke-width="2"/>'});n.forEach(function(p,i){x+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="17" fill="'+(i===4?s:f)+'" stroke="'+s+'" stroke-width="2"/><text x="'+p[0]+'" y="'+(p[1]+4)+'" text-anchor="middle" font-size="12" '+m+' fill="'+(i===4?f:s)+'">'+(i*3+2)+'</text>'})}
+else if(c==='Web Dev'){x='<rect x="70" y="34" width="260" height="156" rx="12" fill="'+f+'" stroke="'+s+'" stroke-width="2"/><line x1="70" y1="58" x2="330" y2="58" stroke="'+s+'" stroke-opacity=".4"/><circle cx="86" cy="46" r="4" fill="#ff7a6b"/><circle cx="100" cy="46" r="4" fill="#ffc857"/><circle cx="114" cy="46" r="4" fill="'+s+'"/><rect x="90" y="76" width="120" height="12" rx="4" fill="'+s+'"/><rect x="90" y="98" width="180" height="7" rx="3" fill="'+s+'" opacity=".35"/><rect x="90" y="112" width="150" height="7" rx="3" fill="'+s+'" opacity=".35"/><rect x="90" y="140" width="70" height="26" rx="13" fill="'+s+'"/><rect x="240" y="76" width="68" height="90" rx="8" fill="'+s+'" opacity=".18"/>'}
+else if(c==='Computer Science'){var r=[[60,280,0],[60,200,0],[60,150,50],[60,90,100],[60,60,160]],y=40;[[300,0],[300,0],[220,0],[150,0],[90,0],[60,0]].forEach(function(b,i){x+='<rect x="'+(50+(i%2)*14)+'" y="'+(40+i*26)+'" width="'+b[0]+'" height="20" rx="4" fill="'+s+'" opacity="'+(.85-i*.12)+'"/><text x="'+(60+(i%2)*14)+'" y="'+(54+i*26)+'" font-size="10" '+m+' fill="'+f+'">'+['main','run_pass','codegen','emit','opt','alloc'][i]+'</text>'})}
+else if(c==='Machine Learning'){var q=[[60,170],[90,150],[120,160],[150,120],[180,125],[210,90],[240,80],[270,60],[300,70],[330,45]];x='<path d="M50 175 C130 165 190 100 340 42" fill="none" stroke="'+s+'" stroke-width="3"/>';q.forEach(function(p,i){x+='<circle cx="'+p[0]+'" cy="'+(p[1]+(i%2?8:-8))+'" r="5" fill="'+s+'" opacity=".75"/>'});x+='<line x1="40" y1="190" x2="360" y2="190" stroke="'+s+'" stroke-opacity=".3"/><line x1="40" y1="30" x2="40" y2="190" stroke="'+s+'" stroke-opacity=".3"/>'}
+else if(c==='Blockchain'){[[40,90],[150,60],[260,90]].forEach(function(p,i){x+='<rect x="'+p[0]+'" y="'+p[1]+'" width="96" height="76" rx="10" fill="'+f+'" stroke="'+s+'" stroke-width="2"/><rect x="'+(p[0]+12)+'" y="'+(p[1]+14)+'" width="50" height="6" rx="3" fill="'+s+'"/><text x="'+(p[0]+12)+'" y="'+(p[1]+46)+'" font-size="10" '+m+' fill="'+s+'" opacity=".7">0x'+(i*7+3)+'f9a</text>'+(i<2?'<line x1="'+(p[0]+96)+'" y1="'+(p[1]+38)+'" x2="'+(p[0]+110)+'" y2="'+(i===0?98:128)+'" stroke="'+s+'" stroke-width="2"/>':'')})}
+else{x='<circle cx="160" cy="112" r="42" fill="none" stroke="'+s+'" stroke-width="16" stroke-dasharray="9 7"/><circle cx="160" cy="112" r="30" fill="'+f+'" stroke="'+s+'" stroke-width="2"/><circle cx="160" cy="112" r="10" fill="'+s+'"/><path d="M250 60h50l26 26v80a6 6 0 0 1-6 6h-70a6 6 0 0 1-6-6V66a6 6 0 0 1 6-6z" fill="'+f+'" stroke="'+s+'" stroke-width="2"/><text x="262" y="132" font-size="16" '+m+' fill="'+s+'">.dll</text>'}
+return x}
+function coverArt(p){var h=p.hue;return '<div class="cover" style="--c1:hsl('+h+',55%,9%)"><svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><radialGradient id="g'+h+'" cx="70%" cy="30%" r="75%"><stop offset="0" stop-color="hsl('+h+',70%,45%)" stop-opacity=".5"/><stop offset="1" stop-color="hsl('+h+',60%,8%)" stop-opacity="0"/></radialGradient><pattern id="d'+h+'" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="hsl('+h+',70%,70%)" opacity=".18"/></pattern></defs><rect width="400" height="225" fill="url(#g'+h+')"/><rect width="400" height="225" fill="url(#d'+h+')"/>'+art(p.cat,h)+'</svg><span class="cat">'+p.cat+'</span></div>'}
+function meta(p){return '<div class="meta"><span class="av">'+ini(p.au)+'</span><span>'+p.au+' · '+p.min+' min read</span></div>'}
+function card(p){return '<a class="card" href="#'+p.id+'">'+cover(p)+'<div class="body"><h3>'+p.title+'</h3><p>'+p.ex+'</p>'+meta(p)+'</div></a>'}
+var cur='All';
+function list(){var f=POSTS[0],rest=POSTS.slice(1);
+if(cur!=='All'){rest=POSTS.filter(function(p){return p.cat===cur});f=null}
+var h='<section class="hero"><span class="tag">THE PCON BLOG</span><h1>Ideas worth <span>shipping.</span></h1><p class="lede">Tutorials, deep dives and lessons learned, written by the students of NIT Jamshedpur.</p></section><div class="filters" role="group" aria-label="Filter by topic">';
+CATS.forEach(function(c){h+='<button class="chip" aria-pressed="'+(c===cur)+'" data-c="'+c+'">'+c+'</button>'});
+h+='</div>';
+if(f)h+='<a class="feature" href="#'+f.id+'">'+cover(f)+'<div class="body"><span class="cat">Featured · '+f.cat+'</span><h2>'+f.title+'</h2><p>'+f.ex+'</p>'+meta(f)+'</div></a>';
+h+='<div class="grid">'+(rest.length?rest.map(card).join(''):'<p class="empty">No posts in this topic yet. Want to write the first one?</p>')+'</div>';
+return h}
+function postOld(p){var more=POSTS.filter(function(x){return x.id!==p.id}).slice(0,3);
+return '<a class="back" href="#blog">← All posts</a><article><span class="cat">'+p.cat+'</span><h1>'+p.title+'</h1><div class="byline"><span class="av">'+ini(p.au)+'</span><div><b>'+p.au+'</b><span>'+p.role+'</span></div><div class="when">'+p.date+'<br>'+p.min+' min read</div></div>'+cover(p)+'<div class="prose">'+p.body+'</div><div class="author"><span class="av">'+ini(p.au)+'</span><div><b>Written by '+p.au+'</b><p>'+p.role+'. '+p.bio+'</p></div></div></article><section class="more"><h2>Keep reading</h2><div class="grid" style="padding:0">'+more.map(card).join('')+'</div></section>'}
+function post(p){var more=POSTS.filter(function(x){return x.id!==p.id}).slice(0,3),a=ini(p.au);
+return '<div id="bar"></div><a class="back" href="#blog">← All posts</a><header class="phead"><div class="crumbs"><span class="pill">'+p.cat+'</span><span>'+p.min+' min read</span></div><h1>'+p.title+'</h1><p class="dek">'+p.ex+'</p><div class="by"><span class="av ring">'+a+'</span><div class="who"><small>Written by</small><b>'+p.au+'</b><span>'+p.role+'</span></div><div class="act"><span class="date">'+p.date+'</span><button class="copy" id="cp">Copy link</button></div></div></header><div class="hcover">'+cover(p)+'</div><div class="pgrid"><aside class="side"><div class="acard"><span class="av big ring">'+a+'</span><small>Written by</small><b>'+p.au+'</b><span class="role">'+p.role+'</span><p>'+p.bio+'</p><a class="more-by" href="#blog">More from PCON ↗</a></div></aside><div class="prose">'+p.body+'</div></div><div class="cta"><div><h2>Have something to teach?</h2><p>Every PCON post is written by a member. Pitch yours.</p></div><a class="join" href="#blog">Write for PCON ↗</a></div><section class="more"><h2>Keep reading</h2><div class="grid" style="padding:0">'+more.map(card).join('')+'</div></section>'}
+function render(){var id=location.hash.slice(1),p=POSTS.filter(function(x){return x.id===id})[0],app=document.getElementById('app');
+app.innerHTML=p?post(p):list();document.title=(p?p.title+' | ':'Blog | ')+'PCON NIT Jamshedpur';if(p)window.scrollTo(0,0)}
+document.addEventListener('click',function(e){var b=e.target.closest('.chip');if(b){cur=b.dataset.c;render()}if(e.target.id==='cp'){var t=e.target;try{navigator.clipboard.writeText(location.href).then(function(){t.textContent='Copied'})}catch(x){t.textContent='Copy failed'}}});
+window.addEventListener('scroll',function(){var b=document.getElementById('bar');if(!b)return;var h=document.documentElement.scrollHeight-innerHeight;b.style.width=(h>0?scrollY/h*100:0)+'%'});
+window.addEventListener('hashchange',render);render();
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+export const SEED_CATEGORIES = [
+  { name: "Algorithms", slug: "algorithms", hue: 162 },
+  { name: "Web Dev", slug: "web-dev", hue: 172 },
+  { name: "Computer Science", slug: "computer-science", hue: 150 },
+  { name: "Machine Learning", slug: "machine-learning", hue: 185 },
+  { name: "Blockchain", slug: "blockchain", hue: 195 },
+  { name: "Miscellaneous", slug: "miscellaneous", hue: 140 },
+];
+
+export const SEED_AUTHORS = [
+  {
+    name: "Aarav Sinha",
+    roleTitle: "Pre-final year, CSE",
+    bio: "Codeforces specialist who runs the Tuesday problem-solving sessions.",
+    avatarUrl: null,
+  },
+  {
+    name: "Meera Kapoor",
+    roleTitle: "Final year, IT",
+    bio: "Leads the web team and maintains the PCON website.",
+    avatarUrl: null,
+  },
+  {
+    name: "Rohan Das",
+    roleTitle: "Third year, CSE",
+    bio: "Systems nerd. Compilers, kernels and anything low level.",
+    avatarUrl: null,
+  },
+  {
+    name: "Ishita Verma",
+    roleTitle: "Pre-final year, ECE",
+    bio: "Reads papers on weekends. Runs the ML reading group.",
+    avatarUrl: null,
+  },
+  {
+    name: "Kabir Mehta",
+    roleTitle: "Second year, CSE",
+    bio: "Curious about how things work under the hood.",
+    avatarUrl: null,
+  },
+  {
+    name: "Ananya Roy",
+    roleTitle: "Final year, CSE",
+    bio: "Backend developer and hackathon regular.",
+    avatarUrl: null,
+  },
+];
+
+export const SEED_POSTS = [
+  {
+    slug: "dp-without-tears",
+    title: "Dynamic programming without the tears",
+    excerpt: "Stop memorising recurrences. A way to find the state, the transition and the base case for any DP problem.",
+    categorySlug: "algorithms",
+    authorName: "Aarav Sinha",
+    status: "published",
+    isFeatured: true,
+    publishedAt: new Date("2026-11-08T10:00:00Z"),
+    content: `Every DP problem is the same question in disguise: *what is the smallest piece of information I need to carry forward?* Once you can answer that, the code writes itself.
+
+## Start with the state
+
+Take the classic "maximum sum with no two adjacent elements". At index \`i\` you only care about the best sum up to \`i\`. Nothing else matters.
+
+\`\`\`cpp
+dp[i] = max(dp[i-1], dp[i-2] + a[i]);
+\`\`\`
+
+> If your state needs more than two or three parameters, you have probably picked the wrong state.
+
+## A checklist
+
+* Define what \`dp[i]\` means in one sentence.
+* Write the transition on paper before any code.
+* Check the base cases against a tiny input.
+
+Practise this on ten problems and the pattern becomes automatic.`,
+  },
+  {
+    slug: "nextjs-for-club-sites",
+    title: "Building our club site with Next.js",
+    excerpt: "How we structured routes, content and deployment for the PCON website, and what we would do differently.",
+    categorySlug: "web-dev",
+    authorName: "Meera Kapoor",
+    status: "published",
+    isFeatured: false,
+    publishedAt: new Date("2026-11-02T10:00:00Z"),
+    content: `When we rebuilt the PCON site we wanted something any member could contribute to without learning a CMS.
+
+## Routes
+
+Blogs live under \`/blogs/[id]\`, and the listing sits at \`/blogs\`. Each post is backed by PostgreSQL with an admin interface for submissions.
+
+\`\`\`typescript
+export async function generateStaticParams() {
+  const posts = await getPublishedBlogs();
+  return posts.map((p) => ({ id: p.slug }));
+}
+\`\`\`
+
+Static generation and incremental revalidation keep every page blazing fast and completely free to host.`,
+  },
+  {
+    slug: "intro-to-llvm",
+    title: "Profiling code with LLVM",
+    excerpt: "A first look at how compilers see your program, and how to measure where the time actually goes.",
+    categorySlug: "computer-science",
+    authorName: "Rohan Das",
+    status: "published",
+    isFeatured: false,
+    publishedAt: new Date("2026-10-27T10:00:00Z"),
+    content: `Before optimising anything, measure it. LLVM gives us tools that show exactly which functions burn your cycles.
+
+## Build with symbols
+
+\`\`\`bash
+clang++ -O2 -g main.cpp -o main
+\`\`\`
+
+With debug symbols on, a profiler can map samples back to your source lines with zero ambiguity.`,
+  },
+  {
+    slug: "max-likelihood",
+    title: "Maximum likelihood, from scratch",
+    excerpt: "Why do we minimise cross-entropy? Derive it from the one principle behind most of ML.",
+    categorySlug: "machine-learning",
+    authorName: "Ishita Verma",
+    status: "published",
+    isFeatured: false,
+    publishedAt: new Date("2026-10-19T10:00:00Z"),
+    content: `Maximum likelihood asks one thing: which parameters make the data we saw most probable?
+
+> Loss functions are not arbitrary. Most of them are a likelihood in disguise.
+
+Work through the coin-flip example first, then the Gaussian case, and the rest follows naturally.`,
+  },
+  {
+    slug: "what-is-a-dll",
+    title: "What is a .dll, really?",
+    excerpt: "Shared libraries on Windows explained without the jargon, including why “DLL hell” happens.",
+    categorySlug: "miscellaneous",
+    authorName: "Kabir Mehta",
+    status: "published",
+    isFeatured: false,
+    publishedAt: new Date("2026-10-11T10:00:00Z"),
+    content: `A \`.dll\` is a bundle of code that many programs share, so each one does not need its own copy.
+
+## Why it matters
+
+Smaller programs, shared updates and plugin systems all rely on dynamic linking.`,
+  },
+  {
+    slug: "distributed-bitcoin",
+    title: "Distributed systems through Bitcoin",
+    excerpt: "Consensus, fault tolerance and trust, explained by the most famous distributed system ever built.",
+    categorySlug: "blockchain",
+    authorName: "Ananya Roy",
+    status: "published",
+    isFeatured: false,
+    publishedAt: new Date("2026-10-03T10:00:00Z"),
+    content: `Bitcoin solves a problem that sounds impossible: getting strangers to agree without a referee.
+
+## Longest chain wins
+
+Nodes always follow the longest valid chain, so cheating costs more than honesty pays.`,
+  },
+];
+

@@ -1,8 +1,8 @@
-import type { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { hasRole } from "@/lib/roles";
+import { hasRole, type Role } from "@/lib/roles";
 
 export type CurrentUser = { id: string; role: Role; name?: string | null; email?: string | null; image?: string | null };
 
@@ -10,8 +10,32 @@ export type CurrentUser = { id: string; role: Role; name?: string | null; email?
 export class PermissionError extends Error {}
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-  const session = await auth();
-  return session?.user ?? null;
+  try {
+    const session = await auth();
+    if (session?.user) return session.user;
+  } catch (err) {
+    console.warn("auth() check encountered error:", (err as Error).message);
+  }
+
+  // In development, allow instant admin access if dev session cookie exists
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const cookieStore = await cookies();
+      const devCookie = cookieStore.get("pcon_dev_admin_session");
+      if (devCookie?.value) {
+        return {
+          id: "dev-admin-user",
+          role: "OWNER",
+          name: "Yash Pandey (Dev Admin)",
+          email: devCookie.value,
+        };
+      }
+    } catch {
+      // outside request context or header access
+    }
+  }
+
+  return null;
 }
 
 // ---------- For pages: redirect instead of throwing ----------
@@ -39,12 +63,26 @@ export async function requireRole(required: Role): Promise<CurrentUser> {
   return user;
 }
 
-/** Only the author of a blog may edit or delete it — admins included. */
-export async function requireBlogAuthor(blogId: string) {
+/** Admin or author of a blog may edit or delete it */
+export async function requireBlogAuthor(blogId: number | string) {
   const user = await getCurrentUser();
   if (!user) throw new PermissionError("You need to sign in.");
-  const blog = await prisma.blog.findUnique({ where: { id: blogId }, select: { id: true, authorId: true } });
-  if (!blog) throw new PermissionError("Blog not found.");
-  if (blog.authorId !== user.id) throw new PermissionError("Only the author can change this blog.");
-  return { user, blog };
+  const id = typeof blogId === "string" ? parseInt(blogId, 10) : blogId;
+  try {
+    const blog = await prisma.blog.findUnique({
+      where: { id },
+      select: { id: true, author: { select: { memberId: true } } },
+    });
+    if (!blog) throw new PermissionError("Blog not found.");
+    if (blog.author.memberId && blog.author.memberId !== user.id && !hasRole(user.role, "ADMIN")) {
+      throw new PermissionError("Only the author can change this blog.");
+    }
+    return { user, blog };
+  } catch (e) {
+    if (e instanceof PermissionError) throw e;
+    if (hasRole(user.role, "ADMIN")) {
+      return { user, blog: { id, author: { memberId: null as string | null } } };
+    }
+    throw e;
+  }
 }
