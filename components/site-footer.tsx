@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { HalftoneMark } from "@/components/halftone-mark";
 import { navLinks, socialLinks } from "@/lib/site-data";
@@ -28,7 +29,7 @@ export function SiteFooter() {
         </div>
         <nav className="footer-col" aria-label="Footer">
           <span>Quick links</span>
-          {navLinks.map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}
+          {navLinks.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
         </nav>
         <div className="footer-col">
           <span>Contact</span>
