@@ -1,20 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowIcon } from "@/components/brand";
+import { BrandMatrix } from "@/components/brand-matrix";
+import { HackerScramble } from "@/components/hacker-scramble";
+import { MatrixControl } from "@/components/matrix-control";
 import { BuildOnScroll } from "@/components/build-on-scroll";
-import { CodeRain } from "@/components/code-rain";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { blogPosts, events, focusAreas, heroPillars } from "@/lib/site-data";
-
-const codeLines = [
-  <><span className="syntax-purple">const</span> <span className="syntax-blue">future</span> = <span className="syntax-yellow">&quot;yours to build&quot;</span>;</>,
-  <><span className="syntax-purple">for</span> (<span className="syntax-orange">idea</span> <span className="syntax-purple">of</span> <span className="syntax-blue">possibilities</span>) {"{"}</>,
-  <>{"  "}<span className="syntax-blue">learn</span>(idea);</>,
-  <>{"  "}<span className="syntax-blue">build</span>(idea);</>,
-  <>{"  "}<span className="syntax-blue">share</span>(idea);</>,
-  <>{"}"}</>,
-];
+import { blogPosts, events, focusAreas } from "@/lib/site-data";
 
 const tickerWords = ["THINK DEEPLY", "BUILD BOLDLY", "LEARN TOGETHER", "CODE FOR THE FUTURE"];
 
@@ -30,49 +22,19 @@ export default function HomePage() {
     <div className="site-shell" id="top">
       <SiteHeader />
       <main>
-        <section className="hero" aria-labelledby="hero-title">
+        <section className="hero" aria-labelledby="hero-title" data-build-section data-build-intro>
           <div className="hero__backdrop" aria-hidden="true" />
-          <CodeRain />
+          <BrandMatrix />
           <div className="shell hero__inner">
             <div className="hero__copy">
-              <div className="eyebrow"><span className="status-dot" /> THE CODING COMMUNITY AT NIT JAMSHEDPUR</div>
-              <h1 id="hero-title">Code for <span>the future.</span></h1>
-              <p className="hero__intro">A community of curious minds, ambitious ideas, and the code that brings them to life.</p>
-              <div className="hero__actions">
-                <a className="button button--primary" href="#community">Find your people <ArrowIcon /></a>
-                <a className="button button--outline" href="#about">Get to know PCON <span aria-hidden="true">↓</span></a>
-              </div>
+              <div className="eyebrow"><span className="status-dot" /> NIT JAMSHEDPUR <span className="hero__eyebrow-divider">/</span> THE CODING COMMUNITY</div>
+              <h1 id="hero-title" className="hero__title" data-build>PCON</h1>
+              <p className="hero__club-name" data-build>PROGRAMMING CLUB OF NIT JAMSHEDPUR</p>
+              <HackerScramble />
+              <MatrixControl />
             </div>
-
-            <div className="hero-art" aria-hidden="true">
-              <div className="hero-art__halo" />
-              <div className="hero-art__orbit hero-art__orbit--one" />
-              <div className="hero-art__orbit hero-art__orbit--two" />
-              <div className="hero-art__cross hero-art__cross--one">+</div>
-              <div className="hero-art__cross hero-art__cross--two">+</div>
-              <div className="hero-art__tag hero-art__tag--top"><span className="tag-pulse" /> ideas in motion</div>
-              <div className="code-window">
-                <div className="code-window__bar"><span className="window-dots"><i /><i /><i /></span><span>future.ts</span><span className="code-window__menu">···</span></div>
-                <div className="code-window__body">
-                  {codeLines.map((line, index) => <div className="code-line" key={index}><span>{String(index + 1).padStart(2, "0")}</span><code>{line}</code></div>)}
-                  <div className="code-cursor" />
-                </div>
-              </div>
-              <div className="hero-art__badge"><Image className="badge-mark" src="/pcon-logo.png" alt="" width={50} height={30} /><span>PCON<br /><small>NIT JSR</small></span></div>
-              <div className="hero-art__tag hero-art__tag--bottom">01000011 <span>✳</span> 01001111</div>
-            </div>
-
-            <ul className="hero-pillars">
-              {heroPillars.map((pillar) => (
-                <li className="hero-pillar" key={pillar.title}>
-                  <span className="hero-pillar__symbol" aria-hidden="true">{pillar.symbol}</span>
-                  <strong>{pillar.title}</strong>
-                  <p>{pillar.text}</p>
-                </li>
-              ))}
-            </ul>
           </div>
-          <div className="shell hero__index" aria-hidden="true"><span>↓</span><i /> SCROLL TO WATCH IT BUILD</div>
+          <a className="hero__index" href="#about"><span>↓</span><i /> SCROLL TO EXPLORE</a>
         </section>
 
         <section className="ticker" aria-label="PCON values">
