@@ -104,7 +104,11 @@ export function BuildOnScroll() {
     const cursors = cursorRefs.current;
     const motion: CursorMotion[] = CURSORS.map(() => ({ x: 0, y: 0, tx: 0, ty: 0, placed: false, active: false }));
     const clickTimers: number[] = [];
-    const introStartedAt = performance.now();
+    // On a first visit the full-load splash covers the page for ~1.7s (see app/status-pages.css);
+    // start the hero's intro build after it so the cursors aren't hidden behind it.
+    const splash = document.querySelector<HTMLElement>(".pcon-loader--splash");
+    const splashShowing = !!splash && root.classList.contains("is-entering") && getComputedStyle(splash).display !== "none";
+    const introStartedAt = performance.now() + (splashShowing ? 1700 : 0);
     let frame = 0;
     let lastTime = 0;
     let lastScrollY = window.scrollY;

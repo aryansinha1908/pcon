@@ -17,7 +17,11 @@ export function SiteHeader() {
   };
 
   return (
+    <>
+    <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header">
+      {/* Scroll progress along the header's bottom edge (pure CSS; hidden where unsupported). */}
+      <span className="read-progress" aria-hidden="true" />
       <div className="shell site-header__inner">
         <Brand />
         <nav className="main-nav" aria-label="Main navigation">
@@ -39,5 +43,6 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
+    </>
   );
 }

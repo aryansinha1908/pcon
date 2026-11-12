@@ -11,12 +11,17 @@ import { TypeTitle } from "@/components/type-title";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPathway, type Resource, type ResourceKind, type Roadmap } from "@/lib/roadmaps";
+import { baseOpenGraph } from "@/lib/site-url";
 import { getYouTubePreviews, type YouTubePreview } from "@/lib/youtube";
 import "./roadmaps.css";
 
+const ROADMAPS_DESCRIPTION = "Learning roadmaps curated by PCON seniors: problem solving foundations, then competitive programming, web development, AI/ML or DevOps.";
+
 export const metadata: Metadata = {
-  title: "Roadmaps — PCON",
-  description: "Learning roadmaps curated by PCON seniors: problem solving foundations, then competitive programming, web development, AI/ML or DevOps.",
+  title: "Roadmaps",
+  description: ROADMAPS_DESCRIPTION,
+  alternates: { canonical: "/roadmaps" },
+  openGraph: { ...baseOpenGraph, title: "Roadmaps · PCON", description: ROADMAPS_DESCRIPTION, url: "/roadmaps" },
 };
 
 const KIND_LABEL: Record<ResourceKind, string> = {
@@ -178,7 +183,7 @@ export default async function RoadmapsPage() {
   return (
     <div className="site-shell" id="top">
       <SiteHeader />
-      <main>
+      <main id="main">
         <RoadmapEffects />
         <div className="sky">
         <Starfield />

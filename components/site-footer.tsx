@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackToTop } from "@/components/back-to-top";
 import { Brand } from "@/components/brand";
 import { HalftoneMark } from "@/components/halftone-mark";
 import { navLinks, socialLinks } from "@/lib/site-data";
@@ -6,6 +7,7 @@ import { navLinks, socialLinks } from "@/lib/site-data";
 export function SiteFooter() {
   return (
     <footer className="site-footer">
+      <BackToTop />
       <div className="footer-mark">
         <div className="shell footer-mark__inner">
           <figure className="mark-frame mark-frame--logo">
