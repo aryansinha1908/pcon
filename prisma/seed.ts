@@ -2,6 +2,14 @@ import { PrismaClient, type Role } from "@prisma/client";
 import { calculateReadTimeMinutes } from "../lib/blog-utils";
 import { SEED_ACHIEVEMENTS, SEED_AUTHORS, SEED_CATEGORIES, SEED_EVENTS, SEED_HALL_OF_FAME, SEED_POSTS } from "../lib/seed-data";
 
+// `npm run db:seed` runs plain tsx, which doesn't read .env. Load it here
+// instead of relying on Prisma doing it as a side effect of the import.
+try {
+  process.loadEnvFile(".env");
+} catch {
+  // no .env file: fine in CI, where variables come from the environment
+}
+
 const prisma = new PrismaClient();
 const RANK: Record<Role, number> = { MEMBER: 0, ADMIN: 1, OWNER: 2 };
 

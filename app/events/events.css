@@ -1,15 +1,7 @@
-/* Events page. Builds on the tokens and shared classes in app/globals.css
-   (.section-pad, .section-label, .chip, .button, .text-link) and the .terminal
-   card in app/status-pages.css. Scroll reveal rules live in globals.css. */
-
-/* ───── Hero ───── */
-.events-hero { position: relative; isolation: isolate; padding: 96px 0 72px; text-align: center; }
-.events-hero__backdrop { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 55% 60% at 50% 0%, rgb(39 201 173 / 20%), transparent 70%); }
-.events-hero__backdrop::after { position: absolute; inset: 0; background-image: radial-gradient(rgb(134 193 163 / 22%) .8px, transparent .8px); background-size: 22px 22px; mask-image: radial-gradient(ellipse 60% 70% at 50% 30%, #000 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 30%, #000 20%, transparent 75%); content: ""; }
-.events-hero .eyebrow { justify-content: center; }
-.events-hero h1 { margin: 24px 0 18px; font: 700 clamp(48px, 7vw, 84px)/1.02 var(--display); letter-spacing: -.06em; text-wrap: balance; }
-.events-hero h1 span { color: var(--mint); text-shadow: 0 0 60px rgb(39 201 173 / 35%); }
-.events-hero p { max-width: 540px; margin: 0 auto; color: var(--text-muted); font-size: 16px; line-height: 1.75; }
+/* Events page. Shares the roadmap page's hero, starfield and background
+   treatment (imported from app/roadmaps/roadmaps.css) so the two pages read as
+   one family. This file only adds the event-grid / event-card specifics that
+   build on the shared classes in app/globals.css. */
 
 .events-hero__term { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; margin-top: 34px; padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px; background: rgb(3 15 13 / 70%); color: var(--text-muted); font: 12px/1.4 var(--mono); }
 .events-hero__stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 0; padding: 0; list-style: none; }
@@ -21,77 +13,37 @@
 .events-section { border-top: 1px solid var(--line); }
 .events-section h2 { margin: 26px 0 44px; }
 .events-section--past { background: var(--ink-deep); }
+.events-section--past .event-card { opacity: .88; }
+.events-section--past .event-card:hover { opacity: 1; }
 
-.event-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; color: var(--text-muted); font: 12px/1.5 var(--mono); list-style: none; }
-.event-meta li { display: flex; gap: 7px; }
-.event-meta li > span { color: var(--mint); }
+/* ───── Card additions specific to real event data (poster, location, CTA) ───── */
+.event-card__poster { position: relative; width: calc(100% + 44px); height: 160px; margin: -22px -22px 18px; overflow: hidden; border-radius: 12px 12px 0 0; background: var(--ink-raised); }
+.event-card__poster img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.16, 1, .3, 1); }
+.event-card h3 { margin-top: 18px; }
+.event-card__location { display: flex; align-items: center; gap: 6px; margin-top: 12px; color: var(--text-faint); font: 11px var(--mono); letter-spacing: .02em; }
+.event-card__location::before { content: "◎"; color: var(--mint); }
+.event-card__cta { margin-top: auto; padding-top: 18px; }
+.event-card--empty { align-items: flex-start; justify-content: center; gap: 12px; }
+.event-card--empty p { color: var(--text-muted); }
 
-/* Cover for events without a poster: the event's initials as a code tag. */
-.event-cover { position: relative; display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden; background: radial-gradient(ellipse 70% 70% at 30% 20%, rgb(0 255 160 / 20%), transparent 70%), radial-gradient(rgb(134 193 163 / 18%) .8px, transparent .8px) 0 0 / 18px 18px, var(--ink-raised); }
-.event-cover__tag { color: var(--paper); font: clamp(30px, 5vw, 56px)/1 var(--pixel); letter-spacing: -.02em; text-shadow: 0 0 30px rgb(0 255 160 / 45%); }
-.event-cover__tag i { color: var(--mint); font-style: normal; }
+/* ───── Hover: lift, glow and a slow poster zoom (matches roadmap card glow) ───── */
+.event-card { transition: transform .35s cubic-bezier(.16, 1, .3, 1), border-color .25s, background .25s, box-shadow .35s; will-change: transform; }
+.event-card:hover { transform: translateY(-6px); border-color: var(--line-strong); box-shadow: 0 24px 50px rgb(0 0 0 / 35%), 0 0 44px rgb(0 255 160 / 12%); }
+.event-card--upcoming:hover { box-shadow: 0 24px 50px rgb(0 0 0 / 35%), 0 0 60px rgb(0 255 160 / 20%); }
+.event-card:hover .event-card__poster img { transform: scale(1.06); }
+.event-card--empty:hover { transform: none; box-shadow: none; }
 
-/* ───── Spotlight ───── */
-.spotlight { position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); overflow: hidden; border: 1px solid transparent; border-radius: 22px; background: linear-gradient(150deg, rgb(10 38 32), rgb(3 15 13) 55%) padding-box, conic-gradient(from var(--spot-angle), rgb(0 255 160 / 30%) 0 64%, var(--mint-bright) 78%, rgb(0 255 160 / 30%) 92%) border-box; box-shadow: 0 30px 80px -20px rgb(0 0 0 / 70%), 0 0 70px -20px rgb(0 255 160 / 25%); animation: spot-orbit 7s linear infinite; }
-/* A slow light runs around the card's edge (the conic border layer above). */
-@property --spot-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
-@keyframes spot-orbit { to { --spot-angle: 360deg; } }
-.spotlight__media { position: relative; min-height: 100%; background: var(--ink-raised); }
-.spotlight__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.spotlight__media .event-cover { position: absolute; inset: 0; }
-.spotlight__body { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: clamp(26px, 4vw, 44px); }
-.spotlight__body h3 { margin: 0; font: 700 clamp(28px, 3.4vw, 42px)/1.08 var(--display); letter-spacing: -.04em; text-wrap: balance; }
-.spotlight__text { margin: 0; color: var(--text-muted); font-size: 15px; line-height: 1.7; }
-.spotlight__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 4px; }
-.spotlight__live::before { animation: live-pulse 1.4s ease-in-out infinite; }
-@keyframes live-pulse { 50% { opacity: .35; scale: .7; } }
-
-/* ───── Countdown ───── */
-.countdown { width: 100%; padding: 16px 18px 14px; border: 1px solid var(--line); border-radius: 14px; background: rgb(1 8 6 / 70%); }
-.countdown__label { margin: 0 0 10px; color: var(--text-faint); font: 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-.countdown__label span { color: var(--mint); }
-.countdown__tiles { display: flex; align-items: flex-start; }
-.countdown__unit { display: flex; align-items: flex-start; flex: 1; }
-.countdown__sep { padding: 10px 2px 0; color: var(--line-strong); font: 22px/1 var(--pixel); animation: sep-blink 1s steps(1) infinite; }
-@keyframes sep-blink { 50% { opacity: .25; } }
-.countdown__tile { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 8px; }
-.countdown__digits { display: flex; gap: 3px; }
-.countdown__digit { display: grid; place-items: center; width: clamp(26px, 3vw, 34px); height: clamp(36px, 4vw, 46px); overflow: hidden; border: 1px solid rgb(0 255 160 / 16%); border-radius: 7px; background: linear-gradient(180deg, rgb(14 48 41 / 90%) 50%, rgb(6 25 20 / 95%) 50%); color: var(--mint-bright); font: clamp(15px, 1.8vw, 20px)/1 var(--pixel); text-shadow: 0 0 14px rgb(0 255 160 / 55%); }
-.countdown[data-ticking="true"] .countdown__digit { animation: digit-in .38s cubic-bezier(.2, .8, .2, 1); }
-@keyframes digit-in { from { translate: 0 -55%; opacity: 0; filter: blur(2px); } }
-.countdown__tile small { color: var(--text-faint); font: 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-.countdown[data-done="true"] .countdown__digit { color: var(--text-faint); text-shadow: none; }
-
-/* ───── Add to calendar ───── */
-.cal { position: relative; }
-.cal__toggle { display: inline-flex; align-items: center; gap: 9px; min-height: 46px; padding: 0 18px; border: 1px solid rgb(225 241 231 / 22%); border-radius: 999px; background: transparent; color: var(--text); font: 500 13px var(--sans); cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
-.cal__toggle svg { width: 17px; height: 17px; color: var(--mint); }
-.cal__toggle:hover, .cal[data-open="true"] .cal__toggle { border-color: var(--mint); background: rgb(0 245 160 / 8%); }
-.cal--compact .cal__toggle { min-height: 36px; padding: 0 12px; border-color: transparent; color: var(--text-muted); font-size: 12px; }
-.cal--compact .cal__toggle:hover, .cal--compact[data-open="true"] .cal__toggle { border-color: var(--line); color: var(--text); }
-.cal__menu { position: absolute; z-index: 20; top: calc(100% + 8px); left: 0; display: grid; min-width: 210px; padding: 6px; border: 1px solid var(--line-strong); border-radius: 14px; background: rgb(3 15 13 / 96%); box-shadow: 0 20px 50px rgb(0 0 0 / 55%); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); animation: cal-in .18s ease; }
-.cal__menu[hidden] { display: none; }
-.cal__menu a, .cal__menu button { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 42px; padding: 0 12px; border: 0; border-radius: 9px; background: none; color: var(--text); font: 13px var(--sans); text-align: left; cursor: pointer; }
-.cal__menu a:hover, .cal__menu button:hover, .cal__menu a:focus-visible, .cal__menu button:focus-visible { background: rgb(0 245 160 / 10%); color: var(--mint); }
-.cal__menu small, .cal__menu span { color: var(--text-faint); font: 11px var(--mono); }
-@keyframes cal-in { from { opacity: 0; translate: 0 -4px; } }
-
-/* ───── Tickets (more upcoming) ───── */
-.tickets { display: grid; gap: 16px; margin-top: 56px; }
-.tickets__title { margin: 0 0 4px; color: var(--text-faint); font: 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-.ticket {
-  --stub: 128px;
-  --notch: 11px;
-  position: relative;
-  display: grid;
-  grid-template-columns: var(--stub) minmax(0, 1fr);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: linear-gradient(120deg, rgb(14 48 41 / 55%), rgb(3 15 13 / 85%));
-  /* Notches cut into the top and bottom edges where the stub tears off. */
-  mask: radial-gradient(circle var(--notch) at var(--stub) 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle var(--notch) at var(--stub) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
-  -webkit-mask: radial-gradient(circle var(--notch) at var(--stub) 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle var(--notch) at var(--stub) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
-  transition: translate .35s cubic-bezier(.16, 1, .3, 1), border-color .25s, background .25s;
+/* ───── Scroll reveal (progressive enhancement; see scroll-reveal.tsx) ─────
+   The "hidden" rule is scoped to :not(.is-revealed) rather than overriding
+   transform back to none on .is-revealed — that would out-specificity
+   .event-card:hover's lift and freeze hover after a card had revealed. This
+   way, once revealed, nothing here sets `transform` at all, so :hover (and
+   any other transform rule) applies normally. */
+html.reveal-ready [data-reveal]:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .7s cubic-bezier(.16, 1, .3, 1), transform .7s cubic-bezier(.16, 1, .3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 .ticket:hover { translate: 0 -4px; border-color: var(--line-strong); background: linear-gradient(120deg, rgb(14 48 41 / 75%), rgb(3 15 13 / 85%)); }
 .ticket__stub { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 20px 10px; border-right: 2px dashed rgb(0 255 160 / 22%); text-align: center; }
@@ -149,34 +101,5 @@
 }
 
 @media (max-width: 640px) {
-  .events-hero { padding: 64px 0 48px; }
-  .events-hero h1 { font-size: clamp(42px, 13vw, 58px); }
-  .events-hero p { font-size: 14px; }
-  .events-hero__term { border-radius: 16px; }
-  .events-section h2 { margin-bottom: 32px; }
-  .spotlight { border-radius: 18px; }
-  .countdown { padding: 14px 10px 12px; }
-  .countdown__digits { gap: 2px; }
-  .countdown__digit { width: 23px; height: 34px; font-size: 13px; }
-  .countdown__sep { padding: 9px 1px 0; font-size: 14px; }
-  .ticket { --stub: 82px; --notch: 9px; }
-  .ticket__stub strong { font-size: 22px; }
-  .ticket__weekday, .ticket__month { font-size: 9px; letter-spacing: .06em; }
-  .ticket__body { padding: 18px 16px; }
-  .ticket__body h3 { font-size: 18px; }
-  .past-year__list { padding-left: 26px; }
-  .past-event__node { left: -25px; width: 12px; height: 12px; }
-  .past-year__list::before { left: 5px; }
-  .past-event__card { grid-template-columns: 1fr; padding: 16px; }
-  .past-event__thumb { width: 100%; height: 140px; grid-row: 1; }
-  .spotlight__actions { width: 100%; }
-  .spotlight__actions .button { flex: 1; justify-content: center; }
+  .event-card__poster { height: 180px; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .spotlight, .spotlight__live::before, .countdown__sep { animation: none; }
-  .countdown[data-ticking="true"] .countdown__digit { animation: none; }
-}
-
-/* The spotlight clips its corners, so its calendar menu opens upwards. */
-.spotlight .cal__menu { top: auto; bottom: calc(100% + 8px); }
