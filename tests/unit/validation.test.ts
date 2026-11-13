@@ -5,6 +5,7 @@ import {
   blogAuthorSchema,
   eventSchema,
   teamMemberSchema,
+  teamMemberInputSchema,
 } from "@/lib/validation";
 
 const event = {
@@ -115,5 +116,53 @@ describe("teamMemberSchema", () => {
     expect(teamMemberSchema.safeParse({ ...member, batch: "1999" }).success).toBe(false);
     expect(teamMemberSchema.safeParse({ ...member, batch: String(new Date().getFullYear() + 7) }).success).toBe(false);
     expect(teamMemberSchema.safeParse({ ...member, batch: String(new Date().getFullYear() + 6) }).success).toBe(true);
+  });
+});
+
+describe("teamMemberInputSchema", () => {
+  const validMember = {
+    name: "Aarav Sharma",
+    batch: 2026,
+    designation: "App Development Lead",
+    domain: "App Development",
+    photo: "https://images.unsplash.com/photo-1",
+    github: "https://github.com/aarav",
+    linkedin: "https://linkedin.com/in/aarav",
+    portfolio: "https://aarav.dev",
+    email: "aarav@nitjsr.ac.in",
+    displayOrder: 1,
+  };
+
+  it("validates valid team member data", () => {
+    const res = teamMemberInputSchema.safeParse(validMember);
+    expect(res.success).toBe(true);
+  });
+
+  it("rejects invalid URL for github", () => {
+    const res = teamMemberInputSchema.safeParse({
+      ...validMember,
+      github: "not-a-valid-url",
+    });
+    expect(res.success).toBe(false);
+  });
+
+  it("rejects invalid batch year", () => {
+    const res = teamMemberInputSchema.safeParse({
+      ...validMember,
+      batch: 1800,
+    });
+    expect(res.success).toBe(false);
+  });
+
+  it("handles empty string optional URLs as null or empty", () => {
+    const res = teamMemberInputSchema.safeParse({
+      name: "Rohan Deshmukh",
+      batch: 2027,
+      photo: "",
+      github: "",
+      linkedin: "",
+      portfolio: "",
+    });
+    expect(res.success).toBe(true);
   });
 });
