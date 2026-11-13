@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -59,7 +60,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       data: {
         ...member,
         rollNumber: member.studentId,
-        specializations: (member.specializations ?? []).map((s: any) => s.name ?? s),
+        specializations: (member.specializations ?? []).map((s: { name: string } | string) => (typeof s === "string" ? s : s.name)),
       },
     });
   } catch (error) {
@@ -131,8 +132,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const { specializations, ...memberFields } = parsed.data;
 
-    let updated: any;
-    const runUpdate = async (tx: typeof prisma) => {
+    const runUpdate = async (tx: Prisma.TransactionClient) => {
       if (specializations !== undefined && tx.memberSpecialization) {
         await tx.memberSpecialization.deleteMany({
           where: { teamMemberId: id },
@@ -168,11 +168,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       });
     };
 
-    if (prisma.$transaction) {
-      updated = await prisma.$transaction(async (tx) => runUpdate(tx as any));
-    } else {
-      updated = await runUpdate(prisma);
-    }
+    const updated = prisma.$transaction
+      ? await prisma.$transaction(async (tx) => runUpdate(tx))
+      : await runUpdate(prisma);
 
     return NextResponse.json({
       success: true,
@@ -180,7 +178,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       data: {
         ...updated,
         rollNumber: updated.studentId,
-        specializations: (updated.specializations ?? []).map((s: any) => s.name ?? s),
+        // The specializations are only included when that model is available (see runUpdate).
+        specializations: ((updated as { specializations?: { name: string }[] }).specializations ?? []).map((s) => s.name),
       },
     });
   } catch (error) {
