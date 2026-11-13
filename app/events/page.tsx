@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { ArrowIcon } from "@/components/brand";
+import { CodeRain } from "@/components/code-rain";
+import { HackerScramble } from "@/components/hacker-scramble";
+import { RoadmapHeroTitle } from "@/components/roadmap-hero-title";
+import { Starfield } from "@/components/starfield";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { formatDate } from "@/lib/format";
 import { getPublicEvents } from "@/lib/events";
 import { ScrollReveal } from "./scroll-reveal";
+import "../roadmaps/roadmaps.css";
 import "./events.css";
 // Events are live, admin-edited data — never prerender/cache this page at
 // build time (that would freeze the list at whatever it was when `next
@@ -15,6 +20,12 @@ export const metadata: Metadata = {
   title: "Events — PCON",
   description: "Contests, hackathons, workshops and talks from the Programming Club of NIT Jamshedpur — what's coming up, and what we've run before.",
 };
+
+const EVENT_PHRASES = [
+  "HACKATHONS WITH REAL STAKES",
+  "WORKSHOPS RUN BY SENIORS",
+  "BUILD • COMPETE • LEARN",
+];
 
 function EventCard({
   event,
@@ -63,15 +74,27 @@ export default async function EventsPage() {
     <div className="site-shell" id="top">
       <ScrollReveal />
       <SiteHeader />
-      <main>
-        <section className="events-hero" aria-labelledby="events-title">
-          <div className="events-hero__backdrop" aria-hidden="true" />
-          <div className="shell">
-            <div className="eyebrow"><span className="status-dot" /> WHAT&apos;S HAPPENING AT PCON</div>
-            <h1 id="events-title">Contests, builds<br /><span>and everything between.</span></h1>
-            <p>Workshops, hackathons and contests, run by the club for the club. Register for what&apos;s next, or see what we&apos;ve done before.</p>
-          </div>
-        </section>
+      <main id="main">
+        <div className="sky">
+          <Starfield />
+          <section className="roadmaps-hero" aria-labelledby="roadmaps-title">
+            <div className="roadmaps-hero__backdrop" aria-hidden="true" />
+            <CodeRain />
+            <div className="shell">
+              <div className="eyebrow"><span className="status-dot" /> WHAT&apos;S HAPPENING AT PCON</div>
+              <RoadmapHeroTitle prefix="Worth Showing " highlight="Up For." />
+              <div className="roadmaps-hero__scramble-wrap">
+                <HackerScramble phrases={EVENT_PHRASES} />
+              </div>
+              <ul className="chip-row" aria-label="What the club runs">
+                <li className="chip">Contests</li>
+                <li className="chip">Hackathons</li>
+                <li className="chip">Workshops</li>
+                <li className="chip">Talks</li>
+              </ul>
+            </div>
+          </section>
+        </div>
 
         <section className="section-pad events-section" id="upcoming" aria-labelledby="upcoming-title">
           <div className="shell">
