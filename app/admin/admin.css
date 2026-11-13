@@ -568,3 +568,22 @@
   .adm-table__actions > * + * { margin-left: 0; }
   .adm-action { margin: 2px 10px 2px 0; }
 }
+
+/* ---------- Achievements + hall of fame forms ---------- */
+.adm-select--block { width: 100%; padding: 10px 12px; font-size: 14px; }
+.adm-form__row--3 { grid-template-columns: 1.3fr 1fr 1.3fr; }
+.adm-fieldset { margin: 0; padding: 14px 16px 16px; border: 1px solid var(--adm-line-strong); border-radius: 3px; }
+.adm-fieldset legend { padding: 0 6px; color: #c2d1c8; font: 600 12px var(--sans); }
+.adm-fieldset--1 { border-color: rgb(245 196 81 / 45%); }
+.adm-fieldset--1 legend { color: #f5c451; }
+.adm-mono { font: 13px/1.6 var(--mono) !important; }
+.adm-image-field { display: flex; flex-direction: column; gap: 8px; }
+.adm-image-field__side { display: flex; align-items: center; gap: 10px; }
+.adm-image-field__preview { width: 96px; height: 64px; border: 1px solid var(--adm-line-strong); border-radius: 3px; object-fit: cover; background: var(--adm-surface-2); }
+.adm-image-field__preview--empty { display: grid; place-items: center; color: var(--adm-muted); font-size: 11px; }
+.adm-image-field label.adm-btn { cursor: pointer; }
+.adm-thumb { width: 64px; height: 44px; border-radius: 3px; object-fit: cover; background: var(--adm-surface-2); vertical-align: middle; }
+.adm-badge--featured { border-color: rgb(245 196 81 / 50%); color: #f5c451; }
+@media (max-width: 760px) {
+  .adm-form__row--3 { grid-template-columns: 1fr; }
+}

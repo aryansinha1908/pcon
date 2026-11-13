@@ -1,14 +1,18 @@
 import { ImageResponse } from "next/og";
-import { clubAchievements } from "@/lib/club-achievements";
 import { logoDataUrl, OG_SIZE, OgFrame } from "@/lib/og";
 import { siteUrl } from "@/lib/site-url";
 
-export const alt = "PCON Achievements — rank 54 and 1st among NITs at ICPC Kanpur 2025, plus national hackathon wins.";
+export const alt = "PCON Achievements — the club at ICPC regionals and national hackathons.";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 
-const TIER = { winner: "#f5c451", "runner-up": "#cbd5e1", finalist: "#70e3c7", rank: "#82cce9" } as const;
+const CHIPS = [
+  { label: "ICPC regionals", color: "#82cce9" },
+  { label: "National hackathons", color: "#f5c451" },
+  { label: "Since 2017", color: "#70e3c7" },
+];
 
+// Static on purpose: built at build time, when there is no database to read.
 export default async function AchievementsOpengraphImage() {
   const logo = await logoDataUrl();
   return new ImageResponse(
@@ -22,12 +26,12 @@ export default async function AchievementsOpengraphImage() {
           <div style={{ display: "flex", fontSize: 96, fontWeight: 700, letterSpacing: -4, lineHeight: 1 }}>
             Where PCON&nbsp;<span style={{ color: "#70e3c7" }}>shows up.</span>
           </div>
-          <div style={{ display: "flex", fontSize: 30, color: "#f5c451", marginTop: 22 }}>Rank 54 · 1st among all NITs at ICPC Kanpur 2025</div>
+          <div style={{ display: "flex", fontSize: 30, color: "#a9bdb2", marginTop: 22 }}>PCON at the ICPC regionals and national hackathons.</div>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-          {clubAchievements.filter((a) => !a.featured).slice(0, 4).map((a) => (
-            <div key={a.slug} style={{ display: "flex", padding: "8px 16px", border: `2px solid ${TIER[a.tier]}`, borderRadius: 999, color: TIER[a.tier], fontSize: 20, whiteSpace: "nowrap" }}>
-              {a.result} · {a.title}
+          {CHIPS.map((chip) => (
+            <div key={chip.label} style={{ display: "flex", padding: "8px 18px", border: `2px solid ${chip.color}`, borderRadius: 999, color: chip.color, fontSize: 22, whiteSpace: "nowrap" }}>
+              {chip.label}
             </div>
           ))}
         </div>

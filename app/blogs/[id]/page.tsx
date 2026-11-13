@@ -44,11 +44,11 @@ export async function generateMetadata({
   const post = await getPublishedBlogByIdOrSlug(id);
 
   if (!post || post.status !== "published") {
-    return { title: "Blog Not Found | PCON NIT Jamshedpur" };
+    return { title: "Blog not found" };
   }
 
   return {
-    title: `${post.title} | PCON NIT Jamshedpur`,
+    title: post.title,
     description: post.excerpt,
     openGraph: {
       title: post.title,
