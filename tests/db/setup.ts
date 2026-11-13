@@ -26,6 +26,7 @@ vi.mock("next/navigation", async () => {
     notFound: () => {
       throw new Error("NEXT_NOT_FOUND");
     },
+    unstable_rethrow: () => {},
   };
 });
 
