@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowIcon } from "@/components/brand";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -21,8 +22,15 @@ export const metadata: Metadata = {
   openGraph: { ...baseOpenGraph, title: "Achievements · PCON", description, url: "/achievements" },
 };
 
-function Photo({ image, eager = false }: { image: ClubAchievement["image"]; eager?: boolean }) {
+/** Local uploads and Cloudinary are allow-listed for next/image (resized, WebP/AVIF). */
+const optimizable = (src: string) => src.startsWith("/") || src.startsWith("https://res.cloudinary.com/");
+
+function Photo({ image, eager = false, sizes }: { image: ClubAchievement["image"]; eager?: boolean; sizes: string }) {
   if (!image) return <div className="ach-photo-fallback" aria-hidden="true"><span>{"{ }"}</span></div>;
+  // Phones get a photo sized for their screen instead of the full-resolution original.
+  if (optimizable(image.src)) {
+    return <Image src={image.src} alt={image.alt} fill sizes={sizes} priority={eager} loading={eager ? undefined : "lazy"} />;
+  }
   // eslint-disable-next-line @next/next/no-img-element -- admin-entered images can live on any host (uploads, Cloudinary, links), so next/image would need every host allow-listed.
   return <img src={image.src} alt={image.alt} loading={eager ? "eager" : "lazy"} />;
 }
@@ -32,7 +40,7 @@ function Featured({ achievement }: { achievement: ClubAchievement }) {
   return (
     <article className="feat" data-reveal>
       <div className="feat__photo">
-        <Photo image={achievement.image} eager />
+        <Photo image={achievement.image} eager sizes="(max-width: 900px) 100vw, 560px" />
       </div>
       <div className="feat__body">
         <span className="chip chip--live">{achievement.kind} · {achievement.year}</span>
@@ -58,7 +66,7 @@ function Card({ achievement }: { achievement: ClubAchievement }) {
     <div data-reveal>
       <article className="ach-card">
         <div className="ach-card__photo">
-          <Photo image={achievement.image} />
+          <Photo image={achievement.image} sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 380px" />
           <span className={`result result--${achievement.tier}`}>{achievement.result}</span>
         </div>
         <div className="ach-card__body">

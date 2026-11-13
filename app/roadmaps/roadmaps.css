@@ -86,9 +86,12 @@ html:has(.track-nav) { scroll-padding-top: 140px; }
 .track__header .track-progress { width: min(260px, 100%); }
 .track .section-label span { color: var(--tint); }
 
-.timeline-wrap { position: relative; max-width: 860px; margin-top: 52px; }
+/* --rail-x is the centre of the line, which is also the centre of each number node
+   (39px wide on desktop, 31px on phones). The base line, the glowing fill and the
+   dot all position from it, so they can never drift apart. */
+.timeline-wrap { --rail-x: 19.5px; position: relative; max-width: 860px; margin-top: 52px; }
 .timeline { position: relative; display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; list-style: none; }
-.timeline::before { position: absolute; top: 20px; bottom: 20px; left: 19px; width: 1px; background: linear-gradient(var(--tint), var(--line) 85%); content: ""; }
+.timeline::before { position: absolute; top: 20px; bottom: 20px; left: calc(var(--rail-x) - .5px); width: 1px; background: linear-gradient(var(--tint), var(--line) 85%); content: ""; }
 .timeline__item { position: relative; padding-left: 64px; }
 .timeline__stage { margin: 8px 0 12px; color: var(--tint); font: 12px var(--mono); letter-spacing: .02em; }
 .timeline__item:first-child .timeline__stage { margin-top: 0; }
@@ -168,12 +171,10 @@ html:has(.track-nav) { scroll-padding-top: 140px; }
   .pathway__arrow { transform: rotate(90deg); }
   .pathway__fork-label { padding-top: 40px; }
   .pathway__fork-label::before { height: 26px; }
-  .pathway__branches { grid-template-columns: 1fr; gap: 10px; }
+  .pathway__branches { grid-template-columns: 1fr; gap: 16px; }
   .track-nav { top: 64px; }
   .track { padding: 72px 0; }
-  .timeline-wrap { margin-top: 36px; }
-  .timeline__fill, .timeline__tip { left: 15px; }
-  .timeline::before { left: 15px; }
+  .timeline-wrap { --rail-x: 15.5px; margin-top: 36px; }
   .timeline__item { padding-left: 44px; }
   .timeline__node { width: 31px; height: 31px; top: 16px; font-size: 11px; }
   .timeline__stage + .timeline__node { top: calc(16px + 28px); }
@@ -233,8 +234,41 @@ html:has(.track-nav) { scroll-padding-top: 140px; }
 @keyframes ink { from { color: transparent; } }
 
 /* ── Timeline that fills as you scroll ── */
-.timeline__fill { position: absolute; z-index: 1; left: 19px; top: 20px; width: 2px; height: calc(100% - 40px); margin-left: -.5px; border-radius: 2px; background: var(--tint); transform: scaleY(var(--fill, 0)); transform-origin: top; pointer-events: none; }
-.timeline__tip { position: absolute; z-index: 3; left: 19px; top: 20px; width: 10px; height: 10px; margin: -5px 0 0 -4.5px; border-radius: 50%; background: var(--tint); box-shadow: 0 0 0 3px var(--abyss); transform: translateY(var(--fill-px, 0px)); opacity: min(1, calc(var(--fill, 0) * 25), calc((1 - var(--fill, 0)) * 25)); pointer-events: none; }
+/* The fill and the dot are driven by the page's scroll position through a CSS scroll
+   timeline, so the browser moves them on the compositor in step with the scroll: no
+   main-thread work and no lag. The timeline's viewport is inset to a single line at 60%
+   of the screen; progress runs while the line (top 20px to bottom 20px of the wrap)
+   passes it. components/roadmap-effects.tsx mirrors this for browsers without scroll
+   timelines. */
+.timeline__fill { position: absolute; z-index: 1; left: calc(var(--rail-x) - 1px); top: 20px; width: 2px; height: calc(100% - 40px); border-radius: 2px; background: var(--tint); transform: scaleY(0); transform-origin: top; pointer-events: none; }
+/* The dot rides at the bottom edge of an invisible rail as long as the line; moving the
+   rail by its own height (translate %) puts the dot anywhere on the line without JS
+   knowing the length. It sits under the number nodes (z-index 1 < 2), so when it reaches
+   a checkpoint it slides behind it instead of drawing over the number. */
+.timeline__tip { position: absolute; z-index: 1; left: var(--rail-x); top: 20px; width: 0; height: calc(100% - 40px); translate: 0 -100%; opacity: 0; pointer-events: none; }
+.timeline__tip::after { position: absolute; left: -5px; bottom: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--tint); box-shadow: 0 0 0 3px var(--abyss); content: ""; }
+@supports (animation-timeline: view()) {
+  .timeline-wrap { view-timeline: --rail block; view-timeline-inset: 60% 40%; }
+  .timeline__fill,
+  .timeline__tip {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --rail;
+    animation-range: cover 20px cover calc(100% - 20px);
+  }
+  .timeline__fill { animation-name: rail-fill; }
+  .timeline__tip { animation-name: rail-tip; }
+}
+@keyframes rail-fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes rail-tip {
+  0% { translate: 0 -100%; opacity: 0; }
+  4%, 96% { opacity: 1; }
+  100% { translate: 0 0; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .timeline__fill { animation: none; transform: none; }
+  .timeline__tip { display: none; }
+}
 .timeline__node { z-index: 2; transition: border-color var(--dur-enter) var(--ease), color var(--dur-enter) var(--ease), background-color var(--dur-enter) var(--ease); }
 .timeline__item[data-reached="false"] .timeline__node { border-color: color-mix(in srgb, var(--tint) 30%, transparent); color: var(--text-muted); }
 
@@ -331,3 +365,20 @@ html:has(.track-nav) { scroll-padding-top: 140px; }
   .starfield__drift, .star, .roadmaps-hero__title, .next-pin, .track-progress__badge { animation: none; }
   [data-tilt] { transform: none; }
 }
+
+/* Performance: off-screen tracks skip style, layout and paint until they near the
+   viewport. The page has ~1,800 nodes, most of them far below the first screen. */
+.track {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1800px;
+}
+
+/* Touch devices: no live blur on the sticky track nav (see the note in globals.css) */
+@media (pointer: coarse) {
+  .track-nav { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgb(1 8 6 / 97%); }
+}
+
+/* Layout-stable title scramble (components/roadmap-hero-title.tsx) */
+.roadmaps-hero__title { position: relative; }
+.roadmaps-title__overlay { position: absolute; inset: 0; pointer-events: none; }
+.roadmaps-hero__title.is-scrambling .roadmaps-title__base { visibility: hidden; }

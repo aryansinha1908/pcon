@@ -7,7 +7,7 @@
 .pcon-loader__stage { position: relative; width: var(--w); aspect-ratio: 647 / 386; }
 
 /* Three clipped copies of the logo (coordinates are % of the 647×386 image). */
-.pcon-loader__layer { position: absolute; inset: 0; background: url("/pcon-logo.png") center / 100% 100% no-repeat; filter: brightness(1.5); }
+.pcon-loader__layer { position: absolute; inset: 0; background: url("/pcon-logo.webp") center / 100% 100% no-repeat; /* WebP: ~1/3 the bytes of the PNG */ filter: brightness(1.5); }
 .pcon-loader__layer--left { clip-path: polygon(0 0, 33.08% 0, 33.08% 100%, 0 100%); }
 .pcon-loader__layer--p { clip-path: polygon(33.08% 0, 67.39% 0, 68.01% 12.44%, 72.64% 20.73%, 75.43% 29.02%, 76.97% 38.86%, 76.97% 51.81%, 75.43% 62.18%, 71.87% 70.47%, 69.55% 79.02%, 68.01% 87.05%, 66.77% 100%, 33.08% 100%); }
 .pcon-loader__layer--right { clip-path: polygon(67.39% 0, 100% 0, 100% 100%, 66.77% 100%, 68.01% 87.05%, 69.55% 79.02%, 71.87% 70.47%, 75.43% 62.18%, 76.97% 51.81%, 76.97% 38.86%, 75.43% 29.02%, 72.64% 20.73%, 68.01% 12.44%); }
@@ -55,7 +55,7 @@
 .status-code { display: flex; align-items: center; justify-content: center; gap: clamp(12px, 3vw, 28px); margin: 24px 0 8px; }
 /* Bracket crops of the logo. Left: x 0–214 (the P starts at 222). Right: x 432–647, with the
    same curved cut as the loader so the P's bowl (which reaches x=466) never shows. */
-.status-code__bracket { height: clamp(88px, 17vw, 176px); background: url("/pcon-logo.png") no-repeat; filter: brightness(1.5); }
+.status-code__bracket { height: clamp(88px, 17vw, 176px); background: url("/pcon-logo.webp") no-repeat; filter: brightness(1.5); }
 .status-code__bracket--left { aspect-ratio: 214 / 386; background-size: calc(100% * 647 / 214) 100%; background-position: 0 0; animation: bracket-in-left .6s cubic-bezier(.2, .9, .25, 1.2) both; }
 .status-code__bracket--right { aspect-ratio: 215 / 386; background-size: calc(100% * 647 / 215) 100%; background-position: 100% 0; clip-path: polygon(1.86% 0, 100% 0, 100% 100%, 0 100%, 3.72% 87.05%, 8.37% 79.02%, 15.35% 70.47%, 26.05% 62.18%, 30.7% 51.81%, 30.7% 38.86%, 26.05% 29.02%, 17.67% 20.73%, 3.72% 12.44%); animation: bracket-in-right .6s cubic-bezier(.2, .9, .25, 1.2) both; }
 .status-code strong { font: 600 clamp(72px, 15vw, 160px)/.9 var(--display); letter-spacing: -.05em; color: var(--mint); font-variant-numeric: tabular-nums; animation: p-in .6s cubic-bezier(.2, .8, .2, 1) .2s both; }

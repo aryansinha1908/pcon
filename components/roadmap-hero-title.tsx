@@ -70,6 +70,9 @@ export function RoadmapHeroTitle({
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Phones/tablets show the final title straight away: the load-time scramble re-wraps
+    // the wrapped title (layout shift) and delays the page's largest paint.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const timer = setTimeout(() => {
       startScramble();
     }, 180);
@@ -85,9 +88,20 @@ export function RoadmapHeroTitle({
         if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) startScramble();
       }}
     >
-      <span className="roadmaps-title__prefix" aria-hidden="true">{displayPrefix}</span>
-      <span className="roadmaps-title__highlight" aria-hidden="true">{displayHighlight}</span>
-      {isScrambling && <span className="roadmaps-title__cursor" aria-hidden="true">_</span>}
+      {/* The final text always holds the layout (and is what paints first from the server
+          HTML). Scrambled glyphs have different widths, so they draw in an absolute overlay:
+          the title can't re-wrap mid-scramble and push the page around (layout shift). */}
+      <span className="roadmaps-title__base" aria-hidden="true">
+        <span className="roadmaps-title__prefix">{prefix}</span>
+        <span className="roadmaps-title__highlight">{highlight}</span>
+      </span>
+      {isScrambling && (
+        <span className="roadmaps-title__overlay" aria-hidden="true">
+          <span className="roadmaps-title__prefix">{displayPrefix}</span>
+          <span className="roadmaps-title__highlight">{displayHighlight}</span>
+          <span className="roadmaps-title__cursor">_</span>
+        </span>
+      )}
     </h1>
   );
 }

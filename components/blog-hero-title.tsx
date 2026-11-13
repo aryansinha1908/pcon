@@ -84,6 +84,9 @@ export function BlogHeroTitle({
   }, [prefix, highlight, line1Len, line2Len, totalLength]);
 
   useEffect(() => {
+    // Phones/tablets show the final title straight away (no load-time re-wrapping or
+    // delayed largest paint); mouse users still get the scramble on load and hover.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const timer = setTimeout(() => {
       startScramble();
     }, 180);

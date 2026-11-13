@@ -36,7 +36,7 @@ export function BlogFilterChips({
             key={item.slug}
             href={href}
             className={`blog-chip ${isCurrent ? "active" : ""}`}
-            aria-pressed={isCurrent}
+            aria-current={isCurrent ? "page" : undefined}
             scroll={false}
           >
             {item.name}

@@ -4,6 +4,8 @@
  * A handful of brighter four-point stars sit near the top.
  */
 
+import { PauseOffscreen } from "@/components/pause-offscreen";
+
 function mulberry32(seed: number) {
   return () => {
     seed |= 0;
@@ -38,7 +40,8 @@ const STARS = makeStars(90, 5);
 
 export function Starfield() {
   return (
-    <div className="starfield" aria-hidden="true">
+    <div className="starfield" aria-hidden="true" data-pause-offscreen>
+      <PauseOffscreen />
       <div className="starfield__drift">
         {STARS.map((star, i) => (
           <span

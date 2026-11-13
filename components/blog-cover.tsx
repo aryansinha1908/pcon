@@ -25,7 +25,7 @@ export function BlogCover({
 
   const stroke = `hsl(${h}, 70%, 66%)`;
   const fill = `hsl(${h}, 60%, 12%)`;
-  const monoFont = "JetBrains Mono, monospace";
+  const monoFont = "var(--mono)";
 
   function renderArt() {
     if (normCat.includes("algo")) {
@@ -75,7 +75,7 @@ export function BlogCover({
                 y={y + 4}
                 textAnchor="middle"
                 fontSize="12"
-                fontFamily={monoFont}
+                style={{ fontFamily: monoFont }}
                 fill={i === 4 ? fill : stroke}
               >
                 {i * 3 + 2}
@@ -123,7 +123,7 @@ export function BlogCover({
                 x={60 + (i % 2) * 14}
                 y={54 + i * 26}
                 fontSize="10"
-                fontFamily={monoFont}
+                style={{ fontFamily: monoFont }}
                 fill={fill}
               >
                 {passes[i]}
@@ -186,7 +186,7 @@ export function BlogCover({
           <React.Fragment key={i}>
             <rect x={bx} y={by} width="96" height="76" rx="10" fill={fill} stroke={stroke} strokeWidth="2" />
             <rect x={bx + 12} y={by + 14} width="50" height="6" rx="3" fill={stroke} />
-            <text x={bx + 12} y={by + 46} fontSize="10" fontFamily={monoFont} fill={stroke} opacity="0.7">
+            <text x={bx + 12} y={by + 46} fontSize="10" style={{ fontFamily: monoFont }} fill={stroke} opacity="0.7">
               0x{i * 7 + 3}f9a
             </text>
             {i < 2 && (
@@ -213,7 +213,7 @@ export function BlogCover({
         <circle cx="160" cy="112" r="30" fill={fill} stroke={stroke} strokeWidth="2" />
         <circle cx="160" cy="112" r="10" fill={stroke} />
         <path d="M250 60h50l26 26v80a6 6 0 0 1-6 6h-70a6 6 0 0 1-6-6V66a6 6 0 0 1 6-6z" fill={fill} stroke={stroke} strokeWidth="2" />
-        <text x="262" y="132" fontSize="16" fontFamily={monoFont} fill={stroke}>
+        <text x="262" y="132" fontSize="16" style={{ fontFamily: monoFont }} fill={stroke}>
           .dll
         </text>
       </g>

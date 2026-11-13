@@ -7,6 +7,7 @@
     var(--abyss);
   color: var(--text);
   min-height: 100vh;
+  min-height: 100svh;
 }
 
 /* ───── Hero: banner photo behind the drawn heading ───── */
@@ -52,9 +53,15 @@
 }
 
 .team-heading {
+  height: 360px;
   color: var(--text);
   font-family: var(--display);
 }
+
+/* Mirrors sizesFor() in team-heading.tsx */
+@media (max-width: 1100px) { .team-heading { height: 320px; } }
+@media (max-width: 820px) { .team-heading { height: 260px; } }
+@media (max-width: 520px) { .team-heading { height: 180px; } }
 
 /* ───── Batch selector: fixed label + sliding year strip ───── */
 .team-directory {

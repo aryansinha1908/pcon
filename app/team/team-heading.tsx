@@ -12,10 +12,13 @@ function sizesFor(width: number) {
 }
 
 export function TeamHeading() {
-  const [size, setSize] = useState(() => sizesFor(1280));
+  const [size, setSize] = useState(() => ({ ...sizesFor(1280), sweep: true }));
 
   useEffect(() => {
-    const update = () => setSize(sizesFor(window.innerWidth));
+    // Touch screens skip the idle auto-sweep: it redraws the canvas every frame for as
+    // long as the heading is on screen. Tap and drag still animate it.
+    const update = () =>
+      setSize({ ...sizesFor(window.innerWidth), sweep: !window.matchMedia("(pointer: coarse)").matches });
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
@@ -27,13 +30,15 @@ export function TeamHeading() {
     <div
       className="team-heading"
       aria-hidden="true"
-      style={{ width: "100%", height: `${size.height}px`, position: "relative" }}
+      // Height comes from CSS media queries (team.css) matching sizesFor(), so the box is
+      // already the right size in the server HTML and nothing shifts on hydration.
+      style={{ width: "100%", position: "relative" }}
     >
       <TechText
         text="Our team"
-        fontFamily='Manrope, sans-serif'
         fontWeight={500}
         fontSize={size.fontSize}
+        sweep={size.sweep}
         color="#f3f2e9"
         accentColor="#00f5a0"
         reveal="letter"

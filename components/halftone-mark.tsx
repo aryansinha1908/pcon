@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { resolveFontToken } from "@/lib/font-token";
 
 /**
  * An interactive halftone rendering of a shape (an image's alpha or a line of
@@ -55,12 +56,14 @@ async function rasterise(source: Source, width: number, height: number, dpr: num
     const h = img.naturalHeight * scale;
     ctx.drawImage(img, (width - w) / 2, (height - h) / 2, w, h);
   } else {
-    await document.fonts.load(source.font.replace(/\d+px/, "100px"), source.text).catch(() => undefined);
-    ctx.font = source.font.replace(/\d+px/, "100px");
+    // ctx.font can't read CSS variables: resolve tokens like var(--display) first.
+    const font = source.font.replace(/var\((--[\w-]+)\)/g, (_, token: string) => resolveFontToken(token, "sans-serif"));
+    await document.fonts.load(font.replace(/\d+px/, "100px"), source.text).catch(() => undefined);
+    ctx.font = font.replace(/\d+px/, "100px");
     const m = ctx.measureText(source.text);
     const textH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
     const size = 100 * Math.min(boxW / m.width, boxH / textH);
-    ctx.font = source.font.replace(/\d+px/, `${size.toFixed(1)}px`);
+    ctx.font = font.replace(/\d+px/, `${size.toFixed(1)}px`);
     const fm = ctx.measureText(source.text);
     ctx.fillStyle = source.color;
     ctx.textBaseline = "alphabetic";

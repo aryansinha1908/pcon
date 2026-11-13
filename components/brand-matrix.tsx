@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { resolveFontToken } from "@/lib/font-token";
 
 // High-resolution 72x32 ASCII density map of the PCON logo emblem (Right-side up)
 const PCON_LOGO_MAP: number[][] = [
@@ -132,10 +133,19 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
     let height = 0;
     let dpr = 1;
     let frameId = 0;
+    let idleTimer = 0;
     let visible = false;
+    const monoFamily = resolveFontToken("--mono", "monospace");
+
+    // Low-power phones (few cores / little memory, or Save-Data) skip the falling-rain
+    // intro and land on the settled matrix; shimmer and touch ripple still run.
+    const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+    const lowPower =
+      window.matchMedia("(pointer: coarse)").matches &&
+      ((navigator.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4 || nav.connection?.saveData === true);
 
     // Record the exact mount time for falling animation
-    animStartTimeRef.current = performance.now();
+    animStartTimeRef.current = lowPower ? performance.now() - 5000 : performance.now();
     const FALL_SPEED = 480; // px/sec: smooth and cinematic falling
 
     // Pointer interaction
@@ -251,7 +261,7 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
       const isIntroActive = !reducedMotion.matches && elapsed < 3200;
 
       const fontSize = Math.max(9, Math.min(16, colStep * 0.88));
-      ctx.font = `${fontSize}px "DM Mono", monospace`;
+      ctx.font = `${fontSize}px ${monoFamily}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
@@ -259,6 +269,7 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
       const hasActiveRipple = rippleAge >= 0 && rippleAge < 1.4;
 
       // Track the drop head position for each column
+      let settled = true;
       const colDropY: number[] = new Array(mapCols);
       for (let c = 0; c < mapCols; c++) {
         const stream = columnStreams[c];
@@ -320,6 +331,9 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
         cell.vy = (cell.vy + ay) * friction;
         cell.offsetX += cell.vx;
         cell.offsetY += cell.vy;
+        if (settled && Math.abs(cell.vx) + Math.abs(cell.vy) + Math.abs(cell.offsetX) + Math.abs(cell.offsetY) > 0.05) {
+          settled = false;
+        }
 
         // Click ripple impulse
         let rippleBoost = 0;
@@ -362,17 +376,13 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
         const drawX = cell.screenX + cell.offsetX;
         const drawY = cell.screenY + cell.offsetY;
 
+        // No per-glyph shadowBlur: canvas shadows on hundreds of glyphs a frame are the
+        // single most expensive thing this hero did. Brightness alone carries the flash.
         if (isImpact) {
-          // Brilliant white-mint electric spark on impact!
-          ctx.shadowColor = "rgba(0, 255, 179, 1)";
-          ctx.shadowBlur = 18;
           ctx.fillStyle = "#ffffff";
         } else if (pointerBoost > 0.15 || rippleBoost > 0.25) {
-          ctx.shadowColor = "rgba(0, 255, 179, 1)";
-          ctx.shadowBlur = 16;
           ctx.fillStyle = `rgba(220, 255, 245, ${alpha})`;
         } else {
-          ctx.shadowBlur = 0;
           ctx.fillStyle = `rgba(0, 245, 160, ${alpha})`;
         }
 
@@ -400,17 +410,15 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
             if (t === 0) {
               // Luminous White Lead Drop Tip!
               ctx.shadowColor = "rgba(255, 255, 255, 1)";
-              ctx.shadowBlur = 20;
+              ctx.shadowBlur = 12;
               ctx.fillStyle = "#ffffff";
             } else if (t === 1) {
-              // Bright Mint Secondary Glow
-              ctx.shadowColor = "rgba(0, 255, 179, 1)";
-              ctx.shadowBlur = 14;
+              // Bright mint second glyph, no shadow (only the lead tip glows)
+              ctx.shadowBlur = 0;
               ctx.fillStyle = "#39ffb8";
             } else {
               // Cascading Green Trail fading upward
-              ctx.shadowBlur = t < 4 ? 6 : 0;
-              ctx.shadowColor = "rgba(0, 255, 160, 0.9)";
+              ctx.shadowBlur = 0;
               ctx.fillStyle = `rgba(0, 245, 160, ${Math.max(0.12, 0.9 * trailNorm)})`;
             }
 
@@ -422,9 +430,21 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
       ctx.shadowBlur = 0;
 
       if (visible && !reducedMotion.matches) {
-        frameId = requestAnimationFrame(render);
+        if (isIntroActive || pointerActive || hasActiveRipple || !settled) {
+          frameId = requestAnimationFrame(render);
+        } else {
+          // Idle: only the shimmer changes, a few glyphs every 300ms. Redraw on a slow
+          // timer instead of every frame so the CPU/GPU can rest on phones.
+          idleTimer = window.setTimeout(wake, 150);
+        }
       }
     };
+
+    function wake() {
+      window.clearTimeout(idleTimer);
+      idleTimer = 0;
+      if (visible && !frameId) frameId = requestAnimationFrame(render);
+    }
 
     const onPointerMove = (e: PointerEvent) => {
       const rect = hero.getBoundingClientRect();
@@ -432,7 +452,7 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
       pointerY = e.clientY - rect.top;
       pointerActive = true;
       if (reducedMotion.matches) render(performance.now());
-      else if (visible && !frameId) frameId = requestAnimationFrame(render);
+      else wake();
     };
 
     const onPointerDown = (e: PointerEvent) => {
@@ -443,7 +463,7 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
         time: performance.now(),
       };
       if (reducedMotion.matches) render(performance.now());
-      else if (visible && !frameId) frameId = requestAnimationFrame(render);
+      else wake();
     };
 
     const onPointerLeave = () => {
@@ -455,7 +475,7 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
     // Replay animation on double click anywhere on hero
     const onDblClick = () => {
       animStartTimeRef.current = performance.now();
-      if (!frameId) frameId = requestAnimationFrame(render);
+      wake();
     };
 
     let prevWidth = 0;
@@ -483,11 +503,13 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
     const resizeObserver = new ResizeObserver(onResize);
     const visibilityObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      if (visible && !reducedMotion.matches && !frameId) {
-        frameId = requestAnimationFrame(render);
-      } else if (!visible && frameId) {
+      if (visible && !reducedMotion.matches) {
+        wake();
+      } else if (!visible) {
         cancelAnimationFrame(frameId);
         frameId = 0;
+        window.clearTimeout(idleTimer);
+        idleTimer = 0;
       }
     });
 
@@ -502,6 +524,7 @@ export function BrandMatrix({ variant = "pcon" }: BrandMatrixProps) {
 
     return () => {
       cancelAnimationFrame(frameId);
+      window.clearTimeout(idleTimer);
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       hero.removeEventListener("pointermove", onPointerMove);

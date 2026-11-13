@@ -1,25 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+/**
+ * Scroll progress for a post. Writes a compositor-only transform straight to the bar,
+ * at most once per frame: no React re-render and no layout on every scroll event.
+ */
 export function ReadingProgressBar() {
-  const [progress, setProgress] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function onScroll() {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollHeight > 0) {
-        const current = (window.scrollY / scrollHeight) * 100;
-        setProgress(Math.min(100, Math.max(0, current)));
-      }
-    }
+      const ratio = scrollHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollHeight)) : 0;
+      if (barRef.current) barRef.current.style.transform = `scaleX(${ratio.toFixed(4)})`;
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
   }, []);
 
-  return <div className="blog-bar" style={{ width: `${progress}%` }} aria-hidden="true" />;
+  return <div ref={barRef} className="blog-bar" aria-hidden="true" />;
 }
 
 export function CopyLinkButton() {

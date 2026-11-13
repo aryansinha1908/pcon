@@ -12,13 +12,13 @@ export function SiteFooter() {
         <div className="shell footer-mark__inner">
           <figure className="mark-frame mark-frame--logo">
             <figcaption><span>pcon-logo.png</span><span>hover · click</span></figcaption>
-            <HalftoneMark source={{ kind: "image", src: "/pcon-logo.png" }} label="PCON logo" boost={1.5} />
+            <HalftoneMark source={{ kind: "image", src: "/pcon-logo-480.webp" }} label="PCON logo" boost={1.5} />
             <i className="mark-frame__handle mark-frame__handle--tl" /><i className="mark-frame__handle mark-frame__handle--tr" />
             <i className="mark-frame__handle mark-frame__handle--bl" /><i className="mark-frame__handle mark-frame__handle--br" />
           </figure>
           <figure className="mark-frame mark-frame--text">
             <figcaption><span>{"{;}"}</span><span>code · create · collaborate</span></figcaption>
-            <HalftoneMark source={{ kind: "text", text: "{;}", font: "800 100px Manrope", color: "#70e3c7" }} label="{;}" />
+            <HalftoneMark source={{ kind: "text", text: "{;}", font: "800 100px var(--display)", color: "#70e3c7" }} label="{;}" />
             <i className="mark-frame__handle mark-frame__handle--tl" /><i className="mark-frame__handle mark-frame__handle--tr" />
             <i className="mark-frame__handle mark-frame__handle--bl" /><i className="mark-frame__handle mark-frame__handle--br" />
           </figure>

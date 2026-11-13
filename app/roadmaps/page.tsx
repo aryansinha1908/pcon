@@ -67,7 +67,7 @@ function ResourceLink({ resource, preview, addedAt }: { resource: Resource; prev
       {preview && (
         <span className="resource-preview" aria-hidden="true">
           <span className="resource-preview__thumb">
-            <Image src={preview.thumbnail} alt="" width={480} height={360} sizes="260px" />
+            <Image src={preview.thumbnail} alt="" width={264} height={149} />
             <span className="resource-preview__play"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M7 5.5v9l7.5-4.5z" /></svg></span>
           </span>
           <span className="resource-preview__body">

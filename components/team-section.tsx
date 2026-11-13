@@ -266,6 +266,7 @@ export function TeamSection({
             aria-labelledby={`batch-tab-${selectedBatch}`}
             className="members-grid"
           >
+            <h2 className="sr-only">Batch of {selectedBatch}</h2>
             {filteredMembers.map((member) => (
               <TeamMemberCard
                 key={member.id}
