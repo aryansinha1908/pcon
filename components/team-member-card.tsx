@@ -1,17 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { TeamMember } from "@/lib/team";
-
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
+import { PCON_FALLBACK_LOGO, type TeamMember } from "@/lib/team";
 
 function GitHubIcon() {
   return (
@@ -29,16 +19,6 @@ function LinkedInIcon() {
   );
 }
 
-function PortfolioIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  );
-}
-
 export type TeamMemberCardProps = {
   member: TeamMember;
 };
@@ -48,8 +28,8 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
   const photoUrl = member.photo || member.image;
   const showFallback = !photoUrl || imageFailed;
 
-  const hasAnySocial = Boolean(member.github || member.linkedin || member.portfolio);
-  const roleDisplay = member.designation || member.domain || member.department;
+  const rollNo = member.studentId || member.rollNumber;
+  const hasAnySocial = Boolean(member.github || member.linkedin);
 
   return (
     <article className="member-card">
@@ -66,7 +46,14 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
           />
         ) : (
           <div className="member-card__fallback" aria-hidden="true">
-            <span>{getInitials(member.name)}</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="member-card__fallback-logo"
+              src={PCON_FALLBACK_LOGO}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         )}
       </div>
@@ -74,57 +61,41 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
       <div className="member-card__body">
         <div className="member-card__identity">
           <h3 className="member-card__name">{member.name}</h3>
-          {roleDisplay && (
-            <p className="member-card__role">{roleDisplay}</p>
-          )}
-          {member.rollNumber && (
+          {rollNo && (
             <p className="member-card__detail">
-              <span className="member-card__detail-label">Roll No.</span>
-              {member.rollNumber}
+
+              {rollNo}
             </p>
           )}
+          {hasAnySocial && (
+            <div className="member-card__socials" aria-label={`${member.name} links`}>
+              {member.github && (
+                <a
+                  className="member-card__social-icon"
+                  href={member.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${member.name} on GitHub`}
+                  title="GitHub"
+                >
+                  <GitHubIcon />
+                </a>
+              )}
+              {member.linkedin && (
+                <a
+                  className="member-card__social-icon"
+                  href={member.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${member.name} on LinkedIn`}
+                  title="LinkedIn"
+                >
+                  <LinkedInIcon />
+                </a>
+              )}
+            </div>
+          )}
         </div>
-
-        {hasAnySocial && (
-          <div className="member-card__socials" aria-label={`${member.name} links`}>
-            {member.github && (
-              <a
-                className="member-card__social-icon"
-                href={member.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${member.name} GitHub profile`}
-              >
-                <GitHubIcon />
-                <span>GitHub</span>
-              </a>
-            )}
-            {member.linkedin && (
-              <a
-                className="member-card__social-icon"
-                href={member.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${member.name} LinkedIn profile`}
-              >
-                <LinkedInIcon />
-                <span>LinkedIn</span>
-              </a>
-            )}
-            {member.portfolio && (
-              <a
-                className="member-card__social-icon"
-                href={member.portfolio}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${member.name} Portfolio`}
-              >
-                <PortfolioIcon />
-                <span>Portfolio</span>
-              </a>
-            )}
-          </div>
-        )}
       </div>
     </article>
   );

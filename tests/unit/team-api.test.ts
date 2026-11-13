@@ -46,6 +46,7 @@ describe("Team APIs", () => {
   const sampleMember = {
     id: "mem-1",
     name: "Aarav Sharma",
+    studentId: null as string | null,
     photo: "https://example.com/aarav.jpg",
     batch: 2026,
     designation: "App Development Lead",
@@ -56,6 +57,7 @@ describe("Team APIs", () => {
     email: "aarav@nitjsr.ac.in",
     displayOrder: 1,
     isActive: true,
+    userId: null as string | null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

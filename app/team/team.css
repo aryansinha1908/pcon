@@ -220,26 +220,28 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  border: 1px solid var(--team-border);
+  /* Fixed neutral grey border: identical in every state (no click/hover/selected highlight). */
+  border: 2px solid rgb(150 160 158 / 38%);
   border-radius: 14px;
   background: var(--ink-deep);
   box-shadow: 0 16px 36px rgb(0 0 0 / 36%);
   cursor: default;
   user-select: none;
-  transition:
-    transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 0.32s ease,
-    box-shadow 0.38s cubic-bezier(0.2, 0.8, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  transition: box-shadow 0.38s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .member-card:hover {
-  border-color: var(--team-border-strong);
-  box-shadow: 0 20px 44px rgb(0 0 0 / 46%), 0 0 20px rgb(130 204 233 / 10%);
+  box-shadow: 0 20px 44px rgb(0 0 0 / 46%);
 }
 
-.member-card:focus-visible {
-  outline: 2px solid var(--team-cyan);
-  outline-offset: 3px;
+.member-card:hover,
+.member-card:active,
+.member-card:focus,
+.member-card:focus-within {
+  border-color: rgb(150 160 158 / 38%);
+  outline: none;
 }
 
 .member-card__photo {
@@ -263,12 +265,25 @@
   place-items: center;
   width: 100%;
   height: 100%;
+  padding: 24px;
   background:
-    radial-gradient(circle at 50% 35%, rgb(130 204 233 / 22%), transparent 65%),
+    radial-gradient(circle at 50% 42%, rgb(130 204 233 / 22%), transparent 65%),
     linear-gradient(160deg, var(--ink-soft), var(--abyss));
   color: var(--team-cyan);
   font: 700 36px / 1 var(--mono);
   letter-spacing: 0.06em;
+}
+
+.member-card__fallback-logo {
+  display: block;
+  width: 62%;
+  max-width: 164px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.94;
+  filter: drop-shadow(0 10px 24px rgb(0 0 0 / 50%));
+  user-select: none;
+  pointer-events: none;
 }
 
 /* Information Panel with PCON-themed Gradient */
@@ -293,10 +308,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-top-width: black;
 }
 
 .member-card__name {
   margin: 0;
+  padding: 6px 12px;
+  border-radius: 7px;
+  background: rgba(213, 16, 62, 0.1);
   color: var(--text);
   font: 700 19px / 1.28 var(--display);
   letter-spacing: -0.025em;
@@ -323,46 +342,39 @@
   text-transform: uppercase;
 }
 
-/* Social Icons Row */
+/* Social icons — compact row below the roll number */
 .member-card__socials {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .member-card__social-icon {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 10px;
-  border: 1px solid rgb(130 204 233 / 22%);
-  border-radius: 9px;
-  background: rgb(3 15 13 / 65%);
-  color: var(--text-muted);
-  transition:
-    color 0.18s ease,
-    border-color 0.18s ease,
-    background 0.18s ease;
-  font: 600 10px / 1 var(--mono);
-  letter-spacing: 0.04em;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: rgb(214 222 220 / 72%);
   text-decoration: none;
-  text-transform: uppercase;
+  transition: color 0.18s ease;
 }
 
 .member-card__social-icon:hover,
 .member-card__social-icon:focus-visible {
   color: var(--team-cyan);
-  border-color: var(--team-cyan);
-  background: rgb(130 204 233 / 14%);
+}
+
+.member-card__social-icon:focus-visible {
+  outline: 1px solid rgb(130 204 233 / 55%);
+  outline-offset: 1px;
 }
 
 .member-card__social-icon svg {
-  width: 19px;
-  height: 19px;
+  width: 17px;
+  height: 17px;
 }
 
 /* ───── Responsive Breakpoints ───── */

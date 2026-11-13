@@ -67,6 +67,16 @@ export function SubmitButton({
 export function FormMessage({ state }: { state?: FormState }) {
   if (state?.error) return <p className="adm-notice adm-notice--error" role="alert">{state.error}</p>;
   if (state?.ok) return <p className="adm-notice adm-notice--ok" role="status">{state.ok}</p>;
-  if (state?.fieldErrors) return <p className="adm-notice adm-notice--error" role="alert">Fix the highlighted fields.</p>;
+  if (state?.fieldErrors) {
+    const errorList = Object.entries(state.fieldErrors)
+      .map(([field, errs]) => `${field}: ${errs?.filter(Boolean).join(", ")}`)
+      .filter((s) => !s.endsWith(": "))
+      .join(" · ");
+    return (
+      <p className="adm-notice adm-notice--error" role="alert">
+        {errorList ? `Validation error: ${errorList}` : "Fix the highlighted fields."}
+      </p>
+    );
+  }
   return null;
 }

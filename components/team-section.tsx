@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TeamMemberCard } from "@/components/team-member-card";
-import { TEAM_BATCHES, type TeamMember } from "@/lib/team";
+import { CURRENT_TEAM_BATCH, TEAM_BATCHES, type TeamMember } from "@/lib/team";
 
 export type TeamSectionProps = {
   initialMembers?: TeamMember[];
@@ -11,23 +11,20 @@ export type TeamSectionProps = {
 
 export function TeamSection({
   initialMembers,
-  defaultBatch = TEAM_BATCHES[0],
+  defaultBatch = CURRENT_TEAM_BATCH,
 }: TeamSectionProps) {
   const [members, setMembers] = useState<TeamMember[]>(initialMembers ?? []);
   const [loading, setLoading] = useState<boolean>(!initialMembers);
   const [error, setError] = useState<string | null>(null);
   const [selectedBatchOverride, setSelectedBatchOverride] = useState<number | null>(null);
 
-  // Dynamic batches extracted from active members, fallback to default batches
+  // Dynamic batches extracted from active members (including 2027, 2026, 2025), sorted newest first
   const availableBatches = useMemo(() => {
-    const batchSet = new Set(members.map((m) => m.batch));
-    if (batchSet.size === 0) {
-      return [...TEAM_BATCHES];
-    }
-    return Array.from(batchSet).sort((a, b) => a - b);
+    const batchSet = new Set<number>([...TEAM_BATCHES, ...members.map((m) => m.batch)]);
+    return Array.from(batchSet).sort((a, b) => b - a);
   }, [members]);
 
-  // Derived selected batch: override if still available, else defaultBatch or first available
+  // Derived selected batch: override if still available, else defaultBatch (2027) or first available
   const selectedBatch = useMemo(() => {
     if (selectedBatchOverride !== null && availableBatches.includes(selectedBatchOverride)) {
       return selectedBatchOverride;
@@ -42,7 +39,7 @@ export function TeamSection({
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
   const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
 
-  // Fetch active team members from API on mount
+  // Fetch all active team members across batches (2027, 2026, 2025) from API on mount
   useEffect(() => {
     if (initialMembers) return;
 

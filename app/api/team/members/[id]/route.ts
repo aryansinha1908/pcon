@@ -27,6 +27,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       select: {
         id: true,
         name: true,
+        studentId: true,
         photo: true,
         batch: true,
         designation: true,
@@ -39,6 +40,10 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        specializations: {
+          select: { name: true },
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 
@@ -49,7 +54,14 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    return NextResponse.json({ success: true, data: member });
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...member,
+        rollNumber: member.studentId,
+        specializations: (member.specializations ?? []).map((s: any) => s.name ?? s),
+      },
+    });
   } catch (error) {
     console.error("GET /api/team/members/[id] error:", error);
     return NextResponse.json(
@@ -117,15 +129,51 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const updated = await prisma.teamMember.update({
-      where: { id },
-      data: parsed.data,
-    });
+    const { specializations, ...memberFields } = parsed.data;
+
+    let updated: any;
+    const runUpdate = async (tx: typeof prisma) => {
+      if (specializations !== undefined && tx.memberSpecialization) {
+        await tx.memberSpecialization.deleteMany({
+          where: { teamMemberId: id },
+        });
+        if (specializations.length > 0) {
+          await tx.memberSpecialization.createMany({
+            data: specializations.map((name) => ({ teamMemberId: id, name })),
+          });
+        }
+      }
+
+      return tx.teamMember.update({
+        where: { id },
+        data: memberFields,
+        ...(tx.memberSpecialization
+          ? {
+              include: {
+                specializations: {
+                  select: { name: true },
+                  orderBy: { createdAt: "asc" },
+                },
+              },
+            }
+          : {}),
+      });
+    };
+
+    if (prisma.$transaction) {
+      updated = await prisma.$transaction(async (tx) => runUpdate(tx as any));
+    } else {
+      updated = await runUpdate(prisma);
+    }
 
     return NextResponse.json({
       success: true,
       message: "Member updated successfully.",
-      data: updated,
+      data: {
+        ...updated,
+        rollNumber: updated.studentId,
+        specializations: (updated.specializations ?? []).map((s: any) => s.name ?? s),
+      },
     });
   } catch (error) {
     console.error("PUT /api/team/members/[id] error:", error);

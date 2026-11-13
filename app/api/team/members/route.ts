@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
+        studentId: true,
         photo: true,
         batch: true,
         designation: true,
@@ -58,14 +59,24 @@ export async function GET(request: NextRequest) {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        specializations: {
+          select: { name: true },
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 
+    const formattedMembers = members.map((m) => ({
+      ...m,
+      rollNumber: m.studentId,
+      specializations: (m.specializations ?? []).map((s: any) => s.name ?? s),
+    }));
+
     return NextResponse.json({
       success: true,
-      count: members.length,
-      members,
-      data: members,
+      count: formattedMembers.length,
+      members: formattedMembers,
+      data: formattedMembers,
     });
   } catch (error) {
     console.error("GET /api/team/members error:", error);
@@ -121,6 +132,7 @@ export async function POST(request: NextRequest) {
     const member = await prisma.teamMember.create({
       data: {
         name: parsed.data.name,
+        studentId: parsed.data.studentId,
         photo: parsed.data.photo,
         batch: parsed.data.batch,
         designation: parsed.data.designation,
@@ -131,11 +143,29 @@ export async function POST(request: NextRequest) {
         email: parsed.data.email,
         displayOrder: parsed.data.displayOrder,
         isActive: parsed.data.isActive,
+        ...(parsed.data.specializations && parsed.data.specializations.length > 0
+          ? {
+              specializations: {
+                create: parsed.data.specializations.map((name) => ({ name })),
+              },
+            }
+          : {}),
+      },
+      include: {
+        specializations: true,
       },
     });
 
     return NextResponse.json(
-      { success: true, message: "Member created successfully.", data: member },
+      {
+        success: true,
+        message: "Member created successfully.",
+        data: {
+          ...member,
+          rollNumber: member.studentId,
+          specializations: (member.specializations ?? []).map((s: any) => s.name ?? s),
+        },
+      },
       { status: 201 }
     );
   } catch (error) {

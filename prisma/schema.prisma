@@ -152,6 +152,7 @@ model Event {
 model TeamMember {
   id           String   @id @default(cuid())
   name         String
+  studentId    String?  @unique
   photo        String?
   batch        Int
   designation  String?
@@ -163,6 +164,8 @@ model TeamMember {
   displayOrder Int      @default(0)
   isActive     Boolean  @default(true)
 
+  specializations MemberSpecialization[]
+
   user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId       String?  @unique
 
@@ -171,4 +174,17 @@ model TeamMember {
 
   @@index([isActive, displayOrder])
   @@index([batch])
+  @@index([studentId])
+}
+
+model MemberSpecialization {
+  id           String     @id @default(cuid())
+  teamMemberId String
+  name         String
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime   @default(now())
+
+  @@unique([teamMemberId, name])
+  @@index([teamMemberId])
 }
