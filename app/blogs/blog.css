@@ -112,7 +112,10 @@
 
 /* Index / Hero */
 .blog-hero {
-  padding: 72px 0 36px;
+  position: relative;
+  isolation: isolate;
+  padding: 72px 0 24px;
+  overflow-x: clip;
 }
 
 .blog-tag {
@@ -132,23 +135,61 @@
   box-shadow: 0 0 12px var(--mint);
 }
 
-.blog-hero h1 {
-  font-size: clamp(46px, 8vw, 96px);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  margin: 18px 0 18px;
-  font-weight: 600;
+.blog-hero__title {
+  margin: 18px 0 16px;
+  font: 800 clamp(42px, 7.5vw, 88px)/1.02 var(--display);
+  letter-spacing: -.045em;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  text-shadow: 0 10px 40px rgb(0 0 0 / 80%);
+  display: block;
+  width: 100%;
+  animation: pcon-arrive .9s cubic-bezier(.2, .8, .2, 1) both;
 }
 
-.blog-hero h1 span {
+.blog-hero__title-line {
+  display: block;
+  white-space: nowrap;
+  line-height: 1.02;
+}
+
+.blog-hero__title-line--highlight {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.blog-title__prefix {
+  color: #ffffff;
+}
+
+.blog-title__highlight {
   color: var(--mint);
+  text-shadow: 0 0 35px rgb(0 255 160 / 60%), 0 0 70px rgb(0 255 160 / 25%);
+  transition: text-shadow .2s ease;
 }
 
-.blog-lede {
-  max-width: 560px;
-  color: var(--mute);
-  font-size: 18px;
-  margin: 0;
+.blog-hero__title:hover .blog-title__highlight {
+  text-shadow: 0 0 45px rgb(0 255 160 / 85%), 0 0 85px rgb(0 255 160 / 40%);
+}
+
+.blog-title__cursor {
+  display: inline-block;
+  color: var(--mint);
+  font-family: var(--pixel);
+  font-size: 0.65em;
+  margin-left: 8px;
+  vertical-align: baseline;
+  animation: hacker-blink 0.7s steps(2, start) infinite;
+  transition: text-shadow .2s ease;
+}
+
+.blog-hero__title:hover .blog-title__cursor {
+  text-shadow: 0 0 16px var(--mint);
+}
+
+.blog-hero__scramble-wrap {
+  margin: 10px 0 24px;
 }
 
 .blog-filters {
