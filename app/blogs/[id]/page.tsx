@@ -165,7 +165,7 @@ export default async function BlogPostDetailPage({
       {related.length > 0 && (
         <section className="blog-more">
           <h2>Keep reading</h2>
-          <div className="blog-grid" style={{ padding: 0 }}>
+          <div className="blog-grid">
             {related.map((item) => (
               <BlogPostCard key={item.slug || item.id} post={item} />
             ))}

@@ -134,7 +134,12 @@ export function BlogCover({
       );
     }
 
-    if (normCat.includes("machine") || normCat.includes("ml") || normCat.includes("ai")) {
+    // Checked before ML: "blockchain" contains "ai", which used to hit the ML art.
+    if (normCat.includes("block") || normCat.includes("chain") || normCat.includes("crypto")) {
+      return renderChain();
+    }
+
+    if (normCat.includes("machine") || normCat === "ml" || normCat === "ai") {
       const points = [
         [60, 170],
         [90, 150],
@@ -166,37 +171,41 @@ export function BlogCover({
       );
     }
 
-    if (normCat.includes("block") || normCat.includes("chain") || normCat.includes("crypto")) {
-      const blocks = [
-        [40, 90],
-        [150, 60],
-        [260, 90],
-      ];
-      return (
-        <g>
-          {blocks.map(([bx, by], i) => (
-            <React.Fragment key={i}>
-              <rect x={bx} y={by} width="96" height="76" rx="10" fill={fill} stroke={stroke} strokeWidth="2" />
-              <rect x={bx + 12} y={by + 14} width="50" height="6" rx="3" fill={stroke} />
-              <text x={bx + 12} y={by + 46} fontSize="10" fontFamily={monoFont} fill={stroke} opacity="0.7">
-                0x{i * 7 + 3}f9a
-              </text>
-              {i < 2 && (
-                <line
-                  x1={bx + 96}
-                  y1={by + 38}
-                  x2={bx + 110}
-                  y2={i === 0 ? 98 : 128}
-                  stroke={stroke}
-                  strokeWidth="2"
-                />
-              )}
-            </React.Fragment>
-          ))}
-        </g>
-      );
-    }
+    return renderDefault();
+  }
 
+  function renderChain() {
+    const blocks = [
+      [40, 90],
+      [150, 60],
+      [260, 90],
+    ];
+    return (
+      <g>
+        {blocks.map(([bx, by], i) => (
+          <React.Fragment key={i}>
+            <rect x={bx} y={by} width="96" height="76" rx="10" fill={fill} stroke={stroke} strokeWidth="2" />
+            <rect x={bx + 12} y={by + 14} width="50" height="6" rx="3" fill={stroke} />
+            <text x={bx + 12} y={by + 46} fontSize="10" fontFamily={monoFont} fill={stroke} opacity="0.7">
+              0x{i * 7 + 3}f9a
+            </text>
+            {i < 2 && (
+              <line
+                x1={bx + 96}
+                y1={by + 38}
+                x2={bx + 110}
+                y2={i === 0 ? 98 : 128}
+                stroke={stroke}
+                strokeWidth="2"
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </g>
+    );
+  }
+
+  function renderDefault() {
     // Default / Miscellaneous (.dll / gear design from reference)
     return (
       <g>
@@ -244,7 +253,7 @@ export function BlogCover({
         >
           <defs>
             <radialGradient id={gradId} cx="70%" cy="30%" r="75%">
-              <stop offset="0%" stopColor={`hsl(${h}, 70%, 45%)`} stopOpacity="0.5" />
+              <stop offset="0%" stopColor={`hsl(${h}, 70%, 45%)`} stopOpacity="0.22" />
               <stop offset="100%" stopColor={`hsl(${h}, 60%, 8%)`} stopOpacity="0" />
             </radialGradient>
             <pattern id={patId} width="16" height="16" patternUnits="userSpaceOnUse">

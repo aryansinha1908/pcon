@@ -15,13 +15,13 @@ export default function NotFound() {
       <SiteHeader />
       <main id="main" className="status-page">
         <div className="shell status-page__inner">
-          <div className="eyebrow"><span className="status-dot" /> ERROR 404 · PAGE NOT FOUND</div>
+          <div className="eyebrow"><span className="status-dot" /> Error 404 · page not found</div>
           <div className="status-code" aria-hidden="true">
             <span className="status-code__bracket status-code__bracket--left" />
             <strong>404</strong>
             <span className="status-code__bracket status-code__bracket--right" />
           </div>
-          <h1>This page wandered off.</h1>
+          <h1>This page wandered off</h1>
           <p className="status-page__lede">The link may be broken, or the page may still be under construction. New pages are being built right now.</p>
 
           <div className="terminal" aria-hidden="true">

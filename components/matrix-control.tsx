@@ -19,7 +19,7 @@ export function MatrixControl() {
       title="Click to toggle between PCON emblem and Delta Force triangle"
     >
       <i aria-hidden="true" />
-      <span>MOVE OR TAP TO WAKE • SHAPE: <strong>{variant.toUpperCase()}</strong></span>
+      <span>Move or tap to wake · shape: <strong>{variant === "pcon" ? "PCON" : "Delta"}</strong></span>
     </button>
   );
 }

@@ -1,8 +1,8 @@
 export const focusAreas = [
   { number: "01", name: "Competitive programming", description: "Sharpen your problem-solving instincts and learn to think in algorithms.", symbol: "{ }", tint: "mint", roadmap: "/roadmaps#cp" },
   { number: "02", name: "Web & app development", description: "Turn ideas into useful products, from your first interface to launch day.", symbol: "</>", tint: "blue", roadmap: "/roadmaps#web" },
-  { number: "03", name: "AI & machine learning", description: "Explore intelligent systems and build with the technologies shaping tomorrow.", symbol: "✳", tint: "orange", roadmap: "/roadmaps#ml" },
-  { number: "04", name: "Cloud, blockchain & more", description: "Experiment across the stack, follow your curiosity, and find your next frontier.", symbol: "⌘", tint: "violet", roadmap: "/roadmaps#devops" },
+  { number: "03", name: "AI & machine learning", description: "Explore intelligent systems and build with the technologies shaping tomorrow.", symbol: "f(x)", tint: "orange", roadmap: "/roadmaps#ml" },
+  { number: "04", name: "Cloud, blockchain & more", description: "Experiment across the stack, follow your curiosity, and find your next frontier.", symbol: "#!", tint: "violet", roadmap: "/roadmaps#devops" },
 ];
 
 export const navLinks = [
@@ -16,7 +16,7 @@ export const navLinks = [
 export const heroPillars = [
   { symbol: "{ }", title: "Learn", text: "Workshops, roadmaps and peer sessions." },
   { symbol: "</>", title: "Build", text: "Projects, hackathons and real products." },
-  { symbol: "✳", title: "Share", text: "Blogs, talks and a culture of helping out." },
+  { symbol: "~/", title: "Share", text: "Blogs, talks and a culture of helping out." },
 ];
 
 export type ClubEvent = { date: string; title: string; description: string; status: "upcoming" | "past" };

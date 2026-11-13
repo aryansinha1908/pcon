@@ -523,6 +523,10 @@
 .adm-login p { margin: 0; }
 .adm-login__back { align-self: center; margin-top: 6px; color: var(--adm-muted); font-size: 12px; }
 .adm-login__back:hover { color: var(--mint); }
+.adm-login__card > * { min-width: 0; }
+.adm-login__dev { flex-direction: column; gap: 4px; height: auto; min-height: 44px; padding: 8px 12px; border: 1px dashed var(--adm-line-strong); white-space: normal; text-align: center; }
+.adm-login__dev span { font-weight: 600; }
+.adm-login__dev small { max-width: 100%; color: var(--adm-muted); font: 12px/1.3 var(--mono); overflow-wrap: anywhere; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {

@@ -112,6 +112,9 @@ export function BuildOnScroll() {
     let frame = 0;
     let lastTime = 0;
     let lastScrollY = window.scrollY;
+    // Set when the user follows an in-page #anchor link (smooth scroll), so sections
+    // they land on finish building even if they are taller than the viewport.
+    let anchorNavUntil = 0;
 
     const click = (index: number) => {
       const cursor = cursors[index];
@@ -211,8 +214,14 @@ export function BuildOnScroll() {
           // Navbar #anchor links land with the section's top just under the header. Items lower
           // in the section can still be low on screen then, so also follow the section's own
           // progress: every item is fully built by the time its section reaches the anchor line.
-          const bySection = clamp((progressOf(item.section) - item.start) / (1 - item.start));
-          goal = Math.max(goal, bySection);
+          // Only for sections that fit on screen (desktop) or right after an anchor jump: on
+          // phones sections stack much taller than the viewport, and forcing the whole section
+          // live would build cards below the fold all at once instead of as they scroll in.
+          const sectionFits = item.section.getBoundingClientRect().height <= vh - headerHeight;
+          if (sectionFits || time < anchorNavUntil) {
+            const bySection = clamp((progressOf(item.section) - item.start) / (1 - item.start));
+            goal = Math.max(goal, bySection);
+          }
         }
 
         // Selecting only runs forward on scroll down - never unbuilds
@@ -306,16 +315,32 @@ export function BuildOnScroll() {
       if (!frame) frame = window.requestAnimationFrame(tick);
     };
 
+    const onAnchorClick = (event: MouseEvent) => {
+      const link = (event.target as Element | null)?.closest?.("a[href*='#']");
+      if (!(link instanceof HTMLAnchorElement)) return;
+      if (link.pathname !== window.location.pathname || !link.hash) return;
+      anchorNavUntil = performance.now() + 2000;
+      schedule();
+    };
+    const onHashChange = () => {
+      anchorNavUntil = performance.now() + 2000;
+      schedule();
+    };
+
     root.classList.add("build-ready");
     tick(performance.now());
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
+    document.addEventListener("click", onAnchorClick, true);
+    window.addEventListener("hashchange", onHashChange);
 
     return () => {
       window.cancelAnimationFrame(frame);
       clickTimers.forEach((timer) => window.clearTimeout(timer));
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      document.removeEventListener("click", onAnchorClick, true);
+      window.removeEventListener("hashchange", onHashChange);
       root.classList.remove("build-ready");
       for (const { el } of items) {
         delete el.dataset.state;

@@ -13,7 +13,7 @@ interface BlogHeroTitleProps {
 
 export function BlogHeroTitle({
   prefix = "Ideas worth",
-  highlight = "shipping.",
+  highlight = "shipping",
   className = "",
 }: BlogHeroTitleProps) {
   const line1Len = prefix.length;
@@ -27,6 +27,7 @@ export function BlogHeroTitle({
 
   const startScramble = useCallback(() => {
     if (animatingRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     animatingRef.current = true;
     setIsScrambling(true);
 
@@ -93,21 +94,12 @@ export function BlogHeroTitle({
     <h1
       className={`blog-hero__title ${className} ${isScrambling ? "is-scrambling" : ""}`}
       onMouseEnter={startScramble}
-      onClick={startScramble}
-      title="Click or hover to re-scramble"
-      tabIndex={0}
-      role="button"
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          startScramble();
-        }
-      }}
+      aria-label={`${prefix} ${highlight}`}
     >
-      <span className="blog-hero__title-line">
+      <span className="blog-hero__title-line" aria-hidden="true">
         <span className="blog-title__prefix">{displayPrefix}</span>
       </span>
-      <span className="blog-hero__title-line blog-hero__title-line--highlight">
+      <span className="blog-hero__title-line blog-hero__title-line--highlight" aria-hidden="true">
         <span className="blog-title__highlight">{displayHighlight}</span>
         <span className="blog-title__cursor" aria-hidden="true">_</span>
       </span>

@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import TechText from "@/components/TechText";
 
-/** Responsive sizes: 150px on large screens, smaller on tablets and phones. */
+/** Responsive sizes: 120px on large screens, smaller on tablets and phones. */
 function sizesFor(width: number) {
-  if (width <= 520) return { fontSize: 56, height: 240 };
-  if (width <= 820) return { fontSize: 84, height: 320 };
-  if (width <= 1100) return { fontSize: 116, height: 400 };
-  return { fontSize: 150, height: 480 };
+  if (width <= 520) return { fontSize: 52, height: 180 };
+  if (width <= 820) return { fontSize: 80, height: 260 };
+  if (width <= 1100) return { fontSize: 100, height: 320 };
+  return { fontSize: 120, height: 360 };
 }
 
 export function TeamHeading() {
@@ -22,17 +22,20 @@ export function TeamHeading() {
   }, []);
 
   return (
+    <>
+    <h1 id="team-hero-title" className="sr-only">Our team</h1>
     <div
       className="team-heading"
+      aria-hidden="true"
       style={{ width: "100%", height: `${size.height}px`, position: "relative" }}
     >
       <TechText
-        text="OUR TEAM"
+        text="Our team"
         fontFamily='Manrope, sans-serif'
-        fontWeight={600}
+        fontWeight={500}
         fontSize={size.fontSize}
         color="#f3f2e9"
-        accentColor="#82cce9"
+        accentColor="#00f5a0"
         reveal="letter"
         dashLength={4}
         dashGap={2}
@@ -44,5 +47,6 @@ export function TeamHeading() {
         style={undefined}
       />
     </div>
+    </>
   );
 }

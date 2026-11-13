@@ -11,39 +11,41 @@
 
 /* ───── Sections ───── */
 .events-section { border-top: 1px solid var(--line); }
-.events-section h2 { margin: 26px 0 44px; }
+.events-section h2 { margin: 24px 0 44px; }
 .events-section--past { background: var(--ink-deep); }
-.events-section--past .event-card { opacity: .88; }
-.events-section--past .event-card:hover { opacity: 1; }
+
+/* ───── Event cards (base in app/globals.css): flat surfaces, no glow ───── */
+.events-page .event-card { border-radius: var(--radius-card); background: var(--ink-raised); box-shadow: none; transition: border-color var(--dur-menu) var(--ease), background-color var(--dur-menu) var(--ease); }
+.events-page .event-card:hover { border-color: var(--line-strong); background: var(--ink-raised); box-shadow: none; }
+.events-page .event-card--upcoming { border-color: var(--line-strong); background: var(--ink-soft); box-shadow: none; }
+.events-page .event-card h3 { margin-top: 16px; letter-spacing: -.02em; }
+.events-page .event-card p { font-size: 14px; }
 
 /* ───── Card additions specific to real event data (poster, location, CTA) ───── */
-.event-card__poster { position: relative; width: calc(100% + 44px); height: 160px; margin: -22px -22px 18px; overflow: hidden; border-radius: 12px 12px 0 0; background: var(--ink-raised); }
-.event-card__poster img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.16, 1, .3, 1); }
-.event-card h3 { margin-top: 18px; }
-.event-card__location { display: flex; align-items: center; gap: 6px; margin-top: 12px; color: var(--text-faint); font: 11px var(--mono); letter-spacing: .02em; }
-.event-card__location::before { content: "◎"; color: var(--mint); }
-.event-card__cta { margin-top: auto; padding-top: 18px; }
-.event-card--empty { align-items: flex-start; justify-content: center; gap: 12px; }
-.event-card--empty p { color: var(--text-muted); }
+.event-card__poster { position: relative; width: calc(100% + 44px); height: 160px; margin: -22px -22px 16px; overflow: hidden; border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0; background: var(--abyss); }
+.event-card__poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.event-card__location { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--text-muted); font: 12px var(--mono); }
+.event-card__location svg { flex: none; width: 16px; height: 16px; color: var(--mint); }
+.event-card__cta { margin-top: auto; padding-top: 16px; }
 
-/* ───── Hover: lift, glow and a slow poster zoom (matches roadmap card glow) ───── */
-.event-card { transition: transform .35s cubic-bezier(.16, 1, .3, 1), border-color .25s, background .25s, box-shadow .35s; will-change: transform; }
-.event-card:hover { transform: translateY(-6px); border-color: var(--line-strong); box-shadow: 0 24px 50px rgb(0 0 0 / 35%), 0 0 44px rgb(0 255 160 / 12%); }
-.event-card--upcoming:hover { box-shadow: 0 24px 50px rgb(0 0 0 / 35%), 0 0 60px rgb(0 255 160 / 20%); }
-.event-card:hover .event-card__poster img { transform: scale(1.06); }
-.event-card--empty:hover { transform: none; box-shadow: none; }
+/* Empty state */
+.events-page .event-card--empty { justify-content: center; gap: 8px; min-height: 0; padding: 24px; border-color: var(--line); background: transparent; }
+.events-page .event-card--empty:hover { border-color: var(--line); background: transparent; }
+.events-page .event-card--empty h3 { margin: 0; font-size: 18px; }
+.events-page .event-card--empty p { color: var(--text-muted); line-height: 1.7; }
+.events-page .event-card--empty a { color: var(--mint); text-decoration: underline; text-decoration-color: rgb(0 255 160 / 40%); text-underline-offset: 3px; transition: text-decoration-color var(--dur-fast) var(--ease); }
+.events-page .event-card--empty a:hover { text-decoration-color: currentColor; }
 
 /* ───── Scroll reveal (progressive enhancement; see scroll-reveal.tsx) ─────
-   The "hidden" rule is scoped to :not(.is-revealed) rather than overriding
-   transform back to none on .is-revealed — that would out-specificity
-   .event-card:hover's lift and freeze hover after a card had revealed. This
-   way, once revealed, nothing here sets `transform` at all, so :hover (and
-   any other transform rule) applies normally. */
-html.reveal-ready [data-reveal]:not(.is-revealed) {
-  opacity: 0;
-  transform: translateY(26px);
-  transition: opacity .7s cubic-bezier(.16, 1, .3, 1), transform .7s cubic-bezier(.16, 1, .3, 1);
-  transition-delay: var(--reveal-delay, 0ms);
+   Scoped to :not(.is-revealed) so a revealed card has no transform rule left
+   here. Skipped entirely under reduced motion, so cards show straight away. */
+@media (prefers-reduced-motion: no-preference) {
+  html.reveal-ready [data-reveal]:not(.is-revealed) {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity var(--dur-enter) var(--ease), transform var(--dur-enter) var(--ease);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
 }
 .ticket:hover { translate: 0 -4px; border-color: var(--line-strong); background: linear-gradient(120deg, rgb(14 48 41 / 75%), rgb(3 15 13 / 85%)); }
 .ticket__stub { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 20px 10px; border-right: 2px dashed rgb(0 255 160 / 22%); text-align: center; }

@@ -28,7 +28,7 @@ const organizationJsonLd = {
   sameAs: socialLinks.map((link) => link.href),
 };
 
-const tickerWords = ["THINK DEEPLY", "BUILD BOLDLY", "LEARN TOGETHER", "CODE FOR THE FUTURE"];
+const tickerWords = ["Think deeply", "Build boldly", "Learn together", "Code for the future"];
 
 const upcomingEvents = events.filter((event) => event.status === "upcoming");
 const pastEvents = events.filter((event) => event.status === "past");
@@ -67,19 +67,19 @@ export default async function HomePage() {
           <BrandMatrix />
           <div className="shell hero__inner">
             <div className="hero__copy">
-              <div className="eyebrow"><span className="status-dot" /> NIT JAMSHEDPUR <span className="hero__eyebrow-divider">/</span> THE CODING COMMUNITY</div>
+              <div className="eyebrow"><span className="status-dot" /> NIT Jamshedpur <span className="hero__eyebrow-divider">/</span> the coding community</div>
               <h1 id="hero-title" className="hero__title" data-build>PCON</h1>
-              <p className="hero__club-name" data-build>PROGRAMMING CLUB OF NIT JAMSHEDPUR</p>
+              <p className="hero__club-name" data-build>Programming Club of NIT Jamshedpur</p>
               <HackerScramble />
               <MatrixControl />
             </div>
           </div>
-          <a className="hero__index" href="#about"><span>↓</span><i /> SCROLL TO EXPLORE</a>
+          <a className="hero__index" href="#about"><span aria-hidden="true">↓</span><i aria-hidden="true" /> Scroll to explore</a>
         </section>
 
         <section className="ticker" aria-label="PCON values">
           <div className="ticker__track">
-            {[...tickerWords, ...tickerWords].map((word, index) => <span key={index}>{word}<i aria-hidden="true">✳</i></span>)}
+            {[...tickerWords, ...tickerWords].map((word, index) => <span key={index}>{word}<i aria-hidden="true">/</i></span>)}
           </div>
         </section>
 
@@ -87,29 +87,29 @@ export default async function HomePage() {
 
         <section className="about section-pad" id="about" data-build-section>
           <div className="shell">
-            <div className="section-label"><span>01 / WHO WE ARE</span><i /></div>
+            <div className="section-label"><span>01 / Who we are</span><i /></div>
             <div className="about__grid">
-              <h2 data-build>More than a club.<br /><span>A place to become.</span></h2>
+              <h2 data-build>More than a club<br /><span>A place to become</span></h2>
               <div className="about__copy" data-build>
                 <p>We are the Programming Club of NIT Jamshedpur: a community of enthusiastic minds who believe the future belongs to those who know how to build it.</p>
                 <p>From the first line of code to the next big idea, we make space to learn, experiment, and grow — together.</p>
                 <a className="text-link text-link--dark" href="#domains">Explore what we do <ArrowIcon /></a>
               </div>
             </div>
-            <div className="about__quote" data-build><span className="quote-mark">“</span><p>If you think bits are the alphabets of the future,<br className="desktop-only" /> you are one of us.</p><span className="quote-by">THE PCON WAY</span></div>
+            <div className="about__quote" data-build><span className="quote-mark">“</span><p>If you think bits are the alphabets of the future,<br className="desktop-only" /> you are one of us.</p><span className="quote-by">The PCON way</span></div>
           </div>
         </section>
 
         <section className="domains section-pad" id="domains" data-build-section>
           <div className="shell">
             <div className="section-heading">
-              <div><div className="section-label"><span>02 / WHAT WE EXPLORE</span><i /></div><h2>Find your<br /><span>next frontier.</span></h2></div>
+              <div><div className="section-label"><span>02 / What we explore</span><i /></div><h2>Find your<br /><span>next frontier</span></h2></div>
               <p>One community, many directions. Follow what fascinates you — and find the people who’ll build alongside you.</p>
             </div>
             <div className="domain-grid">
               {focusAreas.map((area) => (
-                <article className={"domain-card domain-card--" + area.tint} key={area.number} data-build>
-                  <div className="domain-card__top"><span>{area.number} / 04</span><span className="domain-card__symbol">{area.symbol}</span></div>
+                <article className="domain-card" key={area.number} data-build>
+                  <div className="domain-card__top"><span>{area.number} / 04</span><span className="domain-card__symbol" aria-hidden="true">{area.symbol}</span></div>
                   <h3>{area.name}</h3><p>{area.description}</p>
                   <Link href={area.roadmap} aria-label={area.name + " roadmap"}><ArrowIcon diagonal /></Link>
                 </article>
@@ -121,7 +121,7 @@ export default async function HomePage() {
         <section className="events section-pad" id="events" data-build-section>
           <div className="shell">
             <div className="section-heading">
-              <div><div className="section-label"><span>03 / WHAT’S HAPPENING</span><i /></div><h2>Events &amp;<br /><span>contests.</span></h2></div>
+              <div><div className="section-label"><span>03 / What’s happening</span><i /></div><h2>Events &amp;<br /><span>contests</span></h2></div>
               <p>Contests, hackathons, bootcamps and study jams — there’s always something being built on campus.</p>
             </div>
             <div className="event-grid">
@@ -150,7 +150,7 @@ export default async function HomePage() {
         <section className="blogs section-pad" id="blogs" data-build-section>
           <div className="shell">
             <div className="section-heading">
-              <div><div className="section-label"><span>04 / FROM THE CLUB</span><i /></div><h2>Recent<br /><span>writing.</span></h2></div>
+              <div><div className="section-label"><span>04 / From the club</span><i /></div><h2>Recent<br /><span>writing</span></h2></div>
               <p>Roadmaps, announcements and interview experiences, written by members for members.</p>
             </div>
             <div className="blog-grid">
@@ -173,12 +173,12 @@ export default async function HomePage() {
         <section className="community section-pad" id="community" data-build-section>
           <div className="shell">
             <div className="community__ornament" aria-hidden="true"><span>{"{"}</span><span>;</span><span>{"}"}</span></div>
-            <div className="section-label"><span>05 / YOUR NEXT CHAPTER</span><i /></div>
+            <div className="section-label"><span>05 / Your next chapter</span><i /></div>
             <div className="community__content">
-              <h2 data-build>Curious minds<br />welcome.</h2>
+              <h2 data-build>Curious minds<br />welcome</h2>
               <div className="community__aside" data-build><p>Bring a question, an idea, or just the willingness to try. There’s room to start wherever you are.</p><a className="button button--dark" href="mailto:pcon@nitjsr.ac.in">Let’s build something <ArrowIcon /></a></div>
             </div>
-            <div className="community__bottom"><span>PROGRAMMING CLUB OF NIT JAMSHEDPUR</span><span>CODE · CREATE · COLLABORATE</span></div>
+            <div className="community__bottom"><span>Programming Club of NIT Jamshedpur</span><span>Code · create · collaborate</span></div>
           </div>
         </section>
       </main>

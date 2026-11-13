@@ -12,7 +12,7 @@ interface RoadmapHeroTitleProps {
 
 export function RoadmapHeroTitle({
   prefix = "Find your ",
-  highlight = "path.",
+  highlight = "path",
   className = "",
 }: RoadmapHeroTitleProps) {
   const fullText = prefix + highlight;
@@ -69,6 +69,7 @@ export function RoadmapHeroTitle({
   }, [fullText, prefix, highlight, prefixLen]);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = setTimeout(() => {
       startScramble();
     }, 180);
@@ -79,20 +80,13 @@ export function RoadmapHeroTitle({
     <h1
       id="roadmaps-title"
       className={`roadmaps-hero__title ${className} ${isScrambling ? "is-scrambling" : ""}`}
-      onMouseEnter={startScramble}
-      onClick={startScramble}
-      title="Click or hover to re-scramble"
-      tabIndex={0}
-      role="button"
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          startScramble();
-        }
+      aria-label={fullText}
+      onMouseEnter={() => {
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) startScramble();
       }}
     >
-      <span className="roadmaps-title__prefix">{displayPrefix}</span>
-      <span className="roadmaps-title__highlight">{displayHighlight}</span>
+      <span className="roadmaps-title__prefix" aria-hidden="true">{displayPrefix}</span>
+      <span className="roadmaps-title__highlight" aria-hidden="true">{displayHighlight}</span>
       {isScrambling && <span className="roadmaps-title__cursor" aria-hidden="true">_</span>}
     </h1>
   );

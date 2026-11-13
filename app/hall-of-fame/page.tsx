@@ -98,7 +98,7 @@ function Plaque({ achievement }: { achievement: FameEntry }) {
             </li>
           ))}
         </ol>
-        {achievement.mentions?.length ? <p className="plaque__mentions"><span className="plaque__label">Special mentions:</span> {achievement.mentions.map((m, i) => (
+        {achievement.mentions?.length ? <p className="plaque__mentions"><span className="plaque__label">Special mentions</span> {achievement.mentions.map((m, i) => (
               <span key={m.roll ?? m.name}>
                 {i > 0 && ", "}
                 {m.name}
@@ -132,8 +132,8 @@ export default async function HallOfFamePage() {
         <section className="fame-hero" aria-labelledby="fame-title">
           <div className="fame-hero__beams" aria-hidden="true"><i /><i /></div>
           <div className="shell">
-            <div className="eyebrow fame-hero__eyebrow"><span className="status-dot" /> PCON · HALL OF FAME</div>
-            <h1 id="fame-title">Hall of <span>Fame.</span></h1>
+            <div className="eyebrow fame-hero__eyebrow"><span className="status-dot" /> PCON · Hall of fame</div>
+            <h1 id="fame-title">Hall of <span>Fame</span></h1>
             <p>Every contest, hackathon and challenge the club runs ends with someone on top. These are the people who got there.</p>
             {achievements.length > 0 && (
               <dl className="fame-stats">
@@ -148,7 +148,7 @@ export default async function HallOfFamePage() {
         {latest ? (
           <section className="section-pad fame-latest" aria-labelledby="latest-title">
             <div className="shell">
-              <div className="section-label"><span>01 / LATEST CHAMPIONS</span><i /></div>
+              <div className="section-label"><span>01 / Latest champions</span><i /></div>
               <h2 id="latest-title">{latest.event}</h2>
               <p className="fame-latest__meta">
                 <span className="chip">{latest.kind}</span>
@@ -178,8 +178,8 @@ export default async function HallOfFamePage() {
         {achievements.length > 0 && (
           <section className="section-pad fame-wall" aria-labelledby="wall-title">
             <div className="shell">
-              <div className="section-label"><span>02 / WALL OF FAME</span><i /></div>
-              <h2 id="wall-title">Every <span>podium.</span></h2>
+              <div className="section-label"><span>02 / Wall of fame</span><i /></div>
+              <h2 id="wall-title">Every <span>podium</span></h2>
               {years.map((year) => (
                 <div className="fame-year" key={year}>
                   <h3 className="fame-year__label"><span>{year}</span><i aria-hidden="true" /></h3>
@@ -195,8 +195,8 @@ export default async function HallOfFamePage() {
         {repeatWinners.length > 0 && (
           <section className="section-pad fame-board" aria-labelledby="board-title">
             <div className="shell">
-              <div className="section-label"><span>03 / REPEAT WINNERS</span><i /></div>
-              <h2 id="board-title">Most <span>podiums.</span></h2>
+              <div className="section-label"><span>03 / Repeat winners</span><i /></div>
+              <h2 id="board-title">Most <span>podiums</span></h2>
               <ol className="board">
                 {repeatWinners.map((entry, i) => (
                   <li key={entry.roll ?? entry.name} data-reveal>
