@@ -2,8 +2,17 @@ import { Suspense } from "react";
 import { getBlogCategories, getPublishedBlogs } from "@/lib/blogs-db";
 import { BlogFilterChips } from "@/components/blog-filter-chips";
 import { BlogPostCard, FeaturedBlogCard } from "@/components/blog-post-card";
+import { BlogHeroTitle } from "@/components/blog-hero-title";
+import { HackerScramble } from "@/components/hacker-scramble";
 
 export const dynamic = "force-dynamic";
+
+const BLOG_PHRASES = [
+  "TUTORIALS & SYSTEM DEEP DIVES",
+  "LESSONS LEARNED IN PRODUCTION",
+  "STORIES WRITTEN BY BUILDERS",
+  "READ • EXPERIMENT • SHIP",
+];
 
 export default async function BlogListingPage({
   searchParams,
@@ -31,12 +40,10 @@ export default async function BlogListingPage({
     <>
       <section className="blog-hero">
         <span className="blog-tag">THE PCON BLOG</span>
-        <h1>
-          Ideas worth <span>shipping.</span>
-        </h1>
-        <p className="blog-lede">
-          Tutorials, deep dives and lessons learned, written by the students of NIT Jamshedpur.
-        </p>
+        <BlogHeroTitle prefix="Ideas worth" highlight="shipping." />
+        <div className="blog-hero__scramble-wrap">
+          <HackerScramble phrases={BLOG_PHRASES} />
+        </div>
       </section>
 
       <Suspense fallback={null}>

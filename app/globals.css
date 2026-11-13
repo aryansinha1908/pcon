@@ -150,6 +150,7 @@ a {
 }
 
 .main-nav a:hover,
+.main-nav a[aria-current="page"],
 .footer-col a:hover {
   color: var(--mint);
   text-shadow: 0 0 14px rgb(0 255 160 / 40%);

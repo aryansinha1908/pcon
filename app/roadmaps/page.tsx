@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { ArrowIcon } from "@/components/brand";
+import { CodeRain } from "@/components/code-rain";
+import { HackerScramble } from "@/components/hacker-scramble";
+import { RoadmapHeroTitle } from "@/components/roadmap-hero-title";
 import { StepCheck, TrackProgress } from "@/components/roadmap-progress";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -133,6 +136,13 @@ function Track({ roadmap, index }: { roadmap: Roadmap; index: string }) {
   );
 }
 
+const ROADMAP_PHRASES = [
+  "STEP 1: MASTER PROBLEM SOLVING",
+  "STEP 2: HIT 5★ ON HACKERRANK",
+  "STEP 3: CHOOSE YOUR DIRECTION",
+  "CP • DEV • AI/ML • CLOUD",
+];
+
 export default async function RoadmapsPage() {
   const { principles, foundation, branches } = await getPathway();
   const tracks = [foundation, ...branches];
@@ -144,10 +154,13 @@ export default async function RoadmapsPage() {
       <main>
         <section className="roadmaps-hero" aria-labelledby="roadmaps-title">
           <div className="roadmaps-hero__backdrop" aria-hidden="true" />
+          <CodeRain />
           <div className="shell">
             <div className="eyebrow"><span className="status-dot" /> CURATED BY SENIORS, FOR JUNIORS</div>
-            <h1 id="roadmaps-title">Find your <span>path.</span></h1>
-            <p>Everyone starts with problem solving. Once you hit 5★ on HackerRank, pick the direction that excites you. Follow the steps, tick them off, and come back as new resources are shared.</p>
+            <RoadmapHeroTitle prefix="Find your " highlight="path." />
+            <div className="roadmaps-hero__scramble-wrap">
+              <HackerScramble phrases={ROADMAP_PHRASES} />
+            </div>
             <ul className="chip-row" aria-label="Principles">
               {principles.map((principle) => <li className="chip" key={principle}>{principle}</li>)}
             </ul>
