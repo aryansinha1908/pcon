@@ -3,11 +3,13 @@ import { ArrowIcon } from "@/components/brand";
 import { CodeRain } from "@/components/code-rain";
 import { HackerScramble } from "@/components/hacker-scramble";
 import { RoadmapHeroTitle } from "@/components/roadmap-hero-title";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { Starfield } from "@/components/starfield";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublicEvents } from "@/lib/events";
-import { ScrollReveal } from "./scroll-reveal";
+import { formatDate } from "@/lib/format";
+import { baseOpenGraph } from "@/lib/site-url";
 import "../roadmaps/roadmaps.css";
 import "./events.css";
 
@@ -17,7 +19,8 @@ import "./events.css";
 // that doesn't exist). Always render fresh, per request.
 export const dynamic = "force-dynamic";
 
-const description = "Contests, hackathons, workshops and talks from the Programming Club of NIT Jamshedpur — what's coming up, and what we've run before.";
+const description =
+  "Contests, hackathons, workshops and talks from the Programming Club of NIT Jamshedpur — what's coming up, and what we've run before.";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -36,7 +39,16 @@ function EventCard({
   event,
   upcoming,
 }: {
-  event: { id: string; title: string; description: string; location: string | null; posterUrl: string | null; registrationUrl: string | null; startDate: Date; endDate: Date };
+  event: {
+    id: string;
+    title: string;
+    description: string;
+    location: string | null;
+    posterUrl: string | null;
+    registrationUrl: string | null;
+    startDate: Date;
+    endDate: Date;
+  };
   upcoming: boolean;
 }) {
   const sameDay = event.startDate.toDateString() === event.endDate.toDateString();
@@ -61,7 +73,12 @@ function EventCard({
       <p>{event.description}</p>
       {event.location && <span className="event-card__location">{event.location}</span>}
       {event.registrationUrl && (
-        <a className="text-link text-link--dark event-card__cta" href={event.registrationUrl} target="_blank" rel="noopener noreferrer">
+        <a
+          className="text-link text-link--dark event-card__cta"
+          href={event.registrationUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Register <ArrowIcon diagonal />
         </a>
       )}
@@ -71,6 +88,12 @@ function EventCard({
 
 export default async function EventsPage() {
   const events = await getPublicEvents();
+  const now = new Date();
+  const upcoming = events
+    .filter((e) => e.endDate >= now)
+    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  const past = events.filter((e) => e.endDate < now);
+
   return (
     <div className="site-shell" id="top">
       <ScrollReveal />
@@ -82,7 +105,9 @@ export default async function EventsPage() {
             <div className="roadmaps-hero__backdrop" aria-hidden="true" />
             <CodeRain />
             <div className="shell">
-              <div className="eyebrow"><span className="status-dot" /> WHAT&apos;S HAPPENING AT PCON</div>
+              <div className="eyebrow">
+                <span className="status-dot" /> WHAT&apos;S HAPPENING AT PCON
+              </div>
               <RoadmapHeroTitle prefix="Worth Showing " highlight="Up For." />
               <div className="roadmaps-hero__scramble-wrap">
                 <HackerScramble phrases={EVENT_PHRASES} />
@@ -99,7 +124,10 @@ export default async function EventsPage() {
 
         <section className="section-pad events-section" id="upcoming" aria-labelledby="upcoming-title">
           <div className="shell">
-            <div className="section-label"><span>01 / COMING UP</span><i /></div>
+            <div className="section-label">
+              <span>01 / COMING UP</span>
+              <i />
+            </div>
             <h2 id="upcoming-title">Upcoming events</h2>
             {upcoming.length === 0 ? (
               <div className="event-grid">
@@ -121,7 +149,10 @@ export default async function EventsPage() {
         {past.length > 0 && (
           <section className="section-pad events-section events-section--past" id="past" aria-labelledby="past-title">
             <div className="shell">
-              <div className="section-label"><span>02 / WHAT WE&apos;VE RUN</span><i /></div>
+              <div className="section-label">
+                <span>02 / WHAT WE&apos;VE RUN</span>
+                <i />
+              </div>
               <h2 id="past-title">Past events</h2>
               <div className="event-grid">
                 {past.map((event) => (
