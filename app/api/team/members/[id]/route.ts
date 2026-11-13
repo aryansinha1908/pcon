@@ -144,9 +144,17 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         }
       }
 
+      const updateData: Record<string, unknown> = { ...memberFields };
+      if (memberFields.designation !== undefined) {
+        updateData.position = memberFields.designation;
+      }
+      if (memberFields.displayOrder !== undefined) {
+        updateData.order = memberFields.displayOrder;
+      }
+
       return tx.teamMember.update({
         where: { id },
-        data: memberFields,
+        data: updateData,
         ...(tx.memberSpecialization
           ? {
               include: {

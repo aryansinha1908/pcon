@@ -25,38 +25,77 @@ export async function addTeamMember(_prev: FormState, formData: FormData): Promi
     return toFormError(e);
   }
 
+  const rawEmail = str(formData, "email").trim();
+  const normalizedEmail = rawEmail ? rawEmail.toLowerCase() : undefined;
+
+  const domain = (process.env.ALLOWED_EMAIL_DOMAIN ?? "nitjsr.ac.in").toLowerCase();
+  if (normalizedEmail && !normalizedEmail.endsWith("@" + domain)) {
+    return { fieldErrors: { email: [`Use an @${domain} email.`] } };
+  }
+
+  let user = null;
+  const rawName = str(formData, "name").trim();
+
+  if (normalizedEmail) {
+    user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      include: { teamMember: true },
+    });
+
+    if (user?.teamMember) {
+      return { error: `${normalizedEmail} is already on the team${user.teamMember.isActive ? "" : " (as alumni)"}.` };
+    }
+
+    const existingMemberByEmail = await prisma.teamMember.findFirst({
+      where: { email: normalizedEmail },
+    });
+    if (existingMemberByEmail) {
+      return { error: `${normalizedEmail} is already on the team${existingMemberByEmail.isActive ? "" : " (as alumni)"}.` };
+    }
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          name: rawName || null,
+          role: "MEMBER",
+        },
+        include: { teamMember: true },
+      });
+    } else if (!user.name && rawName) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { name: rawName },
+        include: { teamMember: true },
+      });
+    }
+  }
+
   const rawBatch = str(formData, "batch");
   const rawOrder = str(formData, "displayOrder") || str(formData, "order") || "0";
   const rawSpecs = str(formData, "specializations");
+  const rawDesignation = str(formData, "designation") || str(formData, "position") || undefined;
+  const finalOrder = Number(rawOrder) || 0;
+  const resolvedName = rawName || user?.name || (normalizedEmail ? normalizedEmail.split("@")[0] : "") || "Member";
 
   const parsed = teamMemberInputSchema.safeParse({
-    name: str(formData, "name"),
+    name: resolvedName,
     studentId: str(formData, "studentId") || undefined,
     photo: str(formData, "photo") || undefined,
     batch: rawBatch ? Number(rawBatch) : undefined,
-    designation: str(formData, "designation") || str(formData, "position") || undefined,
+    designation: rawDesignation,
     domain: str(formData, "domain") || undefined,
     specializations: rawSpecs || undefined,
     github: str(formData, "github") || undefined,
     linkedin: str(formData, "linkedin") || undefined,
     portfolio: str(formData, "portfolio") || undefined,
-    email: str(formData, "email") || undefined,
-    displayOrder: rawOrder ? Number(rawOrder) : 0,
+    email: normalizedEmail,
+    displayOrder: finalOrder,
     isActive: true,
   });
 
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) };
   const memberData = parsed.data;
-
-  let userId: string | undefined = undefined;
-  if (memberData.email) {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: memberData.email },
-    });
-    if (existingUser) {
-      userId = existingUser.id;
-    }
-  }
 
   const specs = memberData.specializations ?? [];
 
@@ -66,15 +105,17 @@ export async function addTeamMember(_prev: FormState, formData: FormData): Promi
       studentId: memberData.studentId,
       photo: memberData.photo,
       batch: memberData.batch,
-      designation: memberData.designation,
+      position: memberData.designation ?? null,
+      designation: memberData.designation ?? null,
       domain: memberData.domain,
       github: memberData.github,
       linkedin: memberData.linkedin,
       portfolio: memberData.portfolio,
       email: memberData.email,
+      order: memberData.displayOrder,
       displayOrder: memberData.displayOrder,
       isActive: memberData.isActive,
-      userId,
+      userId: user?.id ?? undefined,
       ...(specs.length > 0
         ? {
             specializations: {
@@ -86,7 +127,7 @@ export async function addTeamMember(_prev: FormState, formData: FormData): Promi
   });
 
   refresh();
-  return { ok: `Added ${memberData.name} to the team.` };
+  return { ok: `Added ${user?.name ?? memberData.name ?? rawName ?? normalizedEmail} to the team.` };
 }
 
 export async function updateTeamMember(id: string, _prev: FormState, formData: FormData): Promise<FormState> {
@@ -154,9 +195,16 @@ export async function updateTeamMember(id: string, _prev: FormState, formData: F
     }
 
     if (Object.keys(memberFields).length > 0) {
+      const updateData: Record<string, unknown> = { ...memberFields };
+      if (memberFields.designation !== undefined) {
+        updateData.position = memberFields.designation;
+      }
+      if (memberFields.displayOrder !== undefined) {
+        updateData.order = memberFields.displayOrder;
+      }
       await tx.teamMember.update({
         where: { id },
-        data: memberFields,
+        data: updateData,
       });
     }
   });
