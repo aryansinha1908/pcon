@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ArrowIcon } from "@/components/brand";
 import { CodeRain } from "@/components/code-rain";
 import { HackerScramble } from "@/components/hacker-scramble";
 import { RoadmapHeroTitle } from "@/components/roadmap-hero-title";
-import { StepCheck, TrackProgress } from "@/components/roadmap-progress";
+import { NewBadge, NextPin, StepCheck, TrackProgress } from "@/components/roadmap-progress";
+import { RoadmapEffects } from "@/components/roadmap-effects";
+import { Starfield } from "@/components/starfield";
+import { TypeTitle } from "@/components/type-title";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPathway, type Resource, type ResourceKind, type Roadmap } from "@/lib/roadmaps";
+import { baseOpenGraph } from "@/lib/site-url";
+import { getYouTubePreviews, type YouTubePreview } from "@/lib/youtube";
 import "./roadmaps.css";
 
+const ROADMAPS_DESCRIPTION = "Learning roadmaps curated by PCON seniors: problem solving foundations, then competitive programming, web development, AI/ML or DevOps.";
+
 export const metadata: Metadata = {
-  title: "Roadmaps — PCON",
-  description: "Learning roadmaps curated by PCON seniors: problem solving foundations, then competitive programming, web development, AI/ML or DevOps.",
+  title: "Roadmaps",
+  description: ROADMAPS_DESCRIPTION,
+  alternates: { canonical: "/roadmaps" },
+  openGraph: { ...baseOpenGraph, title: "Roadmaps · PCON", description: ROADMAPS_DESCRIPTION, url: "/roadmaps" },
 };
 
 const KIND_LABEL: Record<ResourceKind, string> = {
@@ -41,7 +51,7 @@ function ResourceIcon({ kind }: { kind: ResourceKind }) {
   );
 }
 
-function ResourceLink({ resource }: { resource: Resource }) {
+function ResourceLink({ resource, preview, addedAt }: { resource: Resource; preview?: YouTubePreview; addedAt?: string }) {
   return (
     <a className="resource" href={resource.url} target="_blank" rel="noopener noreferrer">
       <ResourceIcon kind={resource.kind} />
@@ -50,14 +60,27 @@ function ResourceLink({ resource }: { resource: Resource }) {
         <span className="resource__meta">
           {KIND_LABEL[resource.kind]} · {hostOf(resource.url)}
           {resource.note && <em>{resource.note}</em>}
+          <NewBadge addedAt={resource.addedAt ?? addedAt} />
         </span>
       </span>
       <span className="resource__arrow" aria-hidden="true"><ArrowIcon diagonal /></span>
+      {preview && (
+        <span className="resource-preview" aria-hidden="true">
+          <span className="resource-preview__thumb">
+            <Image src={preview.thumbnail} alt="" width={480} height={360} sizes="260px" />
+            <span className="resource-preview__play"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M7 5.5v9l7.5-4.5z" /></svg></span>
+          </span>
+          <span className="resource-preview__body">
+            <strong>{preview.title}</strong>
+            {preview.channel && <small>{preview.channel} · {KIND_LABEL[resource.kind]}</small>}
+          </span>
+        </span>
+      )}
     </a>
   );
 }
 
-function Track({ roadmap, index }: { roadmap: Roadmap; index: string }) {
+function Track({ roadmap, index, previews }: { roadmap: Roadmap; index: string; previews: Record<string, YouTubePreview> }) {
   const ids = roadmap.steps.map((step) => step.id);
   return (
     <section className={`track track--${roadmap.tint}`} id={roadmap.slug} aria-labelledby={`${roadmap.slug}-title`}>
@@ -65,20 +88,24 @@ function Track({ roadmap, index }: { roadmap: Roadmap; index: string }) {
         <header className="track__header">
           <div>
             <div className="section-label"><span>{index} / {roadmap.kicker.toUpperCase()}</span><i /></div>
-            <h2 id={`${roadmap.slug}-title`}>{roadmap.title}</h2>
+            <TypeTitle id={`${roadmap.slug}-title`} text={roadmap.title} />
             <p>{roadmap.tagline}</p>
           </div>
           {ids.length > 0 && <TrackProgress ids={ids} label={roadmap.title} resettable />}
         </header>
 
+        <div className="timeline-wrap">
+        <span className="timeline__fill" aria-hidden="true" />
+        <span className="timeline__tip" aria-hidden="true" />
         <ol className="timeline">
           {roadmap.steps.map((step, i) => {
             const showStage = step.stage && step.stage !== roadmap.steps[i - 1]?.stage;
             return (
-              <li className={"timeline__item" + (step.milestone ? " timeline__item--milestone" : "")} key={step.id}>
+              <li className={"timeline__item" + (step.milestone ? " timeline__item--milestone" : "")} key={step.id} id={step.id} data-step-id={step.id}>
                 {showStage && <div className="timeline__stage">{step.stage}</div>}
                 <span className="timeline__node" aria-hidden="true">{step.milestone ? "★" : String(i + 1).padStart(2, "0")}</span>
-                <article className="step-card">
+                <NextPin id={step.id} ids={ids} />
+                <article className="step-card" data-tilt="2.5">
                   <div className="step-card__head">
                     <div>
                       {step.milestone && <span className="chip chip--live">Milestone</span>}
@@ -90,7 +117,7 @@ function Track({ roadmap, index }: { roadmap: Roadmap; index: string }) {
                   {step.summary && <p className="step-card__summary">{step.summary}</p>}
                   {step.resources.length > 0 && (
                     <div className="step-card__resources">
-                      {step.resources.map((resource) => <ResourceLink resource={resource} key={resource.label + resource.url} />)}
+                      {step.resources.map((resource) => <ResourceLink resource={resource} preview={previews[resource.url]} addedAt={step.addedAt} key={resource.label + resource.url} />)}
                     </div>
                   )}
                 </article>
@@ -118,7 +145,7 @@ function Track({ roadmap, index }: { roadmap: Roadmap; index: string }) {
                 {roadmap.tips?.map((tip) => <p className="step-card__summary" key={tip}>{tip}</p>)}
                 {roadmap.furtherReading && (
                   <div className="step-card__resources">
-                    {roadmap.furtherReading.map((resource) => <ResourceLink resource={resource} key={resource.url} />)}
+                    {roadmap.furtherReading.map((resource) => <ResourceLink resource={resource} preview={previews[resource.url]} key={resource.url} />)}
                   </div>
                 )}
                 {roadmap.channels && (
@@ -131,6 +158,7 @@ function Track({ roadmap, index }: { roadmap: Roadmap; index: string }) {
             </li>
           )}
         </ol>
+        </div>
       </div>
     </section>
   );
@@ -146,12 +174,19 @@ const ROADMAP_PHRASES = [
 export default async function RoadmapsPage() {
   const { principles, foundation, branches } = await getPathway();
   const tracks = [foundation, ...branches];
+  const previews = await getYouTubePreviews(tracks.flatMap((track) => [
+    ...track.steps.flatMap((step) => step.resources.map((resource) => resource.url)),
+    ...(track.furtherReading ?? []).map((resource) => resource.url),
+  ]));
   const fiveStar = foundation.steps.at(-1);
 
   return (
     <div className="site-shell" id="top">
       <SiteHeader />
-      <main>
+      <main id="main">
+        <RoadmapEffects />
+        <div className="sky">
+        <Starfield />
         <section className="roadmaps-hero" aria-labelledby="roadmaps-title">
           <div className="roadmaps-hero__backdrop" aria-hidden="true" />
           <CodeRain />
@@ -171,23 +206,24 @@ export default async function RoadmapsPage() {
           <div className="shell">
             <h2 className="sr-only" id="pathway-title">How the roadmaps fit together</h2>
             <div className="pathway__trunk">
-              <a className="pathway__node" href="#foundation">
+              <a className="pathway__node" href="#foundation" data-morph data-tilt="6">
                 <span className="pathway__step">STEP 1</span>
                 <strong>Problem solving</strong>
                 <small>{foundation.steps.filter((step) => !step.milestone).map((step) => step.title.replace(/^Start solving on /, "")).join(" → ")}</small>
               </a>
               <span className="pathway__arrow" aria-hidden="true"><ArrowIcon /></span>
-              <a className="pathway__node pathway__node--milestone" href="#foundation">
+              <a className="pathway__node pathway__node--milestone" href="#foundation" data-morph data-tilt="6">
                 <span className="pathway__step">STEP 2 · MANDATORY FOR ALL</span>
                 <strong>{fiveStar?.title}</strong>
                 <TrackProgress ids={foundation.steps.map((step) => step.id)} label={foundation.title} />
               </a>
             </div>
+            <div className="pathway__fork" data-reveal="static">
             <div className="pathway__fork-label">STEP 3 · CHOOSE YOUR DIRECTION</div>
             <ul className="pathway__branches">
-              {branches.map((branch) => (
-                <li className={`pathway__branch track--${branch.tint}`} key={branch.slug}>
-                  <a href={`#${branch.slug}`}>
+              {branches.map((branch, i) => (
+                <li className={`pathway__branch track--${branch.tint}`} key={branch.slug} style={{ "--i": i } as React.CSSProperties}>
+                  <a href={`#${branch.slug}`} data-morph data-tilt="8">
                     <span className="pathway__step">{branch.kicker.toUpperCase()}</span>
                     <strong>{branch.title}</strong>
                     <small>{branch.steps.length ? `${branch.steps.length} steps` : "Unlocks after 5★"}</small>
@@ -196,16 +232,18 @@ export default async function RoadmapsPage() {
                 </li>
               ))}
             </ul>
+            </div>
           </div>
         </section>
+        </div>
 
         <nav className="track-nav" aria-label="Roadmap tracks">
           <div className="shell track-nav__inner">
-            {tracks.map((track) => <a className={`track-nav__chip track--${track.tint}`} href={`#${track.slug}`} key={track.slug}>{track.slug === "foundation" ? "Foundation" : track.title}</a>)}
+            {tracks.map((track) => <a className={`track-nav__chip track--${track.tint}`} href={`#${track.slug}`} key={track.slug} data-morph>{track.slug === "foundation" ? "Foundation" : track.title}</a>)}
           </div>
         </nav>
 
-        {tracks.map((track, i) => <Track roadmap={track} index={String(i + 1).padStart(2, "0")} key={track.slug} />)}
+        {tracks.map((track, i) => <Track roadmap={track} index={String(i + 1).padStart(2, "0")} previews={previews} key={track.slug} />)}
       </main>
       <SiteFooter />
     </div>

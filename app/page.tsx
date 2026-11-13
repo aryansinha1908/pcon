@@ -6,8 +6,27 @@ import { MatrixControl } from "@/components/matrix-control";
 import { BuildOnScroll } from "@/components/build-on-scroll";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { blogPosts, events, focusAreas } from "@/lib/site-data";
+import type { Metadata } from "next";
+import { blogPosts, events, focusAreas, socialLinks } from "@/lib/site-data";
 import { getPublishedBlogs } from "@/lib/blogs-db";
+import { baseOpenGraph, SITE_DESCRIPTION, SITE_TITLE, siteUrl } from "@/lib/site-url";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { ...baseOpenGraph, title: SITE_TITLE, description: SITE_DESCRIPTION, url: "/" },
+};
+
+/** schema.org Organization data so search engines can show the club's name, logo and profiles. */
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "PCON — Programming Club of NIT Jamshedpur",
+  alternateName: "PCON",
+  url: siteUrl().origin,
+  logo: new URL("/pcon-logo.png", siteUrl()).toString(),
+  email: "pcon@nitjsr.ac.in",
+  sameAs: socialLinks.map((link) => link.href),
+};
 
 const tickerWords = ["THINK DEEPLY", "BUILD BOLDLY", "LEARN TOGETHER", "CODE FOR THE FUTURE"];
 
@@ -37,7 +56,12 @@ export default async function HomePage() {
   return (
     <div className="site-shell" id="top">
       <SiteHeader />
-      <main>
+      <main id="main">
+        <script
+          type="application/ld+json"
+          // JSON-LD must be inline; the data is static and contains no user input. "<" is escaped so it can't end the tag.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }}
+        />
         <section className="hero" aria-labelledby="hero-title" data-build-section data-build-intro>
           <div className="hero__backdrop" aria-hidden="true" />
           <BrandMatrix />

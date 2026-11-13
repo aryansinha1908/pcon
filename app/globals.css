@@ -2606,3 +2606,23 @@ html {
     animation: none;
   }
 }
+
+/* ───── Skip link, reading progress, back to top ───── */
+.skip-link { position: fixed; z-index: 100; top: 12px; left: 12px; padding: 10px 16px; border-radius: 999px; background: var(--mint); color: var(--ink-deep); font-size: 13px; font-weight: 600; translate: 0 -200%; transition: translate .2s ease; }
+.skip-link:focus-visible { translate: 0 0; outline-color: var(--paper); }
+#main:focus { outline: none; }
+
+.read-progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: linear-gradient(90deg, var(--mint-bright), var(--mint)); box-shadow: 0 0 10px rgb(112 227 199 / 60%); transform-origin: left; scale: 0 1; pointer-events: none; }
+@supports (animation-timeline: scroll()) {
+  .read-progress { animation: read-progress linear both; animation-timeline: scroll(root block); }
+}
+@keyframes read-progress { to { scale: 1 1; } }
+
+.back-to-top { position: fixed; z-index: 45; right: max(20px, env(safe-area-inset-right)); bottom: max(24px, calc(env(safe-area-inset-bottom) + 16px)); display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid var(--line-strong); border-radius: 50%; background: rgb(3 15 13 / 85%); color: var(--mint); box-shadow: 0 12px 30px rgb(0 0 0 / 40%); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); cursor: pointer; opacity: 0; translate: 0 12px; pointer-events: none; transition: opacity .25s ease, translate .25s ease, background .2s, border-color .2s; }
+.back-to-top[data-visible="true"] { opacity: 1; translate: 0 0; pointer-events: auto; }
+.back-to-top:hover { border-color: var(--mint); background: rgb(14 48 41 / 95%); }
+.back-to-top svg { width: 20px; height: 20px; }
+html.menu-open .back-to-top { display: none; }
+@media (max-width: 640px) {
+  .back-to-top { right: max(16px, env(safe-area-inset-right)); bottom: max(18px, calc(env(safe-area-inset-bottom) + 12px)); width: 46px; height: 46px; }
+}

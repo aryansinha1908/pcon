@@ -88,3 +88,14 @@ tests/unit/          Fast tests for roles, the event rule, dates and validation
 tests/db/            Server-action permission tests against a test database
 public/              Static assets, including the PCON mark
 ```
+
+## Roadmaps
+
+`/roadmaps` (`app/roadmaps/page.tsx`) reads all roadmap content through `getPathway()` in `lib/roadmaps.ts`. The roadmaps aren't managed in the admin panel yet; when they are, make `getPathway()` load from the database and keep the same shape:
+
+- `Pathway` holds the shared `foundation` track, the independent `branches` (CP, Web, ML, DevOps) and the hero `principles`.
+- `Roadmap` is one track: title, tint, ordered `steps`, plus optional `locked`, `exploreNext`, `furtherReading`, `channels` and `tips`.
+- `RoadmapStep` has a stable `id`, a title, optional `stage`, `optional` and `milestone` flags, and its `resources` (`playlist`, `video`, `practice` or `website`, with an optional `note` such as "Sessions 1–7").
+- `addedAt` (ISO date, on a step or a single resource) marks new content, which shows a "New" badge for a week.
+
+Keep step `id`s stable: juniors' progress is saved in their browser (`localStorage` key `pcon:roadmap-progress:v1`) against them. YouTube links get a hover preview (thumbnail, title, channel) from YouTube's public oEmbed endpoint, fetched on the server and refreshed daily (`lib/youtube.ts`); no API key is needed.

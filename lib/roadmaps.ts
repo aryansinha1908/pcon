@@ -15,6 +15,8 @@ export type Resource = {
   kind: ResourceKind;
   /** Extra guidance from the seniors, e.g. "First 16 videos" or "Sessions 1–7". */
   note?: string;
+  /** ISO date this resource was added. Resources added in the last week get a "New" badge. */
+  addedAt?: string;
 };
 
 export type RoadmapStep = {
@@ -28,6 +30,8 @@ export type RoadmapStep = {
   optional?: boolean;
   /** A checkpoint rather than a topic, e.g. reaching 5★ on HackerRank. */
   milestone?: boolean;
+  /** ISO date the step was added; applies to all its resources that don't set their own. */
+  addedAt?: string;
 };
 
 export type RoadmapTint = "mint" | "blue" | "orange" | "violet";
@@ -65,6 +69,7 @@ const foundation: Roadmap = {
   steps: [
     {
       id: "foundation-cpp-basics",
+      addedAt: "2026-11-12",
       title: "C++ basics",
       summary: "You can learn any other language too, but since our college has traditionally followed C++, it is recommended.",
       resources: [
@@ -74,6 +79,7 @@ const foundation: Roadmap = {
     },
     {
       id: "foundation-stl",
+      addedAt: "2026-11-12",
       title: "STL basics",
       summary: "The C++ Standard Template Library: containers, iterators and algorithms.",
       resources: [{ label: "STL basics by Luv", url: playlist("PLauivoElc3gh3RCiQA82MDI-gJfXQQVnn"), kind: "playlist" }],
@@ -105,6 +111,7 @@ const cp: Roadmap = {
   steps: [
     {
       id: "cp-cp31-basics",
+      addedAt: "2026-11-12",
       stage: "TLE Eliminators CP-31 sheet",
       title: "Basic logic, STL & maths",
       summary: "Start solving the CP-31 sheet for basic logical questions, STL and maths.",
@@ -112,6 +119,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-number-theory-two-pointers",
+      addedAt: "2026-11-12",
       stage: "TLE Eliminators CP-31 sheet",
       title: "Basic number theory & two pointers",
       resources: [
@@ -122,6 +130,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-binary-search-bits",
+      addedAt: "2026-11-12",
       stage: "TLE Eliminators CP-31 sheet",
       title: "Binary search, bit manipulation & advanced number theory",
       resources: [
@@ -131,6 +140,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-recursion-stacks-queues",
+      addedAt: "2026-11-12",
       stage: "TLE Eliminators CP-31 sheet",
       title: "Recursion, stacks & queues",
       resources: [
@@ -140,6 +150,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-trees-heaps",
+      addedAt: "2026-11-12",
       stage: "TLE Eliminators CP-31 sheet",
       title: "Trees & heaps",
       resources: [
@@ -149,6 +160,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-graphs",
+      addedAt: "2026-11-12",
       stage: "TLE Eliminators CP-31 sheet",
       title: "Graph theory",
       resources: [
@@ -158,6 +170,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-dynamic-programming",
+      addedAt: "2026-11-12",
       stage: "TLE Eliminators CP-31 sheet",
       title: "Dynamic programming",
       resources: [
@@ -167,6 +180,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-cses",
+      addedAt: "2026-11-12",
       stage: "CSES",
       title: "CSES problem set",
       summary: "Topic-wise problem solving, with the CSES book for CP concepts.",
@@ -177,6 +191,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-cp-algorithms",
+      addedAt: "2026-11-12",
       stage: "CP-Algorithms",
       title: "CP-Algorithms",
       summary: "CP concepts, with topic-wise CSES, Codeforces and SPOJ problems.",
@@ -184,6 +199,7 @@ const cp: Roadmap = {
     },
     {
       id: "cp-usaco-guide",
+      addedAt: "2026-11-12",
       stage: "USACO Guide",
       title: "USACO Guide",
       summary: "CP concepts and topic-wise problems for practice.",
