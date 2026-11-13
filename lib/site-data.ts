@@ -6,11 +6,10 @@ export const focusAreas = [
 ];
 
 export const navLinks = [
-  { label: "About", href: "/#about" },
-  { label: "What we do", href: "/#domains" },
   { label: "Roadmaps", href: "/roadmaps" },
   { label: "Events", href: "/events" },
   { label: "Blogs", href: "/blogs" },
+  // Becomes "Our Team" (/team) once that page ships; until then it points at the home section.
   { label: "Community", href: "/#community" },
 ];
 
