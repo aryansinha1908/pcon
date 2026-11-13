@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./blog.css";
-import { BlogNav, BlogFooter } from "@/components/blog-nav";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -24,13 +25,12 @@ export const metadata: Metadata = {
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`blog-theme ${dmSans.variable} ${jetbrainsMono.variable}`}>
+    <div className={`site-shell blog-theme ${dmSans.variable} ${jetbrainsMono.variable}`} id="top">
+      <SiteHeader />
       <div className="blog-wrap">
-        <BlogNav />
         <main id="app">{children}</main>
-        <BlogFooter />
       </div>
+      <SiteFooter />
     </div>
   );
 }
-

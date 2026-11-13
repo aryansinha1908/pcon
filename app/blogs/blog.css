@@ -2,14 +2,14 @@
    Sourced pixel-for-pixel from reference/pcon-blog-design.html */
 
 .blog-theme {
-  --bg: #03100d;
-  --bg2: #071a15;
-  --card: #0a1f19;
-  --line: #16352b;
-  --ink: #f1efe6;
-  --mute: #8fa89f;
-  --mint: #6ee7c8;
-  --mint2: #2fbf9f;
+  --bg: var(--abyss, #010806);
+  --bg2: var(--ink-deep, #020a08);
+  --card: var(--ink-raised, #061914);
+  --line: var(--line, rgb(0 255 160 / 12%));
+  --ink: var(--paper, #f8fffa);
+  --mute: var(--text-muted, #95b3a6);
+  --mint: var(--mint, #00f5a0);
+  --mint2: var(--mint-bright, #39ffb8);
   --sans: var(--font-dm-sans, 'DM Sans', system-ui, sans-serif);
   --mono: var(--font-jetbrains-mono, 'JetBrains Mono', ui-monospace, monospace);
   color-scheme: dark;
@@ -19,8 +19,8 @@
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  background-image: radial-gradient(900px 420px at 50% -80px, rgba(47, 191, 159, 0.16), transparent 70%),
-    radial-gradient(rgba(110, 231, 200, 0.07) 1px, transparent 1px);
+  background-image: radial-gradient(900px 420px at 50% -80px, rgba(0, 255, 160, 0.14), transparent 70%),
+    radial-gradient(rgba(0, 255, 160, 0.08) 1px, transparent 1px);
   background-size: auto, 28px 28px;
   background-repeat: no-repeat, repeat;
 }
@@ -39,7 +39,7 @@
 .blog-wrap {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 24px 80px;
 }
 
 /* Nav */
