@@ -11,6 +11,7 @@ export const navLinks = [
   { label: "Roadmaps", href: "/roadmaps" },
   { label: "Events", href: "/events" },
   { label: "Blogs", href: "/blogs" },
+  { label: "Team", href: "/team" },
   { label: "Community", href: "/#community" },
 ];
 

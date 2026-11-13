@@ -6,12 +6,21 @@ const urlPattern = /^(https?:\/\/|\/)/;
 const validUrl = z.string().trim().refine((v) => !v || urlPattern.test(v), {
   message: "Use a valid web URL or absolute path.",
 });
-const optionalUrl = z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), validUrl.optional());
+const optionalUrl = z.preprocess(
+  (v) => (v === null || v === undefined || (typeof v === "string" && v.trim() === "") ? undefined : v),
+  validUrl.nullable().optional()
+);
 
 const httpsUrl = z.url({ protocol: /^https$/, message: "Use a full https:// link." });
-const optionalHttpsUrl = z.preprocess((v) => (v === "" ? undefined : v), httpsUrl.optional());
+const optionalHttpsUrl = z.preprocess(
+  (v) => (v === null || v === undefined || (typeof v === "string" && v.trim() === "") ? undefined : v),
+  httpsUrl.nullable().optional()
+);
 const optionalText = (max: number) =>
-  z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), z.string().trim().max(max).optional());
+  z.preprocess(
+    (v) => (v === null || v === undefined || (typeof v === "string" && v.trim() === "") ? undefined : v),
+    z.string().trim().max(max).nullable().optional()
+  );
 
 export const eventSchema = z
   .object({
@@ -71,12 +80,46 @@ export const teamMemberSchema = z.object({
   batch: z.coerce
     .number()
     .int()
-    .min(2000, "Check the batch year.")
+    .min(2018, "Check the batch year (must be 2018 or later).")
     .refine((y) => y <= new Date().getFullYear() + 6, "Check the batch year."),
   order: z.coerce.number().int().min(0).max(999).default(0),
 });
 
 export const teamMemberUpdateSchema = teamMemberSchema.omit({ email: true });
+
+export const teamMemberInputSchema = z.object({
+  name: z.string().trim().min(2, "Name is required (at least 2 characters).").max(100),
+  studentId: optionalText(50),
+  photo: optionalUrl,
+  batch: z.coerce
+    .number({ message: "Enter a valid batch year." })
+    .int("Batch year must be an integer.")
+    .min(2018, "Batch year must be 2018 or later.")
+    .max(2100, "Enter a valid batch year."),
+  designation: optionalText(100),
+  domain: optionalText(100),
+  specializations: z.preprocess((val) => {
+    if (Array.isArray(val)) return val.map((s) => String(s).trim()).filter(Boolean);
+    if (typeof val === "string" && val.trim()) {
+      return val.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+    return undefined;
+  }, z.array(z.string()).optional()),
+  github: optionalHttpsUrl,
+  linkedin: optionalHttpsUrl,
+  portfolio: optionalHttpsUrl,
+  email: z.preprocess(
+    (v) => (v === null || v === undefined || (typeof v === "string" && v.trim() === "") ? null : typeof v === "string" ? v.trim().toLowerCase() : v),
+    z.string().email("Enter a valid email.").nullable().optional()
+  ),
+  displayOrder: z.coerce.number().int().min(0).max(9999).default(0),
+  isActive: z.preprocess(
+    (v) => (v === undefined ? true : v === "true" || v === true || v === "on"),
+    z.boolean()
+  ).default(true),
+});
+
+export const teamMemberUpdateApiSchema = teamMemberInputSchema.partial();
 
 export type FormState = { error?: string; fieldErrors?: Record<string, string[] | undefined>; ok?: string; data?: unknown };
 
