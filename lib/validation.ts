@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ACHIEVEMENT_KINDS, ACHIEVEMENT_TIER_VALUES, FAME_KINDS } from "./achievement-options";
 import { slugify } from "./blog-utils";
 
 /** https or relative URL check for images and links */
@@ -120,6 +121,57 @@ export const teamMemberInputSchema = z.object({
 });
 
 export const teamMemberUpdateApiSchema = teamMemberInputSchema.partial();
+
+// ───── Achievements (/achievements) ─────
+
+export const achievementSchema = z.object({
+  title: z.string().trim().min(3, "Title is too short.").max(140),
+  organiser: z.string().trim().min(2, "Who ran it? e.g. ICPC, Adobe.").max(120),
+  year: z.coerce
+    .number({ message: "Enter a year." })
+    .int("Enter a year.")
+    .min(2017, "PCON started in 2017.")
+    .refine((y) => y <= new Date().getFullYear() + 1, "Check the year."),
+  dates: optionalText(60),
+  kind: z.enum(ACHIEVEMENT_KINDS, { message: "Pick a type." }),
+  result: z.string().trim().min(2, "Add the result, e.g. Winner or Rank 54.").max(40),
+  tier: z.enum(ACHIEVEMENT_TIER_VALUES, { message: "Pick a badge colour." }),
+  highlight: optionalText(120),
+  imageUrl: optionalUrl,
+  imageAlt: optionalText(200),
+  featured: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()).default(false),
+});
+
+// ───── Hall of fame (/hall-of-fame) ─────
+
+/** Roll numbers like 2025UGCS010: letters and digits only, stored uppercase. */
+const optionalRoll = z.preprocess(
+  (v) => (typeof v === "string" ? (v.trim() === "" ? undefined : v.trim().toUpperCase()) : v),
+  z.string().regex(/^[0-9A-Z]{6,16}$/, "Roll numbers are letters and digits, e.g. 2025UGCS010.").optional(),
+);
+
+const personName = z.string().trim().min(2, "Name is too short.").max(80);
+
+export const placementSchema = z.object({
+  rank: z.union([z.literal(1), z.literal(2), z.literal(3)]).nullable(),
+  name: personName,
+  roll: optionalRoll,
+  award: optionalText(60),
+  team: z.array(z.string().trim().min(1).max(80)).max(8, "At most 8 team members.").default([]),
+});
+
+export const hallOfFameSchema = z.object({
+  event: z.string().trim().min(3, "Event name is too short.").max(140),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Pick the date.")
+    .refine((d) => !Number.isNaN(Date.parse(`${d}T00:00:00Z`)), "Pick the date."),
+  kind: z.enum(FAME_KINDS, { message: "Pick a type." }),
+  summary: optionalText(400),
+  link: optionalHttpsUrl,
+  podium: z.array(placementSchema).min(1, "Add at least the winner."),
+  mentions: z.array(placementSchema).max(20, "At most 20 special mentions.").default([]),
+});
 
 export type FormState = { error?: string; fieldErrors?: Record<string, string[] | undefined>; ok?: string; data?: unknown };
 

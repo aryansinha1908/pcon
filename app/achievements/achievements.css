@@ -98,3 +98,11 @@
   .feat { border-radius: 18px; }
   .feat__rank { font-size: 64px; }
 }
+
+/* Achievements without a photo, and a featured result that isn't a rank. */
+.ach-photo-fallback { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse 70% 70% at 30% 20%, rgb(0 255 160 / 18%), transparent 70%), radial-gradient(rgb(134 193 163 / 18%) .8px, transparent .8px) 0 0 / 18px 18px, var(--ink-raised); }
+.ach-photo-fallback span { color: var(--mint); font: clamp(28px, 4vw, 44px)/1 var(--pixel); text-shadow: 0 0 26px rgb(0 255 160 / 45%); }
+.ach-card__photo img { display: block; }
+.feat__result { margin: 6px 0 0; font: clamp(40px, 5vw, 64px)/1 var(--pixel); text-shadow: 0 0 40px currentColor; }
+.ach-empty { width: min(640px, 100%); margin: 0; }
+.ach-empty .terminal__body { white-space: normal; }
