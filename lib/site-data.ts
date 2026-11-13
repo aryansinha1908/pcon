@@ -9,8 +9,8 @@ export const navLinks = [
   { label: "About", href: "/#about" },
   { label: "What we do", href: "/#domains" },
   { label: "Roadmaps", href: "/roadmaps" },
-  { label: "Events", href: "/#events" },
-  { label: "Blogs", href: "/#blogs" },
+  { label: "Events", href: "/events" },
+  { label: "Blogs", href: "/blogs" },
   { label: "Community", href: "/#community" },
 ];
 
