@@ -7,7 +7,7 @@ import { TeamHeading } from "./team-heading";
 import "./team.css";
 
 export const metadata: Metadata = {
-  title: "Team — PCON",
+  title: "Our Team",
   description: "Meet the team of the Programming Club of NIT Jamshedpur across batches.",
 };
 
@@ -15,7 +15,7 @@ export default function TeamPage() {
   return (
     <div className="site-shell" id="top">
       <SiteHeader />
-      <main className="team-page">
+      <main className="team-page" id="main" tabIndex={-1}>
         <section className="team-hero" aria-labelledby="team-hero-title">
           <div className="team-hero__media" aria-hidden="true">
             {/* eslint-disable-next-line @next/next/no-img-element */}
