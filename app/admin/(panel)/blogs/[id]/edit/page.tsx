@@ -1,34 +1,55 @@
-import { notFound, redirect } from "next/navigation";
-import { requireUser } from "@/lib/auth-guards";
+import { notFound } from "next/navigation";
+import { requirePageRole } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
-import { updateBlog } from "../../../../_actions/blogs";
+import { getBlogCategories, getBlogAuthors } from "@/lib/blogs-db";
+import { updateBlogAction } from "../../../../_actions/blogs";
 import { BlogForm } from "../../../../_components/blog-form";
 import { PageHeader } from "../../../../_components/page-header";
 
-export const metadata = { title: "Edit blog" };
+export const metadata = { title: "Edit Blog Post" };
 
-export default async function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
-  // No role needed beyond being signed in: an author keeps control of their own
-  // blogs even after they stop being an admin.
-  const user = await requireUser();
+export default async function EditBlogPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  await requirePageRole("ADMIN");
   const { id } = await params;
-  const blog = await prisma.blog.findUnique({ where: { id } });
+  const blogId = parseInt(id, 10);
+
+  if (isNaN(blogId)) notFound();
+
+  const [blog, categories, authors] = await Promise.all([
+    prisma.blog.findUnique({
+      where: { id: blogId },
+      include: { category: true, author: true },
+    }),
+    getBlogCategories(),
+    getBlogAuthors(),
+  ]);
+
   if (!blog) notFound();
-  if (blog.authorId !== user.id) redirect("/admin/blogs?denied=1");
 
   return (
     <>
-      <PageHeader eyebrow="03 / BLOGS" title="Edit blog" />
+      <PageHeader eyebrow="03 / BLOGS" title={`Edit: ${blog.title}`} />
       <BlogForm
-        action={updateBlog.bind(null, blog.id)}
-        submitLabel="Save changes"
+        action={updateBlogAction.bind(null, blog.id)}
         defaults={{
           title: blog.title,
-          summary: blog.summary ?? "",
+          slug: blog.slug,
+          excerpt: blog.excerpt,
           content: blog.content,
-          tags: blog.tags.join(", "),
-          published: blog.published,
+          coverImageUrl: blog.coverImageUrl || "",
+          coverImageAlt: blog.coverImageAlt || "",
+          categoryId: blog.categoryId,
+          authorId: blog.authorId,
+          status: blog.status as "draft" | "published",
+          isFeatured: blog.isFeatured,
         }}
+        categories={categories}
+        authors={authors}
+        submitLabel="Save changes"
       />
     </>
   );

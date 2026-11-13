@@ -1,62 +1,75 @@
 import { describe, expect, it } from "vitest";
-import { createBlog, deleteBlog, setBlogPublished, updateBlog } from "@/app/admin/_actions/blogs";
+import {
+  createBlogAction,
+  updateBlogAction,
+  deleteBlogAction,
+  togglePublishedAction,
+} from "@/app/admin/_actions/blogs";
 import { prisma } from "@/lib/prisma";
 import { createUser, expectRedirect, form, hasTestDb, validBlog } from "./helpers";
 import { actingAs } from "./session";
 
-async function blogBy(authorId: string) {
-  await expectRedirect(actingAs(authorId, () => createBlog({}, form(validBlog))));
-  return prisma.blog.findFirstOrThrow({ where: { authorId } });
+async function ensureSeedData() {
+  const cat = await prisma.blogCategory.upsert({
+    where: { slug: "algorithms" },
+    update: {},
+    create: { name: "Algorithms", slug: "algorithms", hue: 162 },
+  });
+  let author = await prisma.blogAuthor.findFirst();
+  if (!author) {
+    author = await prisma.blogAuthor.create({
+      data: { name: "Aarav Sinha", roleTitle: "Pre-final year, CSE" },
+    });
+  }
+  return { cat, author };
 }
 
-describe.skipIf(!hasTestDb)("blogs: any admin creates, only the author changes", () => {
+describe.skipIf(!hasTestDb)("blogs: admin management and publish flows", () => {
   it("doesn't let members create blogs", async () => {
     const member = await createUser("MEMBER");
-    expect((await actingAs(member.id, () => createBlog({}, form(validBlog)))).error).toMatch(/permission/i);
+    expect((await actingAs(member.id, () => createBlogAction({}, form(validBlog)))).error).toMatch(/permission/i);
     expect(await prisma.blog.count()).toBe(0);
   });
 
-  it("saves an admin's blog as a draft with normalised tags", async () => {
+  it("saves an admin's blog as a draft", async () => {
     const admin = await createUser("ADMIN");
-    const blog = await blogBy(admin.id);
-    expect(blog.published).toBe(false);
-    expect(blog.tags).toEqual(["dsa", "dp"]);
+    const { cat, author } = await ensureSeedData();
+    const payload = {
+      ...validBlog,
+      categoryId: String(cat.id),
+      authorId: String(author.id),
+    };
+
+    await expectRedirect(actingAs(admin.id, () => createBlogAction({}, form(payload))));
+    const blog = await prisma.blog.findFirstOrThrow({ where: { title: validBlog.title } });
+    expect(blog.status).toBe("draft");
+    expect(blog.readTimeMinutes).toBeGreaterThanOrEqual(1);
   });
 
-  it("stops other admins, and even owners, from editing, publishing or deleting it", async () => {
-    const author = await createUser("ADMIN");
-    const otherAdmin = await createUser("ADMIN");
-    const owner = await createUser("OWNER");
-    const blog = await blogBy(author.id);
+  it("lets an admin edit, publish and delete blogs", async () => {
+    const admin = await createUser("ADMIN");
+    const { cat, author } = await ensureSeedData();
+    const payload = {
+      ...validBlog,
+      categoryId: String(cat.id),
+      authorId: String(author.id),
+    };
 
-    for (const user of [otherAdmin, owner]) {
-      const edit = await actingAs(user.id, () => updateBlog(blog.id, {}, form({ ...validBlog, title: "Hijacked" })));
-      expect(edit.error).toMatch(/only the author/i);
-      expect((await actingAs(user.id, () => setBlogPublished(blog.id, true))).error).toMatch(/only the author/i);
-      expect((await actingAs(user.id, () => deleteBlog(blog.id))).error).toMatch(/only the author/i);
-    }
-    const after = await prisma.blog.findUniqueOrThrow({ where: { id: blog.id } });
-    expect(after).toMatchObject({ title: validBlog.title, published: false });
-  });
+    await expectRedirect(actingAs(admin.id, () => createBlogAction({}, form(payload))));
+    const blog = await prisma.blog.findFirstOrThrow({ where: { title: validBlog.title } });
 
-  it("lets the author edit, publish and delete", async () => {
-    const author = await createUser("ADMIN");
-    const blog = await blogBy(author.id);
+    await expectRedirect(
+      actingAs(admin.id, () =>
+        updateBlogAction(blog.id, {}, form({ ...payload, title: "Intro to DP (v2)" }))
+      )
+    );
+    expect((await actingAs(admin.id, () => togglePublishedAction(blog.id, true))).ok).toBeTruthy();
 
-    await expectRedirect(actingAs(author.id, () => updateBlog(blog.id, {}, form({ ...validBlog, title: "Intro to DP (v2)" }))));
-    expect((await actingAs(author.id, () => setBlogPublished(blog.id, true))).ok).toBeTruthy();
-    expect(await prisma.blog.findUniqueOrThrow({ where: { id: blog.id } })).toMatchObject({ title: "Intro to DP (v2)", published: true });
+    const afterPublish = await prisma.blog.findUniqueOrThrow({ where: { id: blog.id } });
+    expect(afterPublish.title).toBe("Intro to DP (v2)");
+    expect(afterPublish.status).toBe("published");
 
-    expect((await actingAs(author.id, () => deleteBlog(blog.id))).ok).toBeTruthy();
-    expect(await prisma.blog.count()).toBe(0);
-  });
-
-  it("keeps an author in control of their blog after they stop being an admin", async () => {
-    const author = await createUser("ADMIN");
-    const blog = await blogBy(author.id);
-    await prisma.user.update({ where: { id: author.id }, data: { role: "MEMBER" } });
-
-    expect((await actingAs(author.id, () => setBlogPublished(blog.id, true))).ok).toBeTruthy();
-    expect((await actingAs(author.id, () => createBlog({}, form(validBlog)))).error).toMatch(/permission/i);
+    expect((await actingAs(admin.id, () => deleteBlogAction(blog.id))).ok).toBeTruthy();
+    expect(await prisma.blog.count({ where: { id: blog.id } })).toBe(0);
   });
 });

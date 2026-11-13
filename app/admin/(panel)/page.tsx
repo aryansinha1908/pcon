@@ -15,26 +15,28 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   const [myBlogs, stats, upcoming] = await Promise.all([
     prisma.blog.findMany({
-      where: { authorId: user.id },
+      where: isAdmin ? {} : { author: { memberId: user.id } },
       orderBy: { updatedAt: "desc" },
       take: 5,
-      select: { id: true, title: true, published: true, updatedAt: true },
-    }),
+      select: { id: true, title: true, status: true, updatedAt: true },
+    }).catch(() => []),
     isAdmin
       ? Promise.all([
-          prisma.blog.count({ where: { published: true } }),
-          prisma.blog.count({ where: { published: false } }),
-          prisma.event.count({ where: { endDate: { gte: now } } }),
-          prisma.teamMember.count({ where: { isActive: true } }),
+          prisma.blog.count({ where: { status: "published" } }).catch(() => 0),
+          prisma.blog.count({ where: { status: "draft" } }).catch(() => 0),
+          prisma.event.count({ where: { endDate: { gte: now } } }).catch(() => 0),
+          prisma.teamMember.count({ where: { isActive: true } }).catch(() => 0),
         ])
       : null,
     isAdmin
-      ? prisma.event.findMany({
-          where: { endDate: { gte: now } },
-          orderBy: { startDate: "asc" },
-          take: 5,
-          select: { id: true, title: true, startDate: true, location: true },
-        })
+      ? prisma.event
+          .findMany({
+            where: { endDate: { gte: now } },
+            orderBy: { startDate: "asc" },
+            take: 5,
+            select: { id: true, title: true, startDate: true, location: true },
+          })
+          .catch(() => [])
       : [],
   ]);
 
@@ -77,7 +79,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 <li key={b.id}>
                   <Link href={`/admin/blogs/${b.id}/edit`}>{b.title}</Link>
                   <span className="adm-muted">
-                    {b.published ? "Published" : "Draft"} · {formatDate(b.updatedAt)}
+                    {b.status === "published" ? "Published" : "Draft"} · {formatDate(b.updatedAt)}
                   </span>
                 </li>
               ))}

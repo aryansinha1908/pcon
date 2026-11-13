@@ -25,11 +25,11 @@ model User {
   image         String?
   role          Role      @default(MEMBER)
 
-  accounts      Account[]
-  sessions      Session[]
-  blogs         Blog[]
-  eventsCreated Event[]
-  teamMember    TeamMember?
+  accounts       Account[]
+  sessions       Session[]
+  authorProfiles BlogAuthor[]
+  eventsCreated  Event[]
+  teamMember     TeamMember?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,22 +76,56 @@ model VerificationToken {
 
 // ---------- Site content ----------
 
+model BlogCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  slug      String   @unique
+  hue       Int      @default(160)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  blogs Blog[]
+
+  @@map("blog_categories")
+}
+
+model BlogAuthor {
+  id        Int      @id @default(autoincrement())
+  memberId  String?  @map("member_id")
+  name      String
+  roleTitle String   @map("role_title")
+  bio       String   @default("")
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  member User?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  blogs  Blog[]
+
+  @@map("blog_authors")
+}
+
 model Blog {
-  id        String   @id @default(cuid())
-  title     String
-  summary   String?
-  content   String
-  tags      String[]
-  published Boolean  @default(false)
+  id              Int       @id @default(autoincrement())
+  slug            String    @unique
+  title           String
+  excerpt         String
+  content         String
+  coverImageUrl   String?   @map("cover_image_url")
+  coverImageAlt   String?   @map("cover_image_alt")
+  categoryId      Int       @map("category_id")
+  authorId        Int       @map("author_id")
+  status          String    @default("draft") // 'draft' | 'published'
+  isFeatured      Boolean   @default(false) @map("is_featured")
+  readTimeMinutes Int       @default(1) @map("read_time_minutes")
+  publishedAt     DateTime? @map("published_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  /// Only the author may edit or delete a blog — no admin override.
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
+  category BlogCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  author   BlogAuthor   @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([published, createdAt])
+  @@index([status, publishedAt(sort: Desc)], map: "idx_blogs_status_published")
+  @@index([categoryId], map: "idx_blogs_category")
+  @@map("blogs")
 }
 
 model Event {

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
 import { requireUser } from "@/lib/auth-guards";
 import { hasRole, roleLabel } from "@/lib/roles";
@@ -40,7 +41,14 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <form
             action={async () => {
               "use server";
-              await signOut({ redirectTo: "/admin/login" });
+              const { cookies } = await import("next/headers");
+              const cookieStore = await cookies();
+              cookieStore.delete("pcon_dev_admin_session");
+              try {
+                await signOut({ redirectTo: "/admin/login" });
+              } catch {
+                redirect("/admin/login");
+              }
             }}
           >
             <button type="submit" className="adm-btn adm-btn--ghost adm-btn--sm">

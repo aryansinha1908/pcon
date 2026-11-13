@@ -29,7 +29,7 @@ export function form(fields: Record<string, string>): FormData {
 
 export async function resetDb() {
   await prisma.$executeRawUnsafe(
-    'TRUNCATE "TeamMember", "Blog", "Event", "Session", "Account", "VerificationToken", "User" CASCADE',
+    'TRUNCATE "TeamMember", "blogs", "blog_authors", "blog_categories", "Event", "Session", "Account", "VerificationToken", "User" CASCADE',
   );
 }
 
@@ -51,6 +51,9 @@ export const validEvent = {
 
 export const validBlog = {
   title: "Intro to DP",
-  content: "Dynamic programming breaks a problem into overlapping subproblems.",
-  tags: "dsa, dp",
+  excerpt: "Dynamic programming breaks a problem down cleanly.",
+  content: "Dynamic programming breaks a problem into overlapping subproblems and memoizes state.",
+  categoryId: "1",
+  authorId: "1",
+  status: "draft",
 };

@@ -7,11 +7,11 @@ import { prisma } from "@/lib/prisma";
 const ALLOWED_DOMAIN = (process.env.ALLOWED_EMAIL_DOMAIN ?? "nitjsr.ac.in").toLowerCase();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   adapter: PrismaAdapter(prisma),
   // Database sessions: a role change (e.g. demoting an admin) takes effect on
   // the very next request instead of waiting for a JWT to expire.
   session: { strategy: "database" },
-  trustHost: true,
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
