@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -14,6 +14,9 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     const session = await auth();
     if (session?.user) return session.user;
   } catch (err) {
+    // Next.js signals (e.g. "this route reads headers, render it per request")
+    // are thrown as errors; hand them back instead of logging them as failures.
+    unstable_rethrow(err);
     console.warn("auth() check encountered error:", (err as Error).message);
   }
 
@@ -30,7 +33,8 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
           email: devCookie.value,
         };
       }
-    } catch {
+    } catch (err) {
+      unstable_rethrow(err);
       // outside request context or header access
     }
   }
