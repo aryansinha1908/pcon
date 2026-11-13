@@ -1,6 +1,6 @@
 import { PrismaClient, type Role } from "@prisma/client";
 import { calculateReadTimeMinutes } from "../lib/blog-utils";
-import { SEED_CATEGORIES, SEED_AUTHORS, SEED_POSTS } from "../lib/seed-data";
+import { SEED_CATEGORIES, SEED_AUTHORS, SEED_EVENTS, SEED_POSTS } from "../lib/seed-data";
 
 const prisma = new PrismaClient();
 const RANK: Record<Role, number> = { MEMBER: 0, ADMIN: 1, OWNER: 2 };
@@ -86,6 +86,13 @@ export async function seedBlogData() {
   }
 }
 
+export async function seedEvents() {
+  console.log("Seeding events...");
+  for (const { id, ...event } of SEED_EVENTS) {
+    await prisma.event.upsert({ where: { id }, update: event, create: { id, ...event } });
+  }
+}
+
 async function main() {
   const admins = emailsFrom("SEED_ADMIN_EMAILS");
   const owners = emailsFrom("SEED_OWNER_EMAILS");
@@ -99,6 +106,13 @@ async function main() {
     console.log("Blog data seeded successfully.");
   } catch (err) {
     console.warn("Could not seed database directly (database might be offline):", (err as Error).message);
+  }
+
+  try {
+    await seedEvents();
+    console.log("Events seeded successfully.");
+  } catch (err) {
+    console.warn("Could not seed events (database might be offline):", (err as Error).message);
   }
 }
 

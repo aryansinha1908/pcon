@@ -8,9 +8,9 @@ export const focusAreas = [
 export const navLinks = [
   { label: "Roadmaps", href: "/roadmaps" },
   { label: "Events", href: "/events" },
+  { label: "Achievements", href: "/achievements" },
   { label: "Blogs", href: "/blogs" },
-  // Becomes "Our Team" (/team) once that page ships; until then it points at the home section.
-  { label: "Community", href: "/#community" },
+  { label: "Our Team", href: "/team" },
 ];
 
 export const heroPillars = [
