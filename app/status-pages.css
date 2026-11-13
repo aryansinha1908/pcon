@@ -111,13 +111,14 @@ button.button { border: 1px solid transparent; font-family: inherit; cursor: poi
 html.is-entering body:has(> .pcon-loader--splash) .site-header { animation: enter-down .6s cubic-bezier(.2, .8, .2, 1) var(--enter) both; }
 html.is-entering body:has(> .pcon-loader--splash) :is(
   .roadmaps-hero .shell > *, .pathway__trunk > *,
+  .events-hero .shell > *, .fame-hero .shell > *, .ach-hero .shell > *,
   .status-page__inner > *
 ) { animation: enter-up .8s cubic-bezier(.2, .8, .2, 1) calc(var(--enter) + .1s + var(--n, 0) * .09s) both; }
 /* Stagger: each element waits a little longer than the one before. */
-:is(.roadmaps-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(2) { --n: 1; }
-:is(.roadmaps-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(3) { --n: 2; }
-:is(.roadmaps-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(4) { --n: 3; }
-:is(.roadmaps-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(5) { --n: 4; }
+:is(.roadmaps-hero .shell, .events-hero .shell, .fame-hero .shell, .ach-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(2) { --n: 1; }
+:is(.roadmaps-hero .shell, .events-hero .shell, .fame-hero .shell, .ach-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(3) { --n: 2; }
+:is(.roadmaps-hero .shell, .events-hero .shell, .fame-hero .shell, .ach-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(4) { --n: 3; }
+:is(.roadmaps-hero .shell, .events-hero .shell, .fame-hero .shell, .ach-hero .shell, .status-page__inner, .pathway__trunk) > :nth-child(5) { --n: 4; }
 :is(.status-page__inner) > :nth-child(n + 6) { --n: 5; }
 .pathway__trunk > * { --n: 4; }
 .pathway__trunk > :nth-child(2) { --n: 5; }
@@ -140,5 +141,5 @@ body:has(.adm-root) > .pcon-loader--splash { display: none; }
 body:has(.adm-root) .site-header { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .pcon-loader--splash { display: none; }
-  body:has(> .pcon-loader--splash) :is(.site-header, .roadmaps-hero .shell > *, .pathway__trunk > *, .status-page__inner > *) { animation: none !important; }
+  body:has(> .pcon-loader--splash) :is(.site-header, .roadmaps-hero .shell > *, .events-hero .shell > *, .fame-hero .shell > *, .ach-hero .shell > *, .pathway__trunk > *, .status-page__inner > *) { animation: none !important; }
 }

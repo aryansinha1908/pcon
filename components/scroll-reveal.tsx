@@ -5,7 +5,7 @@ import { useEffect } from "react";
 /**
  * Progressive-enhancement scroll reveal for elements marked [data-reveal].
  * Without JS (or if something goes wrong), the <html> element never gets
- * `.reveal-ready`, so the CSS in events.css never hides anything — cards are
+ * `.reveal-ready`, so the reveal CSS never hides anything — cards are
  * visible by default. Mirrors the same safe pattern as the homepage's
  * `html.build-ready [data-build]` system in globals.css.
  */
@@ -19,7 +19,7 @@ export function ScrollReveal() {
 
     if (!("IntersectionObserver" in window)) {
       targets.forEach((el) => el.classList.add("is-revealed"));
-      return;
+      return () => root.classList.remove("reveal-ready");
     }
 
     targets.forEach((el, i) => {
@@ -39,7 +39,11 @@ export function ScrollReveal() {
     );
     targets.forEach((el) => observer.observe(el));
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      // Leaving the page on a client navigation: don't leave other pages' [data-reveal] hidden.
+      root.classList.remove("reveal-ready");
+    };
   }, []);
 
   return null;

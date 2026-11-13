@@ -166,3 +166,39 @@ Nodes always follow the longest valid chain, so cheating costs more than honesty
   },
 ];
 
+/**
+ * Test events taken from the club's Instagram posts (@pconjsr, Oct 2026).
+ * The posts don't give exact times, venues or registration links, so the
+ * times are placeholders, and dates other than HACKSPHERE'26 (3 Jul 2026)
+ * are the days just before each recap post. Fixed ids make `npm run db:seed` safe to re-run.
+ */
+export const SEED_EVENTS = [
+  {
+    id: "seed-event-hacksphere-26",
+    title: "HACKSPHERE'26",
+    description: "A battle of ideas, innovation and problem-solving: PCON's hackathon, where teams built and pitched their projects.",
+    startDate: new Date("2026-07-03T09:00:00+05:30"),
+    endDate: new Date("2026-07-03T21:00:00+05:30"),
+  },
+  {
+    id: "seed-event-dp-bit-workshop",
+    title: "Workshop: Dynamic Programming & Bit Manipulation",
+    description: "A hands-on session to strengthen the fundamentals of dynamic programming and bit manipulation, two topics at the heart of competitive programming.",
+    startDate: new Date("2026-10-11T17:00:00+05:30"),
+    endDate: new Date("2026-10-11T19:00:00+05:30"),
+  },
+  {
+    id: "seed-event-code-pray-submit-26",
+    title: "Code, Pray and Submit '26",
+    description: "An offline competitive programming contest where participants put their problem-solving skills to the test on challenging problems.",
+    startDate: new Date("2026-10-12T10:00:00+05:30"),
+    endDate: new Date("2026-10-12T13:00:00+05:30"),
+  },
+  {
+    id: "seed-event-system-design-workshop",
+    title: "Workshop: System Design",
+    description: "High-level design (architecture, scalability, databases, APIs, caching and load balancing) and low-level design principles for clean, modular, maintainable code.",
+    startDate: new Date("2026-10-22T17:00:00+05:30"),
+    endDate: new Date("2026-10-22T19:00:00+05:30"),
+  },
+];

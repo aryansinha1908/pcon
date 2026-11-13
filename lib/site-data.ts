@@ -6,13 +6,11 @@ export const focusAreas = [
 ];
 
 export const navLinks = [
-  { label: "About", href: "/#about" },
-  { label: "What we do", href: "/#domains" },
   { label: "Roadmaps", href: "/roadmaps" },
   { label: "Events", href: "/events" },
+  { label: "Achievements", href: "/achievements" },
   { label: "Blogs", href: "/blogs" },
-  { label: "Team", href: "/team" },
-  { label: "Community", href: "/#community" },
+  { label: "Our Team", href: "/team" },
 ];
 
 export const heroPillars = [
