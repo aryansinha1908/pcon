@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     const formattedMembers = members.map((m) => ({
       ...m,
       rollNumber: m.studentId,
-      specializations: (m.specializations ?? []).map((s: any) => s.name ?? s),
+      specializations: (m.specializations ?? []).map((s: { name: string } | string) => (typeof s === "string" ? s : s.name)),
     }));
 
     return NextResponse.json({
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
         data: {
           ...member,
           rollNumber: member.studentId,
-          specializations: (member.specializations ?? []).map((s: any) => s.name ?? s),
+          specializations: (member.specializations ?? []).map((s: { name: string } | string) => (typeof s === "string" ? s : s.name)),
         },
       },
       { status: 201 }

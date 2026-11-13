@@ -191,3 +191,81 @@ model MemberSpecialization {
   @@unique([teamMemberId, name])
   @@index([teamMemberId])
 }
+
+// ─────────────────────────────────────────────────────────────
+//  Achievements (/achievements) and Hall of Fame (/hall-of-fame)
+// ─────────────────────────────────────────────────────────────
+
+/// A club achievement at an outside competition (ICPC regionals, national
+/// hackathons). Shown on /achievements.
+model Achievement {
+  id        String  @id @default(cuid())
+  /// Stable key, used by the seed so re-running it never duplicates rows.
+  slug      String  @unique
+  title     String
+  organiser String
+  year      Int
+  /// Optional free-text dates, e.g. "22–23 Dec 2025".
+  dates     String?
+  /// "ICPC" | "Hackathon" | "Other" (validated in lib/validation.ts).
+  kind      String
+  /// Short badge text, e.g. "Winner" or "Rank 54".
+  result    String
+  /// Badge colour: "winner" | "runner-up" | "finalist" | "rank".
+  tier      String
+  /// One line of context, e.g. "1st among all NITs".
+  highlight String?
+  imageUrl  String?
+  imageAlt  String?
+  /// The one spotlighted at the top of the page.
+  featured  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([year])
+  @@map("achievements")
+}
+
+/// Results of an event the club ran. Shown on /hall-of-fame.
+model HallOfFameEntry {
+  id      String   @id @default(cuid())
+  slug    String   @unique
+  event   String
+  /// Calendar day the event was held.
+  date    DateTime @db.Date
+  /// "Contest" | "Hackathon" | "Quiz" | "Other"
+  kind    String
+  summary String?
+  /// Results post or standings.
+  link    String?
+
+  placements HallOfFamePlacement[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@map("hall_of_fame_entries")
+}
+
+/// A podium place (rank 1–3) or a special mention (rank null) in a Hall of Fame entry.
+model HallOfFamePlacement {
+  id      String          @id @default(cuid())
+  entry   HallOfFameEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  entryId String
+  /// 1, 2 or 3 for the podium; null for a special mention.
+  rank    Int?
+  name    String
+  /// Roll number, e.g. "2025UGCS010".
+  roll    String?
+  /// Named prize for a special mention, e.g. "Best UI/UX".
+  award   String?
+  /// Members, for team events.
+  team    String[]        @default([])
+  /// Display order among the mentions.
+  order   Int             @default(0)
+
+  @@index([entryId])
+  @@map("hall_of_fame_placements")
+}

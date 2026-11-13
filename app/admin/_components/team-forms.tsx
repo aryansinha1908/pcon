@@ -136,21 +136,33 @@ export function TeamAddForm({
   const [selectedSpecs, setSelectedSpecs] = useState<string[]>([]);
   const [customSpec, setCustomSpec] = useState("");
 
-  useEffect(() => {
+  // Follow the batch tab the admin is on (adjusted during render, not in an effect).
+  const [prevDefaultBatch, setPrevDefaultBatch] = useState(defaultBatch);
+  if (defaultBatch !== prevDefaultBatch) {
+    setPrevDefaultBatch(defaultBatch);
     setBatchValue(defaultBatch);
-  }, [defaultBatch]);
+  }
 
-  useEffect(() => {
+  // After a successful add, clear the form's own state once per result...
+  const [handledState, setHandledState] = useState(state);
+  if (state !== handledState) {
+    setHandledState(state);
     if (state.ok) {
-      formRef.current?.reset();
       setBatchValue(defaultBatch);
       setPhotoUrl("");
       setSelectedSpecs([]);
       setCustomSpec("");
       setUploadError(null);
+    }
+  }
+
+  // ...and reset the DOM inputs / notify the parent, which are real side effects.
+  useEffect(() => {
+    if (state.ok) {
+      formRef.current?.reset();
       onSuccess?.();
     }
-  }, [state, defaultBatch, onSuccess]);
+  }, [state, onSuccess]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -383,16 +395,22 @@ export function TeamRow({ member }: { member: TeamRowData }) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(update, {});
   const onSubmit = useKeepValuesSubmit(formAction);
 
-  useEffect(() => {
+  // Show the saved photo when the member changes (adjusted during render, not in an effect).
+  const [prevPhoto, setPrevPhoto] = useState(member.photo);
+  if (member.photo !== prevPhoto) {
+    setPrevPhoto(member.photo);
     setPhotoUrl(member.photo ?? "");
-  }, [member.photo]);
+  }
 
-  useEffect(() => {
+  // Close the editor once per successful save.
+  const [handledState, setHandledState] = useState(state);
+  if (state !== handledState) {
+    setHandledState(state);
     if (state.ok) {
       setIsEditing(false);
       setUploadError(null);
     }
-  }, [state]);
+  }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

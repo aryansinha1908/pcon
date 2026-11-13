@@ -1,6 +1,6 @@
 import { PrismaClient, type Role } from "@prisma/client";
 import { calculateReadTimeMinutes } from "../lib/blog-utils";
-import { SEED_CATEGORIES, SEED_AUTHORS, SEED_EVENTS, SEED_POSTS } from "../lib/seed-data";
+import { SEED_ACHIEVEMENTS, SEED_AUTHORS, SEED_CATEGORIES, SEED_EVENTS, SEED_HALL_OF_FAME, SEED_POSTS } from "../lib/seed-data";
 
 // `npm run db:seed` runs plain tsx, which doesn't read .env. Load it here
 // instead of relying on Prisma doing it as a side effect of the import.
@@ -101,6 +101,39 @@ export async function seedEvents() {
   }
 }
 
+/**
+ * Achievements and hall of fame: create-only. Rows whose slug already exists are
+ * left alone, so re-running the seed never overwrites admin-panel edits.
+ */
+export async function seedAchievements() {
+  console.log("Seeding achievements...");
+  for (const a of SEED_ACHIEVEMENTS) {
+    if (await prisma.achievement.findUnique({ where: { slug: a.slug } })) continue;
+    await prisma.achievement.create({ data: a });
+  }
+
+  console.log("Seeding hall of fame...");
+  for (const entry of SEED_HALL_OF_FAME) {
+    if (await prisma.hallOfFameEntry.findUnique({ where: { slug: entry.slug } })) continue;
+    await prisma.hallOfFameEntry.create({
+      data: {
+        slug: entry.slug,
+        event: entry.event,
+        date: new Date(`${entry.date}T00:00:00Z`),
+        kind: entry.kind,
+        summary: entry.summary,
+        link: entry.link,
+        placements: {
+          create: [
+            ...entry.podium.map((p) => ({ rank: p.rank, name: p.name, roll: p.roll, team: p.team ?? [] })),
+            ...(entry.mentions ?? []).map((m, order) => ({ rank: null, name: m.name, roll: m.roll, award: m.award, order })),
+          ],
+        },
+      },
+    });
+  }
+}
+
 async function main() {
   const admins = emailsFrom("SEED_ADMIN_EMAILS");
   const owners = emailsFrom("SEED_OWNER_EMAILS");
@@ -121,6 +154,13 @@ async function main() {
     console.log("Events seeded successfully.");
   } catch (err) {
     console.warn("Could not seed events (database might be offline):", (err as Error).message);
+  }
+
+  try {
+    await seedAchievements();
+    console.log("Achievements and hall of fame seeded successfully.");
+  } catch (err) {
+    console.warn("Could not seed achievements (database might be offline):", (err as Error).message);
   }
 }
 

@@ -110,7 +110,7 @@ describe("Team APIs", () => {
 
       const req = new NextRequest("http://localhost:3000/api/team/members?includeInactive=true");
       // unauthenticated or non-admin should still only query active
-      vi.mocked(auth).mockResolvedValueOnce(null as any);
+      vi.mocked(auth).mockResolvedValueOnce(null as never);
       await getMembers(req);
 
       expect(prisma.teamMember.findMany).toHaveBeenCalledWith(
@@ -151,7 +151,7 @@ describe("Team APIs", () => {
 
   describe("POST /api/team/members", () => {
     it("4. creates a valid team member when authenticated as ADMIN", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as never);
       vi.mocked(prisma.teamMember.create).mockResolvedValueOnce(sampleMember);
 
       const payload = {
@@ -184,7 +184,7 @@ describe("Team APIs", () => {
     });
 
     it("7. rejects invalid input validation (invalid URLs, invalid batch)", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as never);
 
       const req = new NextRequest("http://localhost:3000/api/team/members", {
         method: "POST",
@@ -205,7 +205,7 @@ describe("Team APIs", () => {
 
     it("8. rejects unauthorized (401) and non-admin (403) requests", async () => {
       // 401 when no session
-      vi.mocked(auth).mockResolvedValueOnce(null as any);
+      vi.mocked(auth).mockResolvedValueOnce(null as never);
       const req1 = new NextRequest("http://localhost:3000/api/team/members", {
         method: "POST",
         body: JSON.stringify({ name: "Test" }),
@@ -214,7 +214,7 @@ describe("Team APIs", () => {
       expect(res1.status).toBe(401);
 
       // 403 when MEMBER role
-      vi.mocked(auth).mockResolvedValueOnce(mockMemberSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockMemberSession as never);
       const req2 = new NextRequest("http://localhost:3000/api/team/members", {
         method: "POST",
         body: JSON.stringify({ name: "Test" }),
@@ -226,7 +226,7 @@ describe("Team APIs", () => {
 
   describe("PUT /api/team/members/[id]", () => {
     it("5. updates an existing member", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as never);
       vi.mocked(prisma.teamMember.findUnique).mockResolvedValueOnce(sampleMember);
       vi.mocked(prisma.teamMember.update).mockResolvedValueOnce({
         ...sampleMember,
@@ -247,7 +247,7 @@ describe("Team APIs", () => {
     });
 
     it("rejects unauthorized update requests", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(null as any);
+      vi.mocked(auth).mockResolvedValueOnce(null as never);
 
       const req = new NextRequest("http://localhost:3000/api/team/members/mem-1", {
         method: "PUT",
@@ -261,7 +261,7 @@ describe("Team APIs", () => {
 
   describe("DELETE /api/team/members/[id]", () => {
     it("6. deletes a member by ID", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as never);
       vi.mocked(prisma.teamMember.findUnique).mockResolvedValueOnce(sampleMember);
       vi.mocked(prisma.teamMember.delete).mockResolvedValueOnce(sampleMember);
 
@@ -278,7 +278,7 @@ describe("Team APIs", () => {
     });
 
     it("supports soft-deactivation when ?deactivate=true", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as never);
       vi.mocked(prisma.teamMember.findUnique).mockResolvedValueOnce(sampleMember);
       vi.mocked(prisma.teamMember.update).mockResolvedValueOnce({
         ...sampleMember,
@@ -304,7 +304,7 @@ describe("Team APIs", () => {
 
   describe("POST /api/upload", () => {
     it("9. validates file type (MIME type rejection)", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as never);
 
       const formData = new FormData();
       const fakeFile = new File(["fake text content"], "notes.txt", { type: "text/plain" });
@@ -324,7 +324,7 @@ describe("Team APIs", () => {
     });
 
     it("rejects files exceeding 5MB limit", async () => {
-      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as any);
+      vi.mocked(auth).mockResolvedValueOnce(mockAdminSession as never);
 
       // Create a mock large file
       const largeContent = new Uint8Array(6 * 1024 * 1024);

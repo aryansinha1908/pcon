@@ -5,11 +5,15 @@ import { PodiumReveal } from "@/components/podium-reveal";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { achievements, formatAchievementDate, podiumBoard, yearOf, type Achievement, type Mention, type Placement } from "@/lib/hall-of-fame";
+import { formatAchievementDate, getHallOfFame, podiumBoard, yearOf, type FameEntry, type Mention, type Placement } from "@/lib/hall-of-fame";
 import { baseOpenGraph } from "@/lib/site-url";
 import "./hall-of-fame.css";
 
 const description = "The PCON hall of fame: winners and top finishers from contests, hackathons and other events run by the Programming Club of NIT Jamshedpur.";
+
+// Entries are edited in the admin panel: render per request (and never query
+// the database at build time, where CI has no real database).
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Hall of Fame",
@@ -72,7 +76,7 @@ function Mentions({ names }: { names?: Mention[] }) {
   );
 }
 
-function Plaque({ achievement }: { achievement: Achievement }) {
+function Plaque({ achievement }: { achievement: FameEntry }) {
   const podium = [...achievement.podium].sort((a, b) => a.rank - b.rank);
   return (
     <div data-reveal>
@@ -112,9 +116,10 @@ function Plaque({ achievement }: { achievement: Achievement }) {
   );
 }
 
-export default function HallOfFamePage() {
+export default async function HallOfFamePage() {
+  const achievements = await getHallOfFame();
   const latest = achievements[0];
-  const board = podiumBoard();
+  const board = podiumBoard(achievements);
   const repeatWinners = board.filter((entry) => entry.total >= 2);
   const finishes = achievements.reduce((sum, a) => sum + a.podium.length, 0);
   const years = [...new Set(achievements.map(yearOf))];
@@ -179,7 +184,7 @@ export default function HallOfFamePage() {
                 <div className="fame-year" key={year}>
                   <h3 className="fame-year__label"><span>{year}</span><i aria-hidden="true" /></h3>
                   <div className="plaques">
-                    {achievements.filter((a) => yearOf(a) === year).map((a) => <Plaque achievement={a} key={a.slug} />)}
+                    {achievements.filter((a) => yearOf(a) === year).map((a) => <Plaque achievement={a} key={a.id} />)}
                   </div>
                 </div>
               ))}

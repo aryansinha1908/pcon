@@ -29,7 +29,7 @@ export function form(fields: Record<string, string>): FormData {
 
 export async function resetDb() {
   await prisma.$executeRawUnsafe(
-    'TRUNCATE "TeamMember", "blogs", "blog_authors", "blog_categories", "Event", "Session", "Account", "VerificationToken", "User" CASCADE',
+    'TRUNCATE "hall_of_fame_placements", "hall_of_fame_entries", "achievements", "TeamMember", "blogs", "blog_authors", "blog_categories", "Event", "Session", "Account", "VerificationToken", "User" CASCADE',
   );
 }
 
@@ -47,6 +47,29 @@ export const validEvent = {
   location: "CSE Lab 3",
   startDate: "2026-12-01T18:00",
   endDate: "2026-12-01T22:00",
+};
+
+export const validAchievement = {
+  title: "ICPC Asia Kanpur Regional 2025",
+  organiser: "ICPC",
+  year: "2025",
+  kind: "ICPC",
+  result: "Rank 54",
+  tier: "rank",
+  highlight: "1st among all NITs",
+  imageUrl: "/achievements/icpc-kanpur-25.jpg",
+};
+
+export const validFameEntry = {
+  event: "HACKSPHERE'26",
+  date: "2026-07-03",
+  kind: "Hackathon",
+  place1_name: "Lakshya Kumar Sudhera",
+  place1_roll: "2025ugcs055",
+  place2_name: "Raunak Shrivastava",
+  place3_name: "Team Byte",
+  place3_team: "Asha, Ravi ,  Meera",
+  mentions: "Raushan Kumar | 2025UGMM037 | Best UI/UX\nSujal Bhatu",
 };
 
 export const validBlog = {

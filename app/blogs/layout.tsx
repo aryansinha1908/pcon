@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blog | PCON NIT Jamshedpur",
+  title: "Blogs",
   description: "Tutorials, deep dives and lessons learned, written by the students of NIT Jamshedpur.",
 };
 
@@ -28,7 +28,7 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
     <div className={`site-shell blog-theme ${dmSans.variable} ${jetbrainsMono.variable}`} id="top">
       <SiteHeader />
       <div className="blog-wrap">
-        <main id="app">{children}</main>
+        <main id="main" tabIndex={-1}>{children}</main>
       </div>
       <SiteFooter />
     </div>

@@ -202,3 +202,140 @@ export const SEED_EVENTS = [
     endDate: new Date("2026-10-22T19:00:00+05:30"),
   },
 ];
+
+// ───── Achievements and hall of fame ─────
+// The entries the two pages launched with. `npm run db:seed` only creates rows
+// whose slug is missing, so it never overwrites edits made in the admin panel.
+
+export type SeedFameEntry = {
+  slug: string;
+  event: string;
+  /** YYYY-MM-DD */
+  date: string;
+  kind: "Contest" | "Hackathon" | "Quiz" | "Other";
+  summary?: string;
+  link?: string;
+  podium: { rank: 1 | 2 | 3; name: string; roll?: string; team?: string[] }[];
+  mentions?: { name: string; roll?: string; award?: string }[];
+};
+
+export const SEED_HALL_OF_FAME: SeedFameEntry[] = [
+  {
+    slug: "hacksphere-26",
+    event: "HACKSPHERE'26",
+    date: "2026-07-03",
+    kind: "Hackathon",
+    summary: "A battle of ideas, innovation and problem-solving. The judges called it a genuinely tough decision.",
+    link: "https://www.instagram.com/p/DeeIT_8iNbb/",
+    podium: [
+      { rank: 1, name: "Lakshya Kumar Sudhera", roll: "2025UGCS055" },
+      { rank: 2, name: "Raunak Shrivastava", roll: "2025UGEE045" },
+      { rank: 3, name: "Satyam Sagar", roll: "2025UGCS010" },
+    ],
+    mentions: [{ name: "Raushan Kumar", roll: "2025UGMM037", award: "Best UI/UX" }],
+  },
+  {
+    slug: "code-pray-and-submit-26",
+    event: "Code, Pray and Submit '26",
+    // Results post: 14 Oct 2026; the contest ran shortly before it.
+    date: "2026-10-12",
+    kind: "Contest",
+    summary: "An offline competitive programming contest run alongside the club's DP and bit manipulation workshop.",
+    link: "https://www.instagram.com/p/DefyF29n_wG/",
+    podium: [
+      { rank: 1, name: "Rajput Suraj", roll: "2025UGCS111" },
+      { rank: 2, name: "Satyam Sagar", roll: "2025UGCS010" },
+      { rank: 3, name: "Dheeraj Verma", roll: "2025UGCS047" },
+    ],
+  },
+  {
+    slug: "march-codekarma-2024",
+    event: "March CodeKarma 2024",
+    date: "2024-03-09",
+    kind: "Contest",
+    summary: "The club's monthly programming contest. Special mentions went to the coders who broke into the top five.",
+    podium: [
+      { rank: 1, name: "Om Raj", roll: "2023UGCS022" },
+      { rank: 2, name: "Abhinav Vishen", roll: "2023UGCS010" },
+      { rank: 3, name: "Khushi Malviya", roll: "2023UGMM074" },
+    ],
+    mentions: [
+      { name: "Sujal Bhatu", roll: "2023UGCS119" },
+      { name: "Apoorva Singh", roll: "2023UGCS025" },
+    ],
+  },
+];
+
+/** From the seniors' club deck. Photos are in public/achievements/. */
+export const SEED_ACHIEVEMENTS = [
+  {
+    slug: "icpc-kanpur-2025",
+    title: "ICPC Asia Kanpur Regional 2025",
+    organiser: "ICPC · CSJM University, Kanpur",
+    year: 2025,
+    dates: "22–23 Dec 2025",
+    kind: "ICPC",
+    result: "Rank 54",
+    tier: "rank",
+    highlight: "1st among all NITs",
+    imageUrl: "/achievements/icpc-kanpur-25.jpg",
+    imageAlt: "PCON's team in front of the ICPC Kanpur Site 2025 welcome banner",
+    featured: true,
+  },
+  {
+    slug: "jpmc-code-for-good-2025",
+    title: "Code for Good 2025",
+    organiser: "JPMorgan Chase",
+    year: 2025,
+    kind: "Hackathon",
+    result: "Winner",
+    tier: "winner",
+    imageUrl: "/achievements/jpmc-code-for-good-25.jpg",
+    imageAlt: "The winning team at JPMorgan Chase Code for Good 2025",
+  },
+  {
+    slug: "isro-bah-2025",
+    title: "Bharatiya Antariksh Hackathon 2025",
+    organiser: "ISRO",
+    year: 2025,
+    kind: "Hackathon",
+    result: "Finalist",
+    tier: "finalist",
+    imageUrl: "/achievements/isro-bah-25.jpg",
+    imageAlt: "PCON's finalist team outside an ISRO centre, beside a rocket model",
+  },
+  {
+    slug: "icpc-amritapuri-2025",
+    title: "ICPC Asia Amritapuri Regional 2025",
+    organiser: "ICPC · Amrita Vishwa Vidyapeetham",
+    year: 2025,
+    kind: "ICPC",
+    result: "Rank 183",
+    tier: "rank",
+    highlight: "Out of 360+ teams",
+    imageUrl: "/achievements/icpc-amritapuri-25.jpg",
+    imageAlt: "PCON's team at the ICPC Amritapuri Site Regionals 2025",
+  },
+  {
+    slug: "adobe-gensolve-2024",
+    title: "Adobe GenSolve 2024",
+    organiser: "Adobe",
+    year: 2024,
+    kind: "Hackathon",
+    result: "Winner",
+    tier: "winner",
+    imageUrl: "/achievements/adobe-gensolve-24.jpg",
+    imageAlt: "PCON members receiving the Adobe GenSolve 2024 award on stage",
+  },
+  {
+    slug: "myntra-hackerramp-2024",
+    title: "Myntra WeForShe HackerRamp'24",
+    organiser: "Myntra",
+    year: 2024,
+    kind: "Hackathon",
+    result: "Runner-up",
+    tier: "runner-up",
+    imageUrl: "/achievements/myntra-hackerramp-24.jpg",
+    imageAlt: "PCON's runner-up team in front of the Myntra logo wall",
+  },
+];
