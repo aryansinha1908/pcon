@@ -67,7 +67,7 @@ function ResourceLink({ resource, preview, addedAt }: { resource: Resource; prev
       {preview && (
         <span className="resource-preview" aria-hidden="true">
           <span className="resource-preview__thumb">
-            <Image src={preview.thumbnail} alt="" width={480} height={360} sizes="260px" />
+            <Image src={preview.thumbnail} alt="" width={264} height={149} />
             <span className="resource-preview__play"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M7 5.5v9l7.5-4.5z" /></svg></span>
           </span>
           <span className="resource-preview__body">
@@ -80,6 +80,14 @@ function ResourceLink({ resource, preview, addedAt }: { resource: Resource; prev
   );
 }
 
+function MilestoneIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+      <path d="m8 1.75 1.85 3.9 4.15.55-3.05 2.9.78 4.15L8 11.2l-3.73 2.05.78-4.15L2 6.2l4.15-.55z" />
+    </svg>
+  );
+}
+
 function Track({ roadmap, index, previews }: { roadmap: Roadmap; index: string; previews: Record<string, YouTubePreview> }) {
   const ids = roadmap.steps.map((step) => step.id);
   return (
@@ -87,7 +95,7 @@ function Track({ roadmap, index, previews }: { roadmap: Roadmap; index: string; 
       <div className="shell">
         <header className="track__header">
           <div>
-            <div className="section-label"><span>{index} / {roadmap.kicker.toUpperCase()}</span><i /></div>
+            <div className="section-label"><span>{index} / {roadmap.kicker}</span><i /></div>
             <TypeTitle id={`${roadmap.slug}-title`} text={roadmap.title} />
             <p>{roadmap.tagline}</p>
           </div>
@@ -103,9 +111,9 @@ function Track({ roadmap, index, previews }: { roadmap: Roadmap; index: string; 
             return (
               <li className={"timeline__item" + (step.milestone ? " timeline__item--milestone" : "")} key={step.id} id={step.id} data-step-id={step.id}>
                 {showStage && <div className="timeline__stage">{step.stage}</div>}
-                <span className="timeline__node" aria-hidden="true">{step.milestone ? "★" : String(i + 1).padStart(2, "0")}</span>
+                <span className="timeline__node" aria-hidden="true">{step.milestone ? <MilestoneIcon /> : String(i + 1).padStart(2, "0")}</span>
                 <NextPin id={step.id} ids={ids} />
-                <article className="step-card" data-tilt="2.5">
+                <article className="step-card" data-tilt="1.5">
                   <div className="step-card__head">
                     <div>
                       {step.milestone && <span className="chip chip--live">Milestone</span>}
@@ -166,9 +174,9 @@ function Track({ roadmap, index, previews }: { roadmap: Roadmap; index: string; 
 
 const ROADMAP_PHRASES = [
   "STEP 1: MASTER PROBLEM SOLVING",
-  "STEP 2: HIT 5★ ON HACKERRANK",
+  "STEP 2: 5 STARS ON HACKERRANK",
   "STEP 3: CHOOSE YOUR DIRECTION",
-  "CP • DEV • AI/ML • CLOUD",
+  "CP • DEV • AI/ML • DEVOPS",
 ];
 
 export default async function RoadmapsPage() {
@@ -183,7 +191,7 @@ export default async function RoadmapsPage() {
   return (
     <div className="site-shell" id="top">
       <SiteHeader />
-      <main id="main">
+      <main id="main" className="roadmaps-page">
         <RoadmapEffects />
         <div className="sky">
         <Starfield />
@@ -191,8 +199,8 @@ export default async function RoadmapsPage() {
           <div className="roadmaps-hero__backdrop" aria-hidden="true" />
           <CodeRain />
           <div className="shell">
-            <div className="eyebrow"><span className="status-dot" /> CURATED BY SENIORS, FOR JUNIORS</div>
-            <RoadmapHeroTitle prefix="Find your " highlight="path." />
+            <div className="eyebrow"><span className="status-dot" /> Curated by seniors, for juniors</div>
+            <RoadmapHeroTitle prefix="Find your " highlight="path" />
             <div className="roadmaps-hero__scramble-wrap">
               <HackerScramble phrases={ROADMAP_PHRASES} />
             </div>
@@ -206,27 +214,27 @@ export default async function RoadmapsPage() {
           <div className="shell">
             <h2 className="sr-only" id="pathway-title">How the roadmaps fit together</h2>
             <div className="pathway__trunk">
-              <a className="pathway__node" href="#foundation" data-morph data-tilt="6">
-                <span className="pathway__step">STEP 1</span>
+              <a className="pathway__node" href="#foundation" data-morph data-tilt="3">
+                <span className="pathway__step">Step 1</span>
                 <strong>Problem solving</strong>
                 <small>{foundation.steps.filter((step) => !step.milestone).map((step) => step.title.replace(/^Start solving on /, "")).join(" → ")}</small>
               </a>
               <span className="pathway__arrow" aria-hidden="true"><ArrowIcon /></span>
-              <a className="pathway__node pathway__node--milestone" href="#foundation" data-morph data-tilt="6">
-                <span className="pathway__step">STEP 2 · MANDATORY FOR ALL</span>
+              <a className="pathway__node pathway__node--milestone" href="#foundation" data-morph data-tilt="3">
+                <span className="pathway__step">Step 2 · Required for everyone</span>
                 <strong>{fiveStar?.title}</strong>
                 <TrackProgress ids={foundation.steps.map((step) => step.id)} label={foundation.title} />
               </a>
             </div>
             <div className="pathway__fork" data-reveal="static">
-            <div className="pathway__fork-label">STEP 3 · CHOOSE YOUR DIRECTION</div>
+            <div className="pathway__fork-label">Step 3 · Choose your direction</div>
             <ul className="pathway__branches">
               {branches.map((branch, i) => (
                 <li className={`pathway__branch track--${branch.tint}`} key={branch.slug} style={{ "--i": i } as React.CSSProperties}>
-                  <a href={`#${branch.slug}`} data-morph data-tilt="8">
-                    <span className="pathway__step">{branch.kicker.toUpperCase()}</span>
+                  <a href={`#${branch.slug}`} data-morph data-tilt="3">
+                    <span className="pathway__step">{branch.kicker}</span>
                     <strong>{branch.title}</strong>
-                    <small>{branch.steps.length ? `${branch.steps.length} steps` : "Unlocks after 5★"}</small>
+                    <small>{branch.steps.length ? `${branch.steps.length} steps` : "Unlocks after 5 stars"}</small>
                     {branch.steps.length > 0 && <TrackProgress ids={branch.steps.map((step) => step.id)} label={branch.title} />}
                   </a>
                 </li>

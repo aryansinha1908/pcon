@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { EntranceGate } from "@/components/entrance-gate";
 import { PconLoader } from "@/components/pcon-loader";
+import { fontVariables } from "@/lib/fonts";
 import { baseOpenGraph, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -25,12 +26,14 @@ export const viewport: Viewport = {
  * loads in the same session hide it and skip the entrance straight away. If
  * sessionStorage is unavailable it fails safe and the splash simply plays.
  */
-const SPLASH_ONCE_SCRIPT = `(function(){try{var k="pcon:splash-seen",d=document.documentElement;if(sessionStorage.getItem(k)){d.classList.add("splash-seen");d.classList.remove("is-entering")}else{sessionStorage.setItem(k,"1")}}catch(e){}})();`;
+// Phones and tablets (narrow or touch screens), Save-Data and reduced motion skip the
+// splash entirely so content paints straight away; it only plays on desktop.
+const SPLASH_ONCE_SCRIPT = `(function(){var d=document.documentElement;function skip(){d.classList.add("splash-seen");d.classList.remove("is-entering")}try{var m=window.matchMedia,c=navigator.connection;if(m("(max-width: 1023px)").matches||m("(pointer: coarse)").matches||m("(prefers-reduced-motion: reduce)").matches||(c&&c.saveData)){skip();return}var k="pcon:splash-seen";if(sessionStorage.getItem(k)){skip()}else{sessionStorage.setItem(k,"1")}}catch(e){}})();`;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     // The inline script below may change <html>'s classes before hydration.
-    <html lang="en" className="is-entering" suppressHydrationWarning>
+    <html lang="en" className={`is-entering ${fontVariables}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: SPLASH_ONCE_SCRIPT }} />
       </head>

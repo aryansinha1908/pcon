@@ -20,7 +20,7 @@ export default function GlobalError({ error, retry }: { error: unknown; retry: (
               <strong>500</strong>
               <span className="status-code__bracket status-code__bracket--right" />
             </div>
-            <h1>Something broke.</h1>
+            <h1>Something broke</h1>
             <p className="status-page__lede">The site couldn&apos;t load. Please try again in a moment.{digest ? ` (Reference: ${digest})` : ""}</p>
             <div className="status-actions" style={{ marginTop: 28 }}>
               <button type="button" className="button button--primary" onClick={() => retry()}>Try again</button>

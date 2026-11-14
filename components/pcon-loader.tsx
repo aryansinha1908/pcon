@@ -25,7 +25,7 @@ export function PconLoader({ variant = "page", label = "Loading" }: { variant?: 
         <span className="pcon-loader__orbit"><span className="pcon-loader__spark" /></span>
       </div>
       <p className="pcon-loader__caption" aria-hidden="true">
-        {label.toUpperCase()}<span>.</span><span>.</span><span>.</span>
+        {label}<span>.</span><span>.</span><span>.</span>
       </p>
     </div>
   );

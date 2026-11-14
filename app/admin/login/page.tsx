@@ -64,21 +64,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               });
               redirect("/admin/blogs");
             }}
-            style={{ marginTop: "1rem" }}
           >
-            <button
-              className="adm-btn adm-btn--ghost adm-btn--block"
-              type="submit"
-              style={{
-                border: "1px dashed #2fbf9f",
-                color: "#6ee7c8",
-                padding: "10px",
-                fontSize: "14px",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              ⚡ Dev Admin 1-Click Login (yashpandey040709@gmail.com)
+            <button className="adm-btn adm-btn--ghost adm-btn--block adm-login__dev" type="submit">
+              <span>Dev admin sign-in</span>
+              <small>yashpandey040709@gmail.com</small>
             </button>
           </form>
         )}

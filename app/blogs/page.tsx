@@ -39,8 +39,8 @@ export default async function BlogListingPage({
   return (
     <>
       <section className="blog-hero">
-        <span className="blog-tag">THE PCON BLOG</span>
-        <BlogHeroTitle prefix="Ideas worth" highlight="shipping." />
+        <span className="blog-tag">The PCON blog</span>
+        <BlogHeroTitle prefix="Ideas worth" highlight="shipping" />
         <div className="blog-hero__scramble-wrap">
           <HackerScramble phrases={BLOG_PHRASES} />
         </div>

@@ -135,11 +135,27 @@ export function TeamSection({
     }
   };
 
+  // Tablist keyboard pattern: arrows/Home/End move selection and focus.
+  const onTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    const last = availableBatches.length - 1;
+    const target =
+      event.key === "ArrowRight" ? Math.min(activeIndex + 1, last)
+      : event.key === "ArrowLeft" ? Math.max(activeIndex - 1, 0)
+      : event.key === "Home" ? 0
+      : event.key === "End" ? last
+      : -1;
+    if (target < 0) return;
+    event.preventDefault();
+    const batch = availableBatches[target];
+    selectBatch(batch);
+    buttonRefs.current[batch]?.focus();
+  };
+
   return (
     <section className="team-directory" aria-label="Team members by batch">
       <div className="shell">
         <div className="batch-selector">
-          <span className="batch-selector__label">BATCH OF</span>
+          <span className="batch-selector__label">Batch of</span>
 
           <div className="batch-selector__viewport">
             <div
@@ -160,6 +176,8 @@ export function TeamSection({
                     role="tab"
                     id={`batch-tab-${batch}`}
                     aria-selected={isActive}
+                    tabIndex={isActive ? 0 : -1}
+                    onKeyDown={onTabKeyDown}
                     aria-controls={`batch-panel-${batch}`}
                     className={
                       "batch-selector__btn" +
@@ -187,7 +205,7 @@ export function TeamSection({
               disabled={activeIndex <= 0}
               onClick={() => go(-1)}
             >
-              ‹
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" /></svg>
             </button>
             <button
               type="button"
@@ -196,7 +214,7 @@ export function TeamSection({
               disabled={activeIndex >= availableBatches.length - 1}
               onClick={() => go(1)}
             >
-              ›
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" /></svg>
             </button>
           </div>
         </div>
@@ -248,6 +266,7 @@ export function TeamSection({
             aria-labelledby={`batch-tab-${selectedBatch}`}
             className="members-grid"
           >
+            <h2 className="sr-only">Batch of {selectedBatch}</h2>
             {filteredMembers.map((member) => (
               <TeamMemberCard
                 key={member.id}

@@ -19,13 +19,13 @@ export default function Error({ error, retry }: { error: unknown; retry: () => v
       <SiteHeader />
       <main id="main" className="status-page status-page--error">
         <div className="shell status-page__inner">
-          <div className="eyebrow"><span className="status-dot" /> RUNTIME ERROR</div>
+          <div className="eyebrow"><span className="status-dot" /> Runtime error</div>
           <div className="status-code" aria-hidden="true">
             <span className="status-code__bracket status-code__bracket--left" />
             <strong>500</strong>
             <span className="status-code__bracket status-code__bracket--right" />
           </div>
-          <h1>Something broke on our side.</h1>
+          <h1>Something broke on our side</h1>
           <p className="status-page__lede">It&apos;s not you. Try again, and if it keeps happening, let us know at pcon@nitjsr.ac.in.</p>
 
           <div className="terminal" aria-hidden="true">

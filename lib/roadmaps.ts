@@ -92,10 +92,10 @@ const foundation: Roadmap = {
     },
     {
       id: "foundation-hackerrank-5-star",
-      title: "Achieve 5★ in Problem Solving",
-      summary: "This ensures you're comfortable with the basics of DSA and implementation. Further details will be shared after you reach 5★.",
+      title: "Reach 5 stars in problem solving",
+      summary: "This ensures you're comfortable with the basics of DSA and implementation. Further details will be shared after you reach 5 stars.",
       milestone: true,
-      resources: [{ label: "HackerRank Problem Solving", url: "https://www.hackerrank.com/domains/algorithms?badge_type=problem-solving", kind: "practice" }],
+      resources: [{ label: "HackerRank problem solving", url: "https://www.hackerrank.com/domains/algorithms?badge_type=problem-solving", kind: "practice" }],
     },
   ],
 };
@@ -206,7 +206,7 @@ const cp: Roadmap = {
       resources: [{ label: "USACO Guide", url: "https://usaco.guide/", kind: "website" }],
     },
   ],
-  tips: ["Make sure you practise the questions rating-wise and topic-wise.", "All the best!"],
+  tips: ["Make sure you practise the questions rating-wise and topic-wise.", "All the best"],
 };
 
 const web: Roadmap = {
@@ -231,7 +231,7 @@ const ml: Roadmap = {
   slug: "ml",
   title: "Data science & AI/ML",
   kicker: "Option C",
-  tagline: "If data science interests you, start with Python after achieving 5★.",
+  tagline: "If data science interests you, start with Python after reaching 5 stars.",
   tint: "orange",
   steps: [
     { id: "ml-python", title: "Python (foundations)", resources: [{ label: "Python playlist", url: playlist("PLu71SKxNbfoBsMugTFALhdLlZ5VOqCg2s"), kind: "playlist" }] },
@@ -247,7 +247,7 @@ const ml: Roadmap = {
     },
     { id: "ml-deep-learning", title: "Deep learning", resources: [{ label: "Deep learning playlist", url: playlist("PLKnIA16_RmvYuZauWaPlRTC54KxSNLtNn"), kind: "playlist" }] },
   ],
-  locked: "This is a starter roadmap. ML is vast — after this you can explore further.",
+  locked: "This is a starter roadmap. ML is vast, so keep exploring after this.",
   exploreNext: ["NLP (Natural Language Processing)", "Computer Vision", "Generative AI (GenAI)"],
   tips: ["Don't just rely on videos. Also explore articles and tutorials."],
   furtherReading: [
@@ -285,7 +285,7 @@ const pathway: Pathway = {
   principles: [
     "Consistency matters more than speed",
     "No domain depends on another",
-    "Resources are shared time to time",
+    "New resources are shared over time",
   ],
   foundation,
   branches: [cp, web, ml, devops],

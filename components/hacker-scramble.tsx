@@ -8,14 +8,14 @@ const PCON_PHRASES = [
   "WELCOME TO PCON",
   "A COMMUNITY THAT BUILDS TOGETHER",
   "IF YOU LOVE CODING",
-  "YOU'RE AT THE RIGHT PLACE.",
+  "YOU'RE AT THE RIGHT PLACE",
 ];
 
 const DELTA_PHRASES = [
   "WELCOME TO DELTA FORCE",
   "A COMMUNITY THAT BUILDS TOGETHER",
   "IF YOU LOVE CODING",
-  "YOU'RE AT THE RIGHT PLACE.",
+  "YOU'RE AT THE RIGHT PLACE",
 ];
 
 interface HackerScrambleProps {
@@ -35,6 +35,27 @@ export function HackerScramble({
   const [displayText, setDisplayText] = useState(currentPhrases[0] ?? "");
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
+  // Only animate while on screen and the tab is visible: off-screen it would keep
+  // re-rendering React ~30 times a second for nobody.
+  const [inView, setInView] = useState(true);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    let onScreen = true;
+    const sync = () => setInView(onScreen && document.visibilityState === "visible");
+    const observer = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      sync();
+    });
+    observer.observe(el);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, []);
 
   useEffect(() => {
     const handleToggle = (e: Event) => {
@@ -71,6 +92,8 @@ export function HackerScramble({
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  const longestPhrase = currentPhrases.reduce((a, b) => (b.length > a.length ? b : a), "");
+
   const advancePhrase = useCallback(() => {
     setPhraseIndex((prev) => (prev + 1) % currentPhrases.length);
   }, [currentPhrases.length]);
@@ -79,6 +102,9 @@ export function HackerScramble({
     stateRef.current.phraseIndex = phraseIndex;
     const targetText = currentPhrases[phraseIndex];
     if (!targetText) return;
+
+    // Paused off-screen: the render shows the readable phrase; resume when back in view.
+    if (!inView) return;
 
     if (prefersReducedMotion.current) {
       setDisplayText(targetText);
@@ -95,6 +121,7 @@ export function HackerScramble({
     const totalLockSteps = targetLength;
     const lockInterval = Math.max(28, Math.min(65, 1200 / totalLockSteps)); // smooth left-to-right resolve
     let lastLockTime = performance.now() + 200; // initial scramble before locking starts
+    let holdTimer = 0;
 
     const tick = (now: number) => {
       // Advance lockIndex
@@ -110,8 +137,9 @@ export function HackerScramble({
           if (i < lockIndex) {
             result += targetText[i];
           } else if (targetText[i] === " ") {
-            // Keep spaces or occasionally glitch
-            result += Math.random() < 0.15 ? GLYPHS[Math.floor(Math.random() * GLYPHS.length)] : " ";
+            // Spaces stay spaces: the pixel font is monospaced, so keeping the word breaks
+            // fixed keeps line wrapping (and the hero's height) identical mid-scramble.
+            result += " ";
           } else {
             result += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
           }
@@ -123,11 +151,9 @@ export function HackerScramble({
         // Completed resolution!
         setDisplayText(targetText);
         setIsHolding(true);
-        const holdTimer = setTimeout(() => {
-          advancePhrase();
-        }, holdDuration);
-
-        return () => clearTimeout(holdTimer);
+        // Cleared in the effect cleanup (returning it from a rAF callback did nothing).
+        holdTimer = window.setTimeout(advancePhrase, holdDuration);
+        return;
       }
 
       frameId = requestAnimationFrame(tick);
@@ -137,11 +163,13 @@ export function HackerScramble({
 
     return () => {
       cancelAnimationFrame(frameId);
+      window.clearTimeout(holdTimer);
     };
-  }, [phraseIndex, currentPhrases, holdDuration, scrambleSpeed, advancePhrase]);
+  }, [phraseIndex, currentPhrases, holdDuration, scrambleSpeed, advancePhrase, inView]);
 
   return (
     <div
+      ref={rootRef}
       className={`hacker-scramble ${className}`}
       onClick={advancePhrase}
       role="button"
@@ -153,13 +181,24 @@ export function HackerScramble({
     >
       <span className="sr-only">{currentPhrases[phraseIndex]}</span>
       <div className="hacker-scramble__box" aria-hidden="true">
-        <span className="hacker-scramble__text">{displayText}</span>
-        <span
-          className={`hacker-scramble__cursor ${
-            isHolding ? "hacker-scramble__cursor--blink" : "hacker-scramble__cursor--solid"
-          }`}
-        >
-          _
+        {/* The visible line and an invisible copy of the longest phrase share one grid
+            cell, so the box is always sized for the longest phrase: cycling between
+            short and long phrases never changes the hero's height (no layout shift). */}
+        <span className="hacker-scramble__stack">
+          <span className="hacker-scramble__line">
+            <span className="hacker-scramble__text">{inView ? displayText : currentPhrases[phraseIndex]}</span>
+            <span
+              className={`hacker-scramble__cursor ${
+                isHolding ? "hacker-scramble__cursor--blink" : "hacker-scramble__cursor--solid"
+              }`}
+            >
+              _
+            </span>
+          </span>
+          <span className="hacker-scramble__line hacker-scramble__sizer">
+            <span className="hacker-scramble__text">{longestPhrase}</span>
+            <span className="hacker-scramble__cursor">_</span>
+          </span>
         </span>
       </div>
     </div>

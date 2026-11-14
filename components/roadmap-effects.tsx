@@ -24,69 +24,95 @@ export function RoadmapEffects() {
 
     // ── Reveal on view ───────────────────────────────────────────────
     if (!reduce) {
-      const targets = [...document.querySelectorAll<HTMLElement>("[data-reveal]")];
+      // Only blocks that start fully below the fold get the entrance. Anything already
+      // (even partly) on screen at load stays as it is and is never animated: before, a
+      // half-visible block was left showing and then replayed its entrance on the first
+      // scroll, so cards you had already seen re-drew themselves.
+      const targets = [...document.querySelectorAll<HTMLElement>("[data-reveal]")].filter(
+        (target) => target.getBoundingClientRect().top >= window.innerHeight,
+      );
       const observer = new IntersectionObserver((entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           (entry.target as HTMLElement).dataset.reveal = "play";
           observer.unobserve(entry.target);
         }
-      }, { threshold: 0.25 });
+        // Play as soon as the block's top is a little way into view. A share-of-element
+        // threshold left tall blocks (the stacked option cards on phones) as an empty
+        // gap for a long stretch of scrolling before they appeared.
+      }, { rootMargin: "0px 0px -10% 0px" });
       for (const target of targets) {
-        // Only hide what is still below the fold, so nothing visible blinks out.
-        if (target.getBoundingClientRect().top > window.innerHeight) target.dataset.reveal = "idle";
+        target.dataset.reveal = "idle";
         observer.observe(target);
       }
       cleanups.push(() => observer.disconnect());
     }
 
     // ── Scroll-filled timelines ──────────────────────────────────────
+    // The glowing fill and its dot are a CSS scroll timeline (roadmaps.css), moved by the
+    // browser in step with the scroll. This code only lights the number nodes as the dot
+    // reaches them, measured from where the dot actually is, so they always agree. Browsers
+    // without scroll timelines get the same motion from here, written as direct transforms
+    // (setting custom properties on the wrap made every element inside it restyle on every
+    // scroll frame, which is what made the line lag on phones).
     const wraps = [...document.querySelectorAll<HTMLElement>(".timeline-wrap")];
-    if (reduce) {
-      wraps.forEach((wrap) => wrap.style.setProperty("--fill", "1"));
-    } else if (wraps.length) {
-      let nodeOffsets = new Map<HTMLElement, { item: HTMLElement; y: number }[]>();
-      const measure = () => {
-        nodeOffsets = new Map(wraps.map((wrap) => {
-          const top = wrap.getBoundingClientRect().top;
-          const items = [...wrap.querySelectorAll<HTMLElement>(".timeline__item")].map((item) => {
-            const node = item.querySelector<HTMLElement>(".timeline__node");
-            const rect = (node ?? item).getBoundingClientRect();
-            return { item, y: rect.top + rect.height / 2 - top };
-          });
-          return [wrap, items];
-        }));
-      };
+    const nativeTimeline = CSS.supports("animation-timeline: view()");
+    if (!reduce && wraps.length) {
+      const visible = new Set<HTMLElement>();
       let frame = 0;
+
       const update = () => {
         frame = 0;
         const anchor = window.innerHeight * 0.6;
-        for (const wrap of wraps) {
-          const rect = wrap.getBoundingClientRect();
-          const length = Math.max(rect.height - 40, 1);
-          const fill = Math.min(1, Math.max(0, (anchor - rect.top - 20) / length));
-          const px = fill * length;
-          wrap.style.setProperty("--fill", fill.toFixed(4));
-          wrap.style.setProperty("--fill-px", `${px.toFixed(1)}px`);
-          for (const { item, y } of nodeOffsets.get(wrap) ?? []) {
-            const reached = String(px + 20 >= y - 4);
+        for (const wrap of visible) {
+          const fill = wrap.querySelector<HTMLElement>(".timeline__fill");
+          const tip = wrap.querySelector<HTMLElement>(".timeline__tip");
+          if (!fill || !tip) continue;
+
+          if (!nativeTimeline) {
+            const rect = wrap.getBoundingClientRect();
+            const length = Math.max(rect.height - 40, 1);
+            const progress = Math.min(1, Math.max(0, (anchor - rect.top - 20) / length));
+            fill.style.transform = `scaleY(${progress.toFixed(4)})`;
+            tip.style.translate = `0 ${((progress - 1) * 100).toFixed(3)}%`;
+            tip.style.opacity = String(Math.min(1, progress * 25, (1 - progress) * 25));
+          }
+
+          // The dot is the bottom edge of the tip rail. Read every position first, then
+          // write, so the browser lays out once per frame.
+          const dotY = tip.getBoundingClientRect().bottom;
+          const states = [...wrap.querySelectorAll<HTMLElement>(".timeline__item")].map((item) => {
+            const node = item.querySelector<HTMLElement>(".timeline__node");
+            // Lit as soon as the dot touches the node's top edge, then it passes behind it.
+            return [item, String(dotY >= (node ?? item).getBoundingClientRect().top)] as const;
+          });
+          for (const [item, reached] of states) {
             if (item.dataset.reached !== reached) item.dataset.reached = reached;
           }
         }
       };
       const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
-      const onResize = () => { measure(); schedule(); };
-      measure();
-      update();
+
+      // Only timelines near the screen do any work.
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target as HTMLElement);
+          else visible.delete(entry.target as HTMLElement);
+        }
+        schedule();
+      }, { rootMargin: "50% 0px" });
+      wraps.forEach((wrap) => observer.observe(wrap));
+
       window.addEventListener("scroll", schedule, { passive: true });
-      window.addEventListener("resize", onResize);
+      window.addEventListener("resize", schedule);
       // Card heights change when fonts load or progress badges appear.
-      const resizeObserver = new ResizeObserver(onResize);
+      const resizeObserver = new ResizeObserver(schedule);
       wraps.forEach((wrap) => resizeObserver.observe(wrap));
       cleanups.push(() => {
         cancelAnimationFrame(frame);
+        observer.disconnect();
         window.removeEventListener("scroll", schedule);
-        window.removeEventListener("resize", onResize);
+        window.removeEventListener("resize", schedule);
         resizeObserver.disconnect();
       });
     }

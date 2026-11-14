@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublicEvents } from "@/lib/events";
 import { formatDate } from "@/lib/format";
+import { socialLinks } from "@/lib/site-data";
 import { baseOpenGraph } from "@/lib/site-url";
 import "../roadmaps/roadmaps.css";
 import "./events.css";
@@ -71,7 +72,15 @@ function EventCard({
       </div>
       <h3>{event.title}</h3>
       <p>{event.description}</p>
-      {event.location && <span className="event-card__location">{event.location}</span>}
+      {event.location && (
+        <span className="event-card__location">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M8 14.25s4.5-4.1 4.5-7.75a4.5 4.5 0 0 0-9 0c0 3.65 4.5 7.75 4.5 7.75Z" />
+            <circle cx="8" cy="6.5" r="1.6" />
+          </svg>
+          {event.location}
+        </span>
+      )}
       {event.registrationUrl && (
         <a
           className="text-link text-link--dark event-card__cta"
@@ -93,12 +102,13 @@ export default async function EventsPage() {
     .filter((e) => e.endDate >= now)
     .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
   const past = events.filter((e) => e.endDate < now);
+  const follow = socialLinks.filter((link) => link.label !== "GitHub");
 
   return (
     <div className="site-shell" id="top">
       <ScrollReveal />
       <SiteHeader />
-      <main id="main">
+      <main id="main" className="events-page">
         <div className="sky">
           <Starfield />
           <section className="roadmaps-hero" aria-labelledby="roadmaps-title">
@@ -106,9 +116,9 @@ export default async function EventsPage() {
             <CodeRain />
             <div className="shell">
               <div className="eyebrow">
-                <span className="status-dot" /> WHAT&apos;S HAPPENING AT PCON
+                <span className="status-dot" /> What&apos;s happening at PCON
               </div>
-              <RoadmapHeroTitle prefix="Worth Showing " highlight="Up For." />
+              <RoadmapHeroTitle prefix="Worth showing " highlight="up for" />
               <div className="roadmaps-hero__scramble-wrap">
                 <HackerScramble phrases={EVENT_PHRASES} />
               </div>
@@ -125,15 +135,24 @@ export default async function EventsPage() {
         <section className="section-pad events-section" id="upcoming" aria-labelledby="upcoming-title">
           <div className="shell">
             <div className="section-label">
-              <span>01 / COMING UP</span>
+              <span>01 / Coming up</span>
               <i />
             </div>
             <h2 id="upcoming-title">Upcoming events</h2>
             {upcoming.length === 0 ? (
               <div className="event-grid">
                 <div className="event-card event-card--empty" data-reveal>
-                  <span className="chip">Nothing scheduled</span>
-                  <p>No upcoming events right now — check back soon, or follow the club to hear first.</p>
+                  <h3>Nothing scheduled yet</h3>
+                  <p>
+                    The next contest or workshop will show up here. To hear about it first, follow the club on{" "}
+                    {follow.map((link, i) => (
+                      <span key={link.href}>
+                        {i > 0 && (i === follow.length - 1 ? " or " : ", ")}
+                        <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
+                      </span>
+                    ))}
+                    .
+                  </p>
                 </div>
               </div>
             ) : (
@@ -150,7 +169,7 @@ export default async function EventsPage() {
           <section className="section-pad events-section events-section--past" id="past" aria-labelledby="past-title">
             <div className="shell">
               <div className="section-label">
-                <span>02 / WHAT WE&apos;VE RUN</span>
+                <span>02 / What we&apos;ve run</span>
                 <i />
               </div>
               <h2 id="past-title">Past events</h2>
